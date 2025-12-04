@@ -692,19 +692,28 @@
             defs["PlateDetectedRequest"] = {
   "properties" : {
     "deviceKey" : { },
-    "plateNumber" : { }
+    "plateNumber" : { },
+    "capturedAt" : { }
   }
 };
             defs["PlateDetectedResponse"] = {
   "properties" : {
-    "id" : { },
     "action" : {
       "properties" : {
         "name" : { },
         "ordinal" : { }
       }
     },
-    "plateNumber" : { }
+    "sessionId" : { },
+    "plateNumber" : { },
+    "isRegistered" : { },
+    "vehicleLabel" : { },
+    "vehicleCategory" : {
+      "properties" : {
+        "name" : { },
+        "ordinal" : { }
+      }
+    }
   }
 };
   </script>

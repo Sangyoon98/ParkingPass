@@ -34,6 +34,11 @@ tasks.named("processResources") {
     dependsOn("copyOpenApiToResources")
 }
 
+// build 태스크 실행 시 자동으로 buildOpenApi 실행
+tasks.named("build") {
+    dependsOn("buildOpenApi")
+}
+
 application {
     mainClass.set("com.sangyoon.parkingpass.ApplicationKt")
     
@@ -42,8 +47,12 @@ application {
 }
 
 dependencies {
+    // Swagger / OpenAPI
     implementation(libs.ktor.server.swagger)
     implementation(libs.ktor.server.openapi)
+
+    // StatusPages
+    implementation(libs.ktor.server.status.pages)
 
     implementation(projects.shared)
     implementation(libs.logback)

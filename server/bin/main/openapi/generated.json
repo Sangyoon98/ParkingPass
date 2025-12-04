@@ -75,15 +75,15 @@
                     },
                     "plateNumber": {
                         "type": "string"
+                    },
+                    "capturedAt": {
+                        "type": "string"
                     }
                 }
             },
             "PlateDetectedResponse": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
                     "action": {
                         "type": "object",
                         "properties": {
@@ -95,8 +95,28 @@
                             }
                         }
                     },
+                    "sessionId": {
+                        "type": "integer"
+                    },
                     "plateNumber": {
                         "type": "string"
+                    },
+                    "isRegistered": {
+                        "type": "boolean"
+                    },
+                    "vehicleLabel": {
+                        "type": "string"
+                    },
+                    "vehicleCategory": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
                     }
                 }
             }
