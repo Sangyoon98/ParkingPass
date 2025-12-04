@@ -1,14 +1,14 @@
 package com.sangyoon.parkingpass.parkingevent.controller
 
-import com.sangyoon.parkingpass.parkingevent.sevice.ParkingEventService
 import com.sangyoon.parkingpass.parkingevent.dto.PlateDetectedRequest
-import com.sangyoon.parkingpass.parkingevent.dto.PlateDetectedResponse
+import com.sangyoon.parkingpass.parkingevent.sevice.ParkingEventService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import java.time.Instant
 
 fun Route.parkingEventController(
     parkingEventService: ParkingEventService
@@ -24,15 +24,13 @@ fun Route.parkingEventController(
         post("/events/plate-detected") {
             val request = call.receive<PlateDetectedRequest>()
 
-            val event = parkingEventService.handlePlateDetected(
-                deviceKey = request.deviceKey,
-                plateNumber = request.plateNumber
-            )
+            // capturedAt이 없으면 서버 현재 시간 사용
+            val capturedAt = request.capturedAt?.let { Instant.parse(it) } ?: Instant.now()
 
-            val response = PlateDetectedResponse(
-                id = event.id,
-                action = event.action,
-                plateNumber = event.plateNumber
+            val response = parkingEventService.handlePlateDetected(
+                deviceKey = request.deviceKey,
+                plateNumber = request.plateNumber,
+                capturedAt = capturedAt
             )
 
             call.respond(HttpStatusCode.OK, response)
