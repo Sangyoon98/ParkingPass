@@ -1,7 +1,10 @@
 package com.sangyoon.parkingpass.parking.repository
 
+import com.sangyoon.parkingpass.common.KOREA_ZONE_ID
 import com.sangyoon.parkingpass.parking.model.ParkingSession
 import com.sangyoon.parkingpass.parking.model.SessionStatus
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
@@ -25,4 +28,16 @@ class InMemoryParkingSessionRepository : ParkingSessionRepository {
 
     override fun findAllOpenSessions(parkingLotId: Long): List<ParkingSession> =
         sessions.values.filter { it.parkingLotId == parkingLotId && it.status == SessionStatus.OPEN }
+
+    override fun findAllByParkingLotIdAndDate(
+        parkingLotId: Long,
+        date: LocalDate
+    ): List<ParkingSession> {
+        val startOfDay = date.atStartOfDay(KOREA_ZONE_ID).toInstant()
+        val endOfDay = date.plusDays(1).atStartOfDay(KOREA_ZONE_ID).toInstant()
+
+        return sessions.values.filter { session ->
+            session.parkingLotId == parkingLotId && session.enteredAt.isAfter(startOfDay) && session.enteredAt.isBefore(endOfDay)
+        }
+    }
 }

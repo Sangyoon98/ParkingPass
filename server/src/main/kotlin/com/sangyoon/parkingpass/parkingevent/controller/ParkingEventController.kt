@@ -1,5 +1,6 @@
 package com.sangyoon.parkingpass.parkingevent.controller
 
+import com.sangyoon.parkingpass.common.KOREA_ZONE_ID
 import com.sangyoon.parkingpass.parkingevent.dto.PlateDetectedRequest
 import com.sangyoon.parkingpass.parkingevent.sevice.ParkingEventService
 import io.ktor.http.HttpStatusCode
@@ -8,6 +9,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import java.time.Clock
 import java.time.Instant
 
 fun Route.parkingEventController(
@@ -25,7 +27,7 @@ fun Route.parkingEventController(
             val request = call.receive<PlateDetectedRequest>()
 
             // capturedAt이 없으면 서버 현재 시간 사용
-            val capturedAt = request.capturedAt?.let { Instant.parse(it) } ?: Instant.now()
+            val capturedAt = request.capturedAt?.let { Instant.parse(it) } ?: Clock.system(KOREA_ZONE_ID).instant()
 
             val response = parkingEventService.handlePlateDetected(
                 deviceKey = request.deviceKey,
