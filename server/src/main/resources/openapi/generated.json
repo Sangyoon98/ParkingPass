@@ -64,6 +64,83 @@
                 ]
             }
         },
+        "/api/v1/sessions/open": {
+            "get": {
+                "summary": "현재 주차 중 목록 조회",
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "query",
+                        "description": "주차장 ID",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List<SessionResponse> 현재 주차 중인 세션 목록",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SessionResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Sessions"
+                ]
+            }
+        },
+        "/api/v1/sessions/history": {
+            "get": {
+                "summary": "날짜별 입출차 기록 조회",
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "query",
+                        "description": "주차장 ID",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List<SessionResponse> 해당 날짜의 입출차 기록",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SessionResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Sessions"
+                ]
+            }
+        },
         "/api/v1/vehicles": {
             "post": {
                 "summary": "등록 차량 추가",
@@ -185,6 +262,52 @@
                                 "type": "integer"
                             }
                         }
+                    }
+                }
+            },
+            "SessionResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "parkingLotId": {
+                        "type": "integer"
+                    },
+                    "plateNumber": {
+                        "type": "string"
+                    },
+                    "vehicleId": {
+                        "type": "integer"
+                    },
+                    "vehicleLabel": {
+                        "type": "string"
+                    },
+                    "vehicleCategory": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "enterGateId": {
+                        "type": "integer"
+                    },
+                    "exitGateId": {
+                        "type": "integer"
+                    },
+                    "enteredAt": {
+                        "type": "string"
+                    },
+                    "exitedAt": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
                     }
                 }
             },

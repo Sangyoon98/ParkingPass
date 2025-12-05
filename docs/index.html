@@ -730,6 +730,26 @@
     }
   }
 };
+            defs["SessionResponse"] = {
+  "properties" : {
+    "id" : { },
+    "parkingLotId" : { },
+    "plateNumber" : { },
+    "vehicleId" : { },
+    "vehicleLabel" : { },
+    "vehicleCategory" : {
+      "properties" : {
+        "name" : { },
+        "ordinal" : { }
+      }
+    },
+    "enterGateId" : { },
+    "exitGateId" : { },
+    "enteredAt" : { },
+    "exitedAt" : { },
+    "status" : { }
+  }
+};
             defs["VehicleResponse"] = {
   "properties" : {
     "id" : { },
@@ -768,6 +788,13 @@
                   <li class="nav-header" data-group="ParkingEvents"><a href="#api-ParkingEvents">API Methods - ParkingEvents</a></li>
                     <li data-group="ParkingEvents" data-name="apiV1EventsPlateDetectedPost" class="">
                       <a href="#api-ParkingEvents-apiV1EventsPlateDetectedPost">apiV1EventsPlateDetectedPost</a>
+                    </li>
+                  <li class="nav-header" data-group="Sessions"><a href="#api-Sessions">API Methods - Sessions</a></li>
+                    <li data-group="Sessions" data-name="apiV1SessionsHistoryGet" class="">
+                      <a href="#api-Sessions-apiV1SessionsHistoryGet">apiV1SessionsHistoryGet</a>
+                    </li>
+                    <li data-group="Sessions" data-name="apiV1SessionsOpenGet" class="">
+                      <a href="#api-Sessions-apiV1SessionsOpenGet">apiV1SessionsOpenGet</a>
                     </li>
                   <li class="nav-header" data-group="Vehicles"><a href="#api-Vehicles">API Methods - Vehicles</a></li>
                     <li data-group="Vehicles" data-name="apiV1VehiclesGet" class="">
@@ -1356,6 +1383,613 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-apiV1EventsPlateDetectedPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-Sessions">
+                  <h1>Sessions</h1>
+                    <div id="api-Sessions-apiV1SessionsHistoryGet">
+                      <article id="api-Sessions-apiV1SessionsHistoryGet-0" data-group="User" data-name="apiV1SessionsHistoryGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1SessionsHistoryGet</h1>
+                          <p>날짜별 입출차 기록 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/sessions/history</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsHistoryGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Sessions-apiV1SessionsHistoryGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"//api/v1/sessions/history?parkingLotId=&date="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.SessionsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class SessionsApiExample {
+
+    public static void main(String[] args) {
+        
+        SessionsApi apiInstance = new SessionsApi();
+         parkingLotId = ; //  | 주차장 ID
+         date = ; //  | 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
+        try {
+            apiInstance.apiV1SessionsHistoryGet(parkingLotId, date);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling SessionsApi#apiV1SessionsHistoryGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.SessionsApi;
+
+public class SessionsApiExample {
+
+    public static void main(String[] args) {
+        SessionsApi apiInstance = new SessionsApi();
+         parkingLotId = ; //  | 주차장 ID
+         date = ; //  | 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
+        try {
+            apiInstance.apiV1SessionsHistoryGet(parkingLotId, date);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling SessionsApi#apiV1SessionsHistoryGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp"> *parkingLotId = ; // 주차장 ID (optional)
+ *date = ; // 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03) (optional)
+
+SessionsApi *apiInstance = [[SessionsApi alloc] init];
+
+// 날짜별 입출차 기록 조회
+[apiInstance apiV1SessionsHistoryGetWith:parkingLotId
+    date:date
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.SessionsApi()
+var opts = { 
+  'parkingLotId': , // {{}} 주차장 ID
+  'date':  // {{}} 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.apiV1SessionsHistoryGet(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1SessionsHistoryGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new SessionsApi();
+            var parkingLotId = new (); //  | 주차장 ID (optional) 
+            var date = new (); //  | 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03) (optional) 
+
+            try
+            {
+                // 날짜별 입출차 기록 조회
+                apiInstance.apiV1SessionsHistoryGet(parkingLotId, date);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling SessionsApi.apiV1SessionsHistoryGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiSessionsApi();
+$parkingLotId = ; //  | 주차장 ID
+$date = ; //  | 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
+
+try {
+    $api_instance->apiV1SessionsHistoryGet($parkingLotId, $date);
+} catch (Exception $e) {
+    echo 'Exception when calling SessionsApi->apiV1SessionsHistoryGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::SessionsApi;
+
+my $api_instance = WWW::SwaggerClient::SessionsApi->new();
+my $parkingLotId = ; #  | 주차장 ID
+my $date = ; #  | 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
+
+eval { 
+    $api_instance->apiV1SessionsHistoryGet(parkingLotId => $parkingLotId, date => $date);
+};
+if ($@) {
+    warn "Exception when calling SessionsApi->apiV1SessionsHistoryGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsHistoryGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.SessionsApi()
+parkingLotId =  #  | 주차장 ID (optional)
+date =  #  | 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03) (optional)
+
+try: 
+    # 날짜별 입출차 기록 조회
+    api_instance.api_v1_sessions_history_get(parkingLotId=parkingLotId, date=date)
+except ApiException as e:
+    print("Exception when calling SessionsApi->apiV1SessionsHistoryGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">parkingLotId</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_apiV1SessionsHistoryGet_parkingLotId">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        주차장 ID
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                                <tr><td style="width:150px;">date</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_apiV1SessionsHistoryGet_date">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - List&lt;SessionResponse&gt; 해당 날짜의 입출차 기록 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1SessionsHistoryGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1SessionsHistoryGet-200-schema">
+                                  <div id='responses-apiV1SessionsHistoryGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "List<SessionResponse> 해당 날짜의 입출차 기록",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "items" : {
+          "$ref" : "#/components/schemas/SessionResponse"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1SessionsHistoryGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1SessionsHistoryGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1SessionsHistoryGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Sessions-apiV1SessionsOpenGet">
+                      <article id="api-Sessions-apiV1SessionsOpenGet-0" data-group="User" data-name="apiV1SessionsOpenGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1SessionsOpenGet</h1>
+                          <p>현재 주차 중 목록 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/sessions/open</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Sessions-apiV1SessionsOpenGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Sessions-apiV1SessionsOpenGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Sessions-apiV1SessionsOpenGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"//api/v1/sessions/open?parkingLotId="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.SessionsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class SessionsApiExample {
+
+    public static void main(String[] args) {
+        
+        SessionsApi apiInstance = new SessionsApi();
+         parkingLotId = ; //  | 주차장 ID
+        try {
+            apiInstance.apiV1SessionsOpenGet(parkingLotId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling SessionsApi#apiV1SessionsOpenGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.SessionsApi;
+
+public class SessionsApiExample {
+
+    public static void main(String[] args) {
+        SessionsApi apiInstance = new SessionsApi();
+         parkingLotId = ; //  | 주차장 ID
+        try {
+            apiInstance.apiV1SessionsOpenGet(parkingLotId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling SessionsApi#apiV1SessionsOpenGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp"> *parkingLotId = ; // 주차장 ID (optional)
+
+SessionsApi *apiInstance = [[SessionsApi alloc] init];
+
+// 현재 주차 중 목록 조회
+[apiInstance apiV1SessionsOpenGetWith:parkingLotId
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.SessionsApi()
+var opts = { 
+  'parkingLotId':  // {{}} 주차장 ID
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.apiV1SessionsOpenGet(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1SessionsOpenGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new SessionsApi();
+            var parkingLotId = new (); //  | 주차장 ID (optional) 
+
+            try
+            {
+                // 현재 주차 중 목록 조회
+                apiInstance.apiV1SessionsOpenGet(parkingLotId);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling SessionsApi.apiV1SessionsOpenGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiSessionsApi();
+$parkingLotId = ; //  | 주차장 ID
+
+try {
+    $api_instance->apiV1SessionsOpenGet($parkingLotId);
+} catch (Exception $e) {
+    echo 'Exception when calling SessionsApi->apiV1SessionsOpenGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::SessionsApi;
+
+my $api_instance = WWW::SwaggerClient::SessionsApi->new();
+my $parkingLotId = ; #  | 주차장 ID
+
+eval { 
+    $api_instance->apiV1SessionsOpenGet(parkingLotId => $parkingLotId);
+};
+if ($@) {
+    warn "Exception when calling SessionsApi->apiV1SessionsOpenGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Sessions-apiV1SessionsOpenGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.SessionsApi()
+parkingLotId =  #  | 주차장 ID (optional)
+
+try: 
+    # 현재 주차 중 목록 조회
+    api_instance.api_v1_sessions_open_get(parkingLotId=parkingLotId)
+except ApiException as e:
+    print("Exception when calling SessionsApi->apiV1SessionsOpenGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">parkingLotId</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_apiV1SessionsOpenGet_parkingLotId">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        주차장 ID
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - List&lt;SessionResponse&gt; 현재 주차 중인 세션 목록 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1SessionsOpenGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1SessionsOpenGet-200-schema">
+                                  <div id='responses-apiV1SessionsOpenGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "List<SessionResponse> 현재 주차 중인 세션 목록",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "items" : {
+          "$ref" : "#/components/schemas/SessionResponse"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1SessionsOpenGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1SessionsOpenGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1SessionsOpenGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

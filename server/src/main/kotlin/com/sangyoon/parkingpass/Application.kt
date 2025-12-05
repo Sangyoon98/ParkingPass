@@ -12,6 +12,8 @@ import com.sangyoon.parkingpass.parking.repository.InMemoryVehicleRepository
 import com.sangyoon.parkingpass.parkingevent.controller.parkingEventController
 import com.sangyoon.parkingpass.parkingevent.repository.InMemoryParkingEventRepository
 import com.sangyoon.parkingpass.parkingevent.sevice.ParkingEventService
+import com.sangyoon.parkingpass.session.controller.sessionController
+import com.sangyoon.parkingpass.session.service.SessionService
 import com.sangyoon.parkingpass.vehicle.controller.vehicleController
 import com.sangyoon.parkingpass.vehicle.service.VehicleService
 import io.ktor.serialization.kotlinx.json.json
@@ -69,6 +71,11 @@ fun Application.module() {
 
     val vehicleService = VehicleService(vehicleRepository)
 
+    val sessionService = SessionService(
+        sessionRepository = parkingSessionRepository,
+        vehicleRepository = vehicleRepository
+    )
+
     install(ContentNegotiation) { json() }
 
     configureStatusPages()
@@ -80,5 +87,6 @@ fun Application.module() {
         healthController()
         parkingEventController(parkingEventService)
         vehicleController(vehicleService)
+        sessionController(sessionService)
     }
 }
