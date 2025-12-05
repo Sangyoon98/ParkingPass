@@ -5,4 +5,5 @@ import com.sangyoon.parkingpass.parking.model.Vehicle
 interface VehicleRepository {
     fun findByParkingLotIdAndPlateNumber(parkingLotId: Long, plateNumber: String): Vehicle?
     fun save(vehicle: Vehicle): Vehicle
+    fun findAllByParkingLotId(parkingLotId: Long): List<Vehicle>
 }
