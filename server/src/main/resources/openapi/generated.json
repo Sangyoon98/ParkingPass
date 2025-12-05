@@ -63,6 +63,74 @@
                     "ParkingEvents"
                 ]
             }
+        },
+        "/api/v1/vehicles": {
+            "post": {
+                "summary": "등록 차량 추가",
+                "requestBody": {
+                    "description": "CreateVehicleRequest 등록 차량 정보",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateVehicleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "VehicleResponse 생성된 차량 정보",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VehicleResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Vehicles"
+                ]
+            },
+            "get": {
+                "summary": "등록 차량 목록 조회",
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "query",
+                        "description": "주차장 ID",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List<VehicleResponse> 차량 목록",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/VehicleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Vehicles"
+                ]
+            }
         }
     },
     "components": {
@@ -117,6 +185,65 @@
                                 "type": "integer"
                             }
                         }
+                    }
+                }
+            },
+            "CreateVehicleRequest": {
+                "type": "object",
+                "properties": {
+                    "parkingLotId": {
+                        "type": "integer"
+                    },
+                    "plateNumber": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "memo": {
+                        "type": "string"
+                    }
+                }
+            },
+            "VehicleResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "parkingLotId": {
+                        "type": "integer"
+                    },
+                    "plateNumber": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "memo": {
+                        "type": "string"
                     }
                 }
             }

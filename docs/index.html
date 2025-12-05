@@ -689,6 +689,20 @@
   <script>
     // Script section to load models into a JS Var
     var defs = {}
+            defs["CreateVehicleRequest"] = {
+  "properties" : {
+    "parkingLotId" : { },
+    "plateNumber" : { },
+    "label" : { },
+    "category" : {
+      "properties" : {
+        "name" : { },
+        "ordinal" : { }
+      }
+    },
+    "memo" : { }
+  }
+};
             defs["PlateDetectedRequest"] = {
   "properties" : {
     "deviceKey" : { },
@@ -716,6 +730,21 @@
     }
   }
 };
+            defs["VehicleResponse"] = {
+  "properties" : {
+    "id" : { },
+    "parkingLotId" : { },
+    "plateNumber" : { },
+    "label" : { },
+    "category" : {
+      "properties" : {
+        "name" : { },
+        "ordinal" : { }
+      }
+    },
+    "memo" : { }
+  }
+};
   </script>
 
   <div class="container-fluid">
@@ -739,6 +768,13 @@
                   <li class="nav-header" data-group="ParkingEvents"><a href="#api-ParkingEvents">API Methods - ParkingEvents</a></li>
                     <li data-group="ParkingEvents" data-name="apiV1EventsPlateDetectedPost" class="">
                       <a href="#api-ParkingEvents-apiV1EventsPlateDetectedPost">apiV1EventsPlateDetectedPost</a>
+                    </li>
+                  <li class="nav-header" data-group="Vehicles"><a href="#api-Vehicles">API Methods - Vehicles</a></li>
+                    <li data-group="Vehicles" data-name="apiV1VehiclesGet" class="">
+                      <a href="#api-Vehicles-apiV1VehiclesGet">apiV1VehiclesGet</a>
+                    </li>
+                    <li data-group="Vehicles" data-name="apiV1VehiclesPost" class="">
+                      <a href="#api-Vehicles-apiV1VehiclesPost">apiV1VehiclesPost</a>
                     </li>
           </ul>
         </nav>
@@ -1320,6 +1356,608 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-apiV1EventsPlateDetectedPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-Vehicles">
+                  <h1>Vehicles</h1>
+                    <div id="api-Vehicles-apiV1VehiclesGet">
+                      <article id="api-Vehicles-apiV1VehiclesGet-0" data-group="User" data-name="apiV1VehiclesGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1VehiclesGet</h1>
+                          <p>등록 차량 목록 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/vehicles</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Vehicles-apiV1VehiclesGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Vehicles-apiV1VehiclesGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"//api/v1/vehicles?parkingLotId="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.VehiclesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class VehiclesApiExample {
+
+    public static void main(String[] args) {
+        
+        VehiclesApi apiInstance = new VehiclesApi();
+         parkingLotId = ; //  | 주차장 ID
+        try {
+            apiInstance.apiV1VehiclesGet(parkingLotId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehiclesApi#apiV1VehiclesGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehiclesApi;
+
+public class VehiclesApiExample {
+
+    public static void main(String[] args) {
+        VehiclesApi apiInstance = new VehiclesApi();
+         parkingLotId = ; //  | 주차장 ID
+        try {
+            apiInstance.apiV1VehiclesGet(parkingLotId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehiclesApi#apiV1VehiclesGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp"> *parkingLotId = ; // 주차장 ID (optional)
+
+VehiclesApi *apiInstance = [[VehiclesApi alloc] init];
+
+// 등록 차량 목록 조회
+[apiInstance apiV1VehiclesGetWith:parkingLotId
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.VehiclesApi()
+var opts = { 
+  'parkingLotId':  // {{}} 주차장 ID
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.apiV1VehiclesGet(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1VehiclesGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new VehiclesApi();
+            var parkingLotId = new (); //  | 주차장 ID (optional) 
+
+            try
+            {
+                // 등록 차량 목록 조회
+                apiInstance.apiV1VehiclesGet(parkingLotId);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling VehiclesApi.apiV1VehiclesGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiVehiclesApi();
+$parkingLotId = ; //  | 주차장 ID
+
+try {
+    $api_instance->apiV1VehiclesGet($parkingLotId);
+} catch (Exception $e) {
+    echo 'Exception when calling VehiclesApi->apiV1VehiclesGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::VehiclesApi;
+
+my $api_instance = WWW::SwaggerClient::VehiclesApi->new();
+my $parkingLotId = ; #  | 주차장 ID
+
+eval { 
+    $api_instance->apiV1VehiclesGet(parkingLotId => $parkingLotId);
+};
+if ($@) {
+    warn "Exception when calling VehiclesApi->apiV1VehiclesGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.VehiclesApi()
+parkingLotId =  #  | 주차장 ID (optional)
+
+try: 
+    # 등록 차량 목록 조회
+    api_instance.api_v1_vehicles_get(parkingLotId=parkingLotId)
+except ApiException as e:
+    print("Exception when calling VehiclesApi->apiV1VehiclesGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">parkingLotId</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_apiV1VehiclesGet_parkingLotId">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        주차장 ID
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - List&lt;VehicleResponse&gt; 차량 목록 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1VehiclesGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1VehiclesGet-200-schema">
+                                  <div id='responses-apiV1VehiclesGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "List<VehicleResponse> 차량 목록",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "items" : {
+          "$ref" : "#/components/schemas/VehicleResponse"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1VehiclesGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1VehiclesGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1VehiclesGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Vehicles-apiV1VehiclesPost">
+                      <article id="api-Vehicles-apiV1VehiclesPost-0" data-group="User" data-name="apiV1VehiclesPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1VehiclesPost</h1>
+                          <p>등록 차량 추가</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/api/v1/vehicles</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Vehicles-apiV1VehiclesPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Vehicles-apiV1VehiclesPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Vehicles-apiV1VehiclesPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"//api/v1/vehicles"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.VehiclesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class VehiclesApiExample {
+
+    public static void main(String[] args) {
+        
+        VehiclesApi apiInstance = new VehiclesApi();
+        CreateVehicleRequest body = ; // CreateVehicleRequest | CreateVehicleRequest 등록 차량 정보
+        try {
+            apiInstance.apiV1VehiclesPost(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehiclesApi#apiV1VehiclesPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.VehiclesApi;
+
+public class VehiclesApiExample {
+
+    public static void main(String[] args) {
+        VehiclesApi apiInstance = new VehiclesApi();
+        CreateVehicleRequest body = ; // CreateVehicleRequest | CreateVehicleRequest 등록 차량 정보
+        try {
+            apiInstance.apiV1VehiclesPost(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling VehiclesApi#apiV1VehiclesPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">CreateVehicleRequest *body = ; // CreateVehicleRequest 등록 차량 정보 (optional)
+
+VehiclesApi *apiInstance = [[VehiclesApi alloc] init];
+
+// 등록 차량 추가
+[apiInstance apiV1VehiclesPostWith:body
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.VehiclesApi()
+var opts = { 
+  'body':  // {{CreateVehicleRequest}} CreateVehicleRequest 등록 차량 정보
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.apiV1VehiclesPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1VehiclesPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new VehiclesApi();
+            var body = new CreateVehicleRequest(); // CreateVehicleRequest | CreateVehicleRequest 등록 차량 정보 (optional) 
+
+            try
+            {
+                // 등록 차량 추가
+                apiInstance.apiV1VehiclesPost(body);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling VehiclesApi.apiV1VehiclesPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiVehiclesApi();
+$body = ; // CreateVehicleRequest | CreateVehicleRequest 등록 차량 정보
+
+try {
+    $api_instance->apiV1VehiclesPost($body);
+} catch (Exception $e) {
+    echo 'Exception when calling VehiclesApi->apiV1VehiclesPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::VehiclesApi;
+
+my $api_instance = WWW::SwaggerClient::VehiclesApi->new();
+my $body = WWW::SwaggerClient::Object::CreateVehicleRequest->new(); # CreateVehicleRequest | CreateVehicleRequest 등록 차량 정보
+
+eval { 
+    $api_instance->apiV1VehiclesPost(body => $body);
+};
+if ($@) {
+    warn "Exception when calling VehiclesApi->apiV1VehiclesPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Vehicles-apiV1VehiclesPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.VehiclesApi()
+body =  # CreateVehicleRequest | CreateVehicleRequest 등록 차량 정보 (optional)
+
+try: 
+    # 등록 차량 추가
+    api_instance.api_v1_vehicles_post(body=body)
+except ApiException as e:
+    print("Exception when calling VehiclesApi->apiV1VehiclesPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "description" : "CreateVehicleRequest 등록 차량 정보",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/CreateVehicleRequest"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_apiV1VehiclesPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_apiV1VehiclesPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - VehicleResponse 생성된 차량 정보 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 201 -  </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1VehiclesPost-201-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1VehiclesPost-201-schema">
+                                  <div id='responses-apiV1VehiclesPost-201-schema-201' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/VehicleResponse"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1VehiclesPost-201-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1VehiclesPost-201-schema-201');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1VehiclesPost-201-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
