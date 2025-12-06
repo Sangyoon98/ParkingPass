@@ -45,8 +45,14 @@ fun Application.module() {
 
     // Service 초기화
     val parkingLotService = ParkingLotService(parkingLotRepository)
-    val gateService = GateService(gateDeviceRepository)
-    val vehicleService = VehicleService(vehicleRepository)
+    val gateService = GateService(
+        gateDeviceRepository = gateDeviceRepository,
+        parkingLotRepository = parkingLotRepository
+    )
+    val vehicleService = VehicleService(
+        vehicleRepository = vehicleRepository,
+        parkingLotRepository = parkingLotRepository
+    )
     val sessionService = SessionService(
         sessionRepository = parkingSessionRepository,
         vehicleRepository = vehicleRepository

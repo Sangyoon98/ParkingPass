@@ -4,11 +4,17 @@ import com.sangyoon.parkingpass.gate.dto.GateResponse
 import com.sangyoon.parkingpass.gate.dto.RegisterGateRequest
 import com.sangyoon.parkingpass.parking.model.GateDevice
 import com.sangyoon.parkingpass.parking.repository.GateDeviceRepository
+import com.sangyoon.parkingpass.parking.repository.ParkingLotRepository
 
 class GateService(
-    private val gateDeviceRepository: GateDeviceRepository
+    private val gateDeviceRepository: GateDeviceRepository,
+    private val parkingLotRepository: ParkingLotRepository
 ) {
     fun registerGate(request: RegisterGateRequest): GateResponse {
+        // 주차장 존재 여부 확인
+        val parkingLot = parkingLotRepository.findById(request.parkingLotId)
+            ?: throw IllegalArgumentException("존재하지 않는 주차장입니다: ${request.parkingLotId}")
+
         // 중복 체크 (deviceKey는 unique)
         val existing = gateDeviceRepository.findByDeviceKey(request.deviceKey)
         if (existing != null) {
@@ -17,7 +23,7 @@ class GateService(
 
         val gate = GateDevice(
             id = 0L,
-            parkingLotId = request.parkingLotId,
+            parkingLotId = parkingLot.id,
             name = request.name,
             deviceKey = request.deviceKey,
             direction = request.direction

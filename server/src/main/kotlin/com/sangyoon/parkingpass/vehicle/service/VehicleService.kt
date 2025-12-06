@@ -1,14 +1,20 @@
 package com.sangyoon.parkingpass.vehicle.service
 
 import com.sangyoon.parkingpass.parking.model.Vehicle
+import com.sangyoon.parkingpass.parking.repository.ParkingLotRepository
 import com.sangyoon.parkingpass.parking.repository.VehicleRepository
 import com.sangyoon.parkingpass.vehicle.dto.CreateVehicleRequest
 import com.sangyoon.parkingpass.vehicle.dto.VehicleResponse
 
 class VehicleService(
-    private val vehicleRepository: VehicleRepository
+    private val vehicleRepository: VehicleRepository,
+    private val parkingLotRepository: ParkingLotRepository
 ) {
     fun createVehicle(request: CreateVehicleRequest): VehicleResponse {
+        // 주차장 존재 여부 확인
+        val parkingLot = parkingLotRepository.findById(request.parkingLotId)
+            ?: throw IllegalArgumentException("존재하지 않는 주차장입니다: ${request.parkingLotId}")
+
         // 중복 체크
         val existing = vehicleRepository.findByParkingLotIdAndPlateNumber(
             parkingLotId = request.parkingLotId,
@@ -21,7 +27,7 @@ class VehicleService(
 
         val vehicle = Vehicle(
             id = 0L,
-            parkingLotId = request.parkingLotId,
+            parkingLotId = parkingLot.id,
             plateNumber = normalizePlateNumber(request.plateNumber),
             label = request.label,
             category = request.category,
