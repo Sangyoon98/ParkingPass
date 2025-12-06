@@ -1,6 +1,8 @@
 package com.sangyoon.parkingpass
 
 import com.sangyoon.parkingpass.common.configureStatusPages
+import com.sangyoon.parkingpass.gate.controller.gateController
+import com.sangyoon.parkingpass.gate.service.GateService
 import com.sangyoon.parkingpass.health.controller.healthController
 import com.sangyoon.parkingpass.parking.model.GateDevice
 import com.sangyoon.parkingpass.parking.model.GateDirection
@@ -76,6 +78,8 @@ fun Application.module() {
         vehicleRepository = vehicleRepository
     )
 
+    val gateService = GateService(gateDeviceRepository)
+
     install(ContentNegotiation) { json() }
 
     configureStatusPages()
@@ -88,5 +92,6 @@ fun Application.module() {
         parkingEventController(parkingEventService)
         vehicleController(vehicleService)
         sessionController(sessionService)
+        gateController(gateService)
     }
 }

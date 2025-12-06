@@ -703,6 +703,20 @@
     "memo" : { }
   }
 };
+            defs["GateResponse"] = {
+  "properties" : {
+    "id" : { },
+    "parkingLotId" : { },
+    "name" : { },
+    "deviceKey" : { },
+    "direction" : {
+      "properties" : {
+        "name" : { },
+        "ordinal" : { }
+      }
+    }
+  }
+};
             defs["PlateDetectedRequest"] = {
   "properties" : {
     "deviceKey" : { },
@@ -723,6 +737,19 @@
     "isRegistered" : { },
     "vehicleLabel" : { },
     "vehicleCategory" : {
+      "properties" : {
+        "name" : { },
+        "ordinal" : { }
+      }
+    }
+  }
+};
+            defs["RegisterGateRequest"] = {
+  "properties" : {
+    "parkingLotId" : { },
+    "name" : { },
+    "deviceKey" : { },
+    "direction" : {
       "properties" : {
         "name" : { },
         "ordinal" : { }
@@ -781,6 +808,13 @@
             -->
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
+                  <li class="nav-header" data-group="Gates"><a href="#api-Gates">API Methods - Gates</a></li>
+                    <li data-group="Gates" data-name="apiV1GatesGet" class="">
+                      <a href="#api-Gates-apiV1GatesGet">apiV1GatesGet</a>
+                    </li>
+                    <li data-group="Gates" data-name="apiV1GatesRegisterPost" class="">
+                      <a href="#api-Gates-apiV1GatesRegisterPost">apiV1GatesRegisterPost</a>
+                    </li>
                   <li class="nav-header" data-group="Health"><a href="#api-Health">API Methods - Health</a></li>
                     <li data-group="Health" data-name="apiV1HealthGet" class="">
                       <a href="#api-Health-apiV1HealthGet">apiV1HealthGet</a>
@@ -822,6 +856,609 @@
           </div>
         </div>
         <div id="sections">
+                <section id="api-Gates">
+                  <h1>Gates</h1>
+                    <div id="api-Gates-apiV1GatesGet">
+                      <article id="api-Gates-apiV1GatesGet-0" data-group="User" data-name="apiV1GatesGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1GatesGet</h1>
+                          <p>게이트 목록 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/gates</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Gates-apiV1GatesGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Gates-apiV1GatesGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Gates-apiV1GatesGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Gates-apiV1GatesGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"//api/v1/gates?parkingLotId="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.GatesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class GatesApiExample {
+
+    public static void main(String[] args) {
+        
+        GatesApi apiInstance = new GatesApi();
+         parkingLotId = ; //  | 주차장 ID
+        try {
+            apiInstance.apiV1GatesGet(parkingLotId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GatesApi#apiV1GatesGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.GatesApi;
+
+public class GatesApiExample {
+
+    public static void main(String[] args) {
+        GatesApi apiInstance = new GatesApi();
+         parkingLotId = ; //  | 주차장 ID
+        try {
+            apiInstance.apiV1GatesGet(parkingLotId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GatesApi#apiV1GatesGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp"> *parkingLotId = ; // 주차장 ID (optional)
+
+GatesApi *apiInstance = [[GatesApi alloc] init];
+
+// 게이트 목록 조회
+[apiInstance apiV1GatesGetWith:parkingLotId
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.GatesApi()
+var opts = { 
+  'parkingLotId':  // {{}} 주차장 ID
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.apiV1GatesGet(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1GatesGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new GatesApi();
+            var parkingLotId = new (); //  | 주차장 ID (optional) 
+
+            try
+            {
+                // 게이트 목록 조회
+                apiInstance.apiV1GatesGet(parkingLotId);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling GatesApi.apiV1GatesGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiGatesApi();
+$parkingLotId = ; //  | 주차장 ID
+
+try {
+    $api_instance->apiV1GatesGet($parkingLotId);
+} catch (Exception $e) {
+    echo 'Exception when calling GatesApi->apiV1GatesGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::GatesApi;
+
+my $api_instance = WWW::SwaggerClient::GatesApi->new();
+my $parkingLotId = ; #  | 주차장 ID
+
+eval { 
+    $api_instance->apiV1GatesGet(parkingLotId => $parkingLotId);
+};
+if ($@) {
+    warn "Exception when calling GatesApi->apiV1GatesGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.GatesApi()
+parkingLotId =  #  | 주차장 ID (optional)
+
+try: 
+    # 게이트 목록 조회
+    api_instance.api_v1_gates_get(parkingLotId=parkingLotId)
+except ApiException as e:
+    print("Exception when calling GatesApi->apiV1GatesGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">parkingLotId</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_apiV1GatesGet_parkingLotId">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        주차장 ID
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - List&lt;GateResponse&gt; 게이트 목록 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1GatesGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1GatesGet-200-schema">
+                                  <div id='responses-apiV1GatesGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "List<GateResponse> 게이트 목록",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "items" : {
+          "$ref" : "#/components/schemas/GateResponse"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1GatesGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1GatesGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1GatesGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Gates-apiV1GatesRegisterPost">
+                      <article id="api-Gates-apiV1GatesRegisterPost-0" data-group="User" data-name="apiV1GatesRegisterPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1GatesRegisterPost</h1>
+                          <p>게이트 등록</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/api/v1/gates/register</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Gates-apiV1GatesRegisterPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Gates-apiV1GatesRegisterPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Gates-apiV1GatesRegisterPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"//api/v1/gates/register"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.GatesApi;
+
+import java.io.File;
+import java.util.*;
+
+public class GatesApiExample {
+
+    public static void main(String[] args) {
+        
+        GatesApi apiInstance = new GatesApi();
+        RegisterGateRequest body = ; // RegisterGateRequest | RegisterGateRequest 게이트 정보
+        try {
+            GateResponse result = apiInstance.apiV1GatesRegisterPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GatesApi#apiV1GatesRegisterPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.GatesApi;
+
+public class GatesApiExample {
+
+    public static void main(String[] args) {
+        GatesApi apiInstance = new GatesApi();
+        RegisterGateRequest body = ; // RegisterGateRequest | RegisterGateRequest 게이트 정보
+        try {
+            GateResponse result = apiInstance.apiV1GatesRegisterPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GatesApi#apiV1GatesRegisterPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">RegisterGateRequest *body = ; // RegisterGateRequest 게이트 정보 (optional)
+
+GatesApi *apiInstance = [[GatesApi alloc] init];
+
+// 게이트 등록
+[apiInstance apiV1GatesRegisterPostWith:body
+              completionHandler: ^(GateResponse output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.GatesApi()
+var opts = { 
+  'body':  // {{RegisterGateRequest}} RegisterGateRequest 게이트 정보
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.apiV1GatesRegisterPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1GatesRegisterPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new GatesApi();
+            var body = new RegisterGateRequest(); // RegisterGateRequest | RegisterGateRequest 게이트 정보 (optional) 
+
+            try
+            {
+                // 게이트 등록
+                GateResponse result = apiInstance.apiV1GatesRegisterPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling GatesApi.apiV1GatesRegisterPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiGatesApi();
+$body = ; // RegisterGateRequest | RegisterGateRequest 게이트 정보
+
+try {
+    $result = $api_instance->apiV1GatesRegisterPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling GatesApi->apiV1GatesRegisterPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::GatesApi;
+
+my $api_instance = WWW::SwaggerClient::GatesApi->new();
+my $body = WWW::SwaggerClient::Object::RegisterGateRequest->new(); # RegisterGateRequest | RegisterGateRequest 게이트 정보
+
+eval { 
+    my $result = $api_instance->apiV1GatesRegisterPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling GatesApi->apiV1GatesRegisterPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Gates-apiV1GatesRegisterPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.GatesApi()
+body =  # RegisterGateRequest | RegisterGateRequest 게이트 정보 (optional)
+
+try: 
+    # 게이트 등록
+    api_response = api_instance.api_v1_gates_register_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling GatesApi->apiV1GatesRegisterPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "description" : "RegisterGateRequest 게이트 정보",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/RegisterGateRequest"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_apiV1GatesRegisterPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_apiV1GatesRegisterPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 201 -  </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1GatesRegisterPost-201-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1GatesRegisterPost-201-schema">
+                                  <div id='responses-apiV1GatesRegisterPost-201-schema-201' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/GateResponse"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1GatesRegisterPost-201-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1GatesRegisterPost-201-schema-201');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1GatesRegisterPost-201-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-Health">
                   <h1>Health</h1>
                     <div id="api-Health-apiV1HealthGet">
