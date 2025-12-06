@@ -689,6 +689,12 @@
   <script>
     // Script section to load models into a JS Var
     var defs = {}
+            defs["CreateParkingLotRequest"] = {
+  "properties" : {
+    "name" : { },
+    "location" : { }
+  }
+};
             defs["CreateVehicleRequest"] = {
   "properties" : {
     "parkingLotId" : { },
@@ -715,6 +721,13 @@
         "ordinal" : { }
       }
     }
+  }
+};
+            defs["ParkingLotResponse"] = {
+  "properties" : {
+    "id" : { },
+    "name" : { },
+    "location" : { }
   }
 };
             defs["PlateDetectedRequest"] = {
@@ -822,6 +835,16 @@
                   <li class="nav-header" data-group="ParkingEvents"><a href="#api-ParkingEvents">API Methods - ParkingEvents</a></li>
                     <li data-group="ParkingEvents" data-name="apiV1EventsPlateDetectedPost" class="">
                       <a href="#api-ParkingEvents-apiV1EventsPlateDetectedPost">apiV1EventsPlateDetectedPost</a>
+                    </li>
+                  <li class="nav-header" data-group="ParkingLots"><a href="#api-ParkingLots">API Methods - ParkingLots</a></li>
+                    <li data-group="ParkingLots" data-name="apiV1ParkingLotsGet" class="">
+                      <a href="#api-ParkingLots-apiV1ParkingLotsGet">apiV1ParkingLotsGet</a>
+                    </li>
+                    <li data-group="ParkingLots" data-name="apiV1ParkingLotsIdGet" class="">
+                      <a href="#api-ParkingLots-apiV1ParkingLotsIdGet">apiV1ParkingLotsIdGet</a>
+                    </li>
+                    <li data-group="ParkingLots" data-name="apiV1ParkingLotsPost" class="">
+                      <a href="#api-ParkingLots-apiV1ParkingLotsPost">apiV1ParkingLotsPost</a>
                     </li>
                   <li class="nav-header" data-group="Sessions"><a href="#api-Sessions">API Methods - Sessions</a></li>
                     <li data-group="Sessions" data-name="apiV1SessionsHistoryGet" class="">
@@ -2020,6 +2043,869 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-apiV1EventsPlateDetectedPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-ParkingLots">
+                  <h1>ParkingLots</h1>
+                    <div id="api-ParkingLots-apiV1ParkingLotsGet">
+                      <article id="api-ParkingLots-apiV1ParkingLotsGet-0" data-group="User" data-name="apiV1ParkingLotsGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1ParkingLotsGet</h1>
+                          <p>주차장 목록 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/parking-lots</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ParkingLots-apiV1ParkingLotsGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"//api/v1/parking-lots"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ParkingLotsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ParkingLotsApiExample {
+
+    public static void main(String[] args) {
+        
+        ParkingLotsApi apiInstance = new ParkingLotsApi();
+        try {
+            apiInstance.apiV1ParkingLotsGet();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ParkingLotsApi#apiV1ParkingLotsGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ParkingLotsApi;
+
+public class ParkingLotsApiExample {
+
+    public static void main(String[] args) {
+        ParkingLotsApi apiInstance = new ParkingLotsApi();
+        try {
+            apiInstance.apiV1ParkingLotsGet();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ParkingLotsApi#apiV1ParkingLotsGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+ParkingLotsApi *apiInstance = [[ParkingLotsApi alloc] init];
+
+// 주차장 목록 조회
+[apiInstance apiV1ParkingLotsGetWithCompletionHandler: 
+              ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.ParkingLotsApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.apiV1ParkingLotsGet(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1ParkingLotsGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new ParkingLotsApi();
+
+            try
+            {
+                // 주차장 목록 조회
+                apiInstance.apiV1ParkingLotsGet();
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ParkingLotsApi.apiV1ParkingLotsGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiParkingLotsApi();
+
+try {
+    $api_instance->apiV1ParkingLotsGet();
+} catch (Exception $e) {
+    echo 'Exception when calling ParkingLotsApi->apiV1ParkingLotsGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ParkingLotsApi;
+
+my $api_instance = WWW::SwaggerClient::ParkingLotsApi->new();
+
+eval { 
+    $api_instance->apiV1ParkingLotsGet();
+};
+if ($@) {
+    warn "Exception when calling ParkingLotsApi->apiV1ParkingLotsGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.ParkingLotsApi()
+
+try: 
+    # 주차장 목록 조회
+    api_instance.api_v1_parking_lots_get()
+except ApiException as e:
+    print("Exception when calling ParkingLotsApi->apiV1ParkingLotsGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - List&lt;ParkingLotResponse&gt; 주차장 목록 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1ParkingLotsGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1ParkingLotsGet-200-schema">
+                                  <div id='responses-apiV1ParkingLotsGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "List<ParkingLotResponse> 주차장 목록",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "items" : {
+          "$ref" : "#/components/schemas/ParkingLotResponse"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1ParkingLotsGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1ParkingLotsGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1ParkingLotsGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-ParkingLots-apiV1ParkingLotsIdGet">
+                      <article id="api-ParkingLots-apiV1ParkingLotsIdGet-0" data-group="User" data-name="apiV1ParkingLotsIdGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1ParkingLotsIdGet</h1>
+                          <p>주차장 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/v1/parking-lots/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsIdGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"//api/v1/parking-lots/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ParkingLotsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ParkingLotsApiExample {
+
+    public static void main(String[] args) {
+        
+        ParkingLotsApi apiInstance = new ParkingLotsApi();
+         id = ; //  | 주차장 ID
+        try {
+            ParkingLotResponse result = apiInstance.apiV1ParkingLotsIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ParkingLotsApi#apiV1ParkingLotsIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ParkingLotsApi;
+
+public class ParkingLotsApiExample {
+
+    public static void main(String[] args) {
+        ParkingLotsApi apiInstance = new ParkingLotsApi();
+         id = ; //  | 주차장 ID
+        try {
+            ParkingLotResponse result = apiInstance.apiV1ParkingLotsIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ParkingLotsApi#apiV1ParkingLotsIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp"> *id = ; // 주차장 ID
+
+ParkingLotsApi *apiInstance = [[ParkingLotsApi alloc] init];
+
+// 주차장 조회
+[apiInstance apiV1ParkingLotsIdGetWith:id
+              completionHandler: ^(ParkingLotResponse output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.ParkingLotsApi()
+var id = ; // {{}} 주차장 ID
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.apiV1ParkingLotsIdGet(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1ParkingLotsIdGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new ParkingLotsApi();
+            var id = new (); //  | 주차장 ID
+
+            try
+            {
+                // 주차장 조회
+                ParkingLotResponse result = apiInstance.apiV1ParkingLotsIdGet(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ParkingLotsApi.apiV1ParkingLotsIdGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiParkingLotsApi();
+$id = ; //  | 주차장 ID
+
+try {
+    $result = $api_instance->apiV1ParkingLotsIdGet($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ParkingLotsApi->apiV1ParkingLotsIdGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ParkingLotsApi;
+
+my $api_instance = WWW::SwaggerClient::ParkingLotsApi->new();
+my $id = ; #  | 주차장 ID
+
+eval { 
+    my $result = $api_instance->apiV1ParkingLotsIdGet(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ParkingLotsApi->apiV1ParkingLotsIdGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsIdGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.ParkingLotsApi()
+id =  #  | 주차장 ID
+
+try: 
+    # 주차장 조회
+    api_response = api_instance.api_v1_parking_lots_id_get(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ParkingLotsApi->apiV1ParkingLotsIdGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_apiV1ParkingLotsIdGet_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          주차장 ID
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - ParkingLotResponse 주차장 정보 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1ParkingLotsIdGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1ParkingLotsIdGet-200-schema">
+                                  <div id='responses-apiV1ParkingLotsIdGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "ParkingLotResponse 주차장 정보",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ParkingLotResponse"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1ParkingLotsIdGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1ParkingLotsIdGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1ParkingLotsIdGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-ParkingLots-apiV1ParkingLotsPost">
+                      <article id="api-ParkingLots-apiV1ParkingLotsPost-0" data-group="User" data-name="apiV1ParkingLotsPost" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiV1ParkingLotsPost</h1>
+                          <p>주차장 등록</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/api/v1/parking-lots</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ParkingLots-apiV1ParkingLotsPost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ParkingLots-apiV1ParkingLotsPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"//api/v1/parking-lots"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ParkingLotsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ParkingLotsApiExample {
+
+    public static void main(String[] args) {
+        
+        ParkingLotsApi apiInstance = new ParkingLotsApi();
+        CreateParkingLotRequest body = ; // CreateParkingLotRequest | CreateParkingLotRequest 주차장 정보
+        try {
+            ParkingLotResponse result = apiInstance.apiV1ParkingLotsPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ParkingLotsApi#apiV1ParkingLotsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ParkingLotsApi;
+
+public class ParkingLotsApiExample {
+
+    public static void main(String[] args) {
+        ParkingLotsApi apiInstance = new ParkingLotsApi();
+        CreateParkingLotRequest body = ; // CreateParkingLotRequest | CreateParkingLotRequest 주차장 정보
+        try {
+            ParkingLotResponse result = apiInstance.apiV1ParkingLotsPost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ParkingLotsApi#apiV1ParkingLotsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">CreateParkingLotRequest *body = ; // CreateParkingLotRequest 주차장 정보 (optional)
+
+ParkingLotsApi *apiInstance = [[ParkingLotsApi alloc] init];
+
+// 주차장 등록
+[apiInstance apiV1ParkingLotsPostWith:body
+              completionHandler: ^(ParkingLotResponse output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ParkingPassApi = require('parking_pass_api');
+
+var api = new ParkingPassApi.ParkingLotsApi()
+var opts = { 
+  'body':  // {{CreateParkingLotRequest}} CreateParkingLotRequest 주차장 정보
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.apiV1ParkingLotsPost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiV1ParkingLotsPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new ParkingLotsApi();
+            var body = new CreateParkingLotRequest(); // CreateParkingLotRequest | CreateParkingLotRequest 주차장 정보 (optional) 
+
+            try
+            {
+                // 주차장 등록
+                ParkingLotResponse result = apiInstance.apiV1ParkingLotsPost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ParkingLotsApi.apiV1ParkingLotsPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiParkingLotsApi();
+$body = ; // CreateParkingLotRequest | CreateParkingLotRequest 주차장 정보
+
+try {
+    $result = $api_instance->apiV1ParkingLotsPost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ParkingLotsApi->apiV1ParkingLotsPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ParkingLotsApi;
+
+my $api_instance = WWW::SwaggerClient::ParkingLotsApi->new();
+my $body = WWW::SwaggerClient::Object::CreateParkingLotRequest->new(); # CreateParkingLotRequest | CreateParkingLotRequest 주차장 정보
+
+eval { 
+    my $result = $api_instance->apiV1ParkingLotsPost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ParkingLotsApi->apiV1ParkingLotsPost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ParkingLots-apiV1ParkingLotsPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.ParkingLotsApi()
+body =  # CreateParkingLotRequest | CreateParkingLotRequest 주차장 정보 (optional)
+
+try: 
+    # 주차장 등록
+    api_response = api_instance.api_v1_parking_lots_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ParkingLotsApi->apiV1ParkingLotsPost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "description" : "CreateParkingLotRequest 주차장 정보",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/CreateParkingLotRequest"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_apiV1ParkingLotsPost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_apiV1ParkingLotsPost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 201 - ParkingLotResponse 생성된 주차장 정보 </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiV1ParkingLotsPost-201-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiV1ParkingLotsPost-201-schema">
+                                  <div id='responses-apiV1ParkingLotsPost-201-schema-201' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "ParkingLotResponse 생성된 주차장 정보",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/ParkingLotResponse"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiV1ParkingLotsPost-201-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiV1ParkingLotsPost-201-schema-201');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiV1ParkingLotsPost-201-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

@@ -8,12 +8,15 @@ import com.sangyoon.parkingpass.parking.model.GateDevice
 import com.sangyoon.parkingpass.parking.model.GateDirection
 import com.sangyoon.parkingpass.parking.model.Vehicle
 import com.sangyoon.parkingpass.parking.model.VehicleCategory
+import com.sangyoon.parkingpass.parking.repository.ImMemoryParkingLotRepository
 import com.sangyoon.parkingpass.parking.repository.InMemoryGateDeviceRepository
 import com.sangyoon.parkingpass.parking.repository.InMemoryParkingSessionRepository
 import com.sangyoon.parkingpass.parking.repository.InMemoryVehicleRepository
 import com.sangyoon.parkingpass.parkingevent.controller.parkingEventController
 import com.sangyoon.parkingpass.parkingevent.repository.InMemoryParkingEventRepository
 import com.sangyoon.parkingpass.parkingevent.sevice.ParkingEventService
+import com.sangyoon.parkingpass.parkinglot.controller.parkingLotController
+import com.sangyoon.parkingpass.parkinglot.service.ParkingLotService
 import com.sangyoon.parkingpass.session.controller.sessionController
 import com.sangyoon.parkingpass.session.service.SessionService
 import com.sangyoon.parkingpass.vehicle.controller.vehicleController
@@ -33,37 +36,21 @@ fun main() {
 }
 
 fun Application.module() {
+    // Repository 초기화
+    val parkingLotRepository = ImMemoryParkingLotRepository()
     val gateDeviceRepository = InMemoryGateDeviceRepository()
     val vehicleRepository = InMemoryVehicleRepository()
     val parkingSessionRepository = InMemoryParkingSessionRepository()
     val parkingEventRepository = InMemoryParkingEventRepository()
 
-    // TODO: 초기 데이터(seed) 삽입 (나중에)
-    // gateDeviceRepository.save(...)
-    // vehicleRepository.save(...)
-
-    // 주차장 1개만 있다고 가정하고 parkingLotId = 1L 로 통일
-    val gateEntrance = gateDeviceRepository.save(
-        GateDevice(
-            id = 0L,
-            parkingLotId = 1L,
-            name = "서해그랑블 정문",
-            deviceKey = "서해그랑블",       // ← 요청에 쓰는 deviceKey랑 같아야 함
-            direction = GateDirection.BOTH
-        )
+    // Service 초기화
+    val parkingLotService = ParkingLotService(parkingLotRepository)
+    val gateService = GateService(gateDeviceRepository)
+    val vehicleService = VehicleService(vehicleRepository)
+    val sessionService = SessionService(
+        sessionRepository = parkingSessionRepository,
+        vehicleRepository = vehicleRepository
     )
-    // 예시: 등록 차량 하나
-    vehicleRepository.save(
-        Vehicle(
-            id = 0L,
-            parkingLotId = 1L,
-            plateNumber = "02우1138",
-            label = "206동 1603호",
-            category = VehicleCategory.RESIDENT,
-            memo = null
-        )
-    )
-
     val parkingEventService = ParkingEventService(
         eventRepository = parkingEventRepository,
         gateDeviceRepository = gateDeviceRepository,
@@ -71,17 +58,7 @@ fun Application.module() {
         sessionRepository = parkingSessionRepository
     )
 
-    val vehicleService = VehicleService(vehicleRepository)
-
-    val sessionService = SessionService(
-        sessionRepository = parkingSessionRepository,
-        vehicleRepository = vehicleRepository
-    )
-
-    val gateService = GateService(gateDeviceRepository)
-
     install(ContentNegotiation) { json() }
-
     configureStatusPages()
 
     routing {
@@ -89,6 +66,7 @@ fun Application.module() {
         openAPI("/docs", swaggerFile = "openapi/generated.json")
 
         healthController()
+        parkingLotController(parkingLotService)
         parkingEventController(parkingEventService)
         vehicleController(vehicleService)
         sessionController(sessionService)
