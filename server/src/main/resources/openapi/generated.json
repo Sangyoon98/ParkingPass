@@ -8,6 +8,70 @@
         "license": "Apache/2.0"
     },
     "paths": {
+        "/api/v1/gates": {
+            "get": {
+                "summary": "게이트 목록 조회",
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "query",
+                        "description": "주차장 ID",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List<GateResponse> 게이트 목록",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GateResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Gates"
+                ]
+            }
+        },
+        "/api/v1/gates/register": {
+            "post": {
+                "summary": "게이트 등록",
+                "requestBody": {
+                    "description": "RegisterGateRequest 게이트 정보",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterGateRequest"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Gates"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GateResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/health": {
             "get": {
                 "summary": "HealthCheck",
@@ -61,6 +125,88 @@
                 },
                 "tags": [
                     "ParkingEvents"
+                ]
+            }
+        },
+        "/api/v1/parking-lots": {
+            "post": {
+                "summary": "주차장 등록",
+                "requestBody": {
+                    "description": "CreateParkingLotRequest 주차장 정보",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateParkingLotRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "ParkingLotResponse 생성된 주차장 정보",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ParkingLotResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "ParkingLots"
+                ]
+            },
+            "get": {
+                "summary": "주차장 목록 조회",
+                "responses": {
+                    "200": {
+                        "description": "List<ParkingLotResponse> 주차장 목록",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ParkingLotResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "ParkingLots"
+                ]
+            }
+        },
+        "/api/v1/parking-lots/{id}": {
+            "get": {
+                "summary": "주차장 조회",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "주차장 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ParkingLotResponse 주차장 정보",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ParkingLotResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "ParkingLots"
                 ]
             }
         },
@@ -212,6 +358,59 @@
     },
     "components": {
         "schemas": {
+            "GateResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "parkingLotId": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "deviceKey": {
+                        "type": "string"
+                    },
+                    "direction": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            },
+            "RegisterGateRequest": {
+                "type": "object",
+                "properties": {
+                    "parkingLotId": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "deviceKey": {
+                        "type": "string"
+                    },
+                    "direction": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            },
             "PlateDetectedRequest": {
                 "type": "object",
                 "properties": {
@@ -262,6 +461,31 @@
                                 "type": "integer"
                             }
                         }
+                    }
+                }
+            },
+            "CreateParkingLotRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ParkingLotResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
                     }
                 }
             },

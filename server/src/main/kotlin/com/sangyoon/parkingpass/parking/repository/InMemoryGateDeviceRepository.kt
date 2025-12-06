@@ -18,4 +18,8 @@ class InMemoryGateDeviceRepository : GateDeviceRepository {
         byDeviceKey[saved.deviceKey] = saved
         return saved
     }
+
+    override fun findAllByParkingLotId(parkingLotId: Long): List<GateDevice> {
+        return byId.values.filter { it.parkingLotId == parkingLotId }
+    }
 }
