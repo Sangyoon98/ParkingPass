@@ -4,10 +4,6 @@ import com.sangyoon.parkingpass.common.configureStatusPages
 import com.sangyoon.parkingpass.gate.controller.gateController
 import com.sangyoon.parkingpass.gate.service.GateService
 import com.sangyoon.parkingpass.health.controller.healthController
-import com.sangyoon.parkingpass.parking.model.GateDevice
-import com.sangyoon.parkingpass.parking.model.GateDirection
-import com.sangyoon.parkingpass.parking.model.Vehicle
-import com.sangyoon.parkingpass.parking.model.VehicleCategory
 import com.sangyoon.parkingpass.parking.repository.ImMemoryParkingLotRepository
 import com.sangyoon.parkingpass.parking.repository.InMemoryGateDeviceRepository
 import com.sangyoon.parkingpass.parking.repository.InMemoryParkingSessionRepository
