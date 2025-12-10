@@ -19,11 +19,12 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.core.Closeable
 
 /**
  * 주차장 관리 API 클라이언트
  */
-class ParkingApiClient(baseUrl: String = "http://localhost:8080") {
+class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
     private val client = HttpClient {
         install(ContentNegotiation) {
             json()
@@ -101,5 +102,9 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") {
             parameter("parkingLotId", parkingLotId)
             parameter("date", date)
         }.body()
+    }
+
+    override fun close() {
+        client.close()
     }
 }
