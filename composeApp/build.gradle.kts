@@ -31,6 +31,12 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            // Koin
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.androidx.navigation.compose)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
