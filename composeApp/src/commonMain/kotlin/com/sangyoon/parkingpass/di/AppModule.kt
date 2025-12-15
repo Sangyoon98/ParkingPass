@@ -1,13 +1,20 @@
 package com.sangyoon.parkingpass.di
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sangyoon.parkingpass.api.ParkingApiClient
 import com.sangyoon.parkingpass.data.datasource.ParkingApiDataSource
 import com.sangyoon.parkingpass.data.repository.ParkingLotRepositoryImpl
+import com.sangyoon.parkingpass.data.repository.SessionRepositoryImpl
+import com.sangyoon.parkingpass.data.repository.VehicleRepositoryImpl
 import com.sangyoon.parkingpass.domain.repository.ParkingLotRepository
+import com.sangyoon.parkingpass.domain.repository.SessionRepository
+import com.sangyoon.parkingpass.domain.repository.VehicleRepository
 import com.sangyoon.parkingpass.domain.usecase.CreateParkingLotUseCase
-import com.sangyoon.parkingpass.domain.usecase.GetParkingLotUseCase
+import com.sangyoon.parkingpass.domain.usecase.CreateVehicleUseCase
+import com.sangyoon.parkingpass.domain.usecase.GetOpenSessionsUseCase
+import com.sangyoon.parkingpass.domain.usecase.GetParkingLotDetailUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetParkingLotsUseCase
+import com.sangyoon.parkingpass.domain.usecase.GetSessionHistoryUseCase
+import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -24,12 +31,19 @@ val appModule = module {
 
     // Repository
     single<ParkingLotRepository> { ParkingLotRepositoryImpl(get()) }
+    single<SessionRepository> { SessionRepositoryImpl(get()) }
+    single<VehicleRepository> { VehicleRepositoryImpl(get()) }
 
     // Use Case
     factoryOf(::GetParkingLotsUseCase)
-    factoryOf(::GetParkingLotUseCase)
+    factoryOf(::GetParkingLotDetailUseCase)
     factoryOf(::CreateParkingLotUseCase)
+    factoryOf(::GetParkingLotDetailUseCase)
+    factoryOf(::GetOpenSessionsUseCase)
+    factoryOf(::GetSessionHistoryUseCase)
+    factoryOf(::CreateVehicleUseCase)
 
     // ViewModel
     factory { ParkingLotViewModel(get(), get()) }
+    factory { ParkingLotDetailViewModel(get(), get(),get()) }
 }

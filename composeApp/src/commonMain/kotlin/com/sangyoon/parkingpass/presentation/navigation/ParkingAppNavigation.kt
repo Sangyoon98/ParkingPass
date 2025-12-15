@@ -2,22 +2,26 @@ package com.sangyoon.parkingpass.presentation.navigation
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.sangyoon.parkingpass.presentation.ui.CreateParkingLotScreen
+import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
+import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
 import org.koin.compose.getKoin
 
 sealed class Screen(val route: String) {
     object ParkingLotList : Screen("parking_lot_list")
-    object ParkingLotDetail : Screen("parking_lot_detail/{parkingLotId}") {
-        fun createRoute(parkingLotId: Long) = "parking_lot_detail/$parkingLotId"
-    }
+    object ParkingLotDetail : Screen("parking_lot_detail")
     object CreateParkingLot : Screen("create_parking_lot")
 }
 
@@ -25,6 +29,8 @@ sealed class Screen(val route: String) {
 fun ParkingAppNavigation(
     navController: NavHostController = rememberNavController()
 ) {
+    var selectedParkingLotId by remember { mutableStateOf<Long?>(null) }
+
     NavHost(
         navController = navController,
         startDestination = Screen.ParkingLotList.route
@@ -34,7 +40,8 @@ fun ParkingAppNavigation(
             ParkingLotListScreen(
                 viewModel = viewModel,
                 onParkingLotClick = { parkingLotId ->
-                    navController.navigate(Screen.ParkingLotDetail.createRoute(parkingLotId))
+                    selectedParkingLotId = parkingLotId
+                    navController.navigate(Screen.ParkingLotDetail.route)
                 },
                 onCreateClick = {
                     navController.navigate(Screen.CreateParkingLot.route)
@@ -43,24 +50,28 @@ fun ParkingAppNavigation(
         }
 
         composable(Screen.CreateParkingLot.route) {
-            // TODO: CreateParkingLotScreen 구현 예정
-            Text("주차장 생성 화면 (구현 예정)")
+            val vm: ParkingLotViewModel = getKoin().get()
+            CreateParkingLotScreen(
+                viewModel = vm,
+                onCreated = { navController.popBackStack() },
+                onBack = { navController.popBackStack() }
+            )
         }
 
-        composable(
-            route = Screen.ParkingLotDetail.route,
-            arguments = listOf(
-                navArgument("parkingLotId") {
-                    type = NavType.LongType
-                }
-            )
-        ) { backStackEntry ->
-            // route에서 직접 파싱하는 방법 (가장 안전)
-            val parkingLotId = remember(backStackEntry) {
-                val route = backStackEntry.destination.route ?: ""
-                route.substringAfterLast("/").toLongOrNull() ?: 0L
+        composable(Screen.ParkingLotDetail.route) {
+            val vm: ParkingLotDetailViewModel = getKoin().get()
+
+            val parkingLotId = selectedParkingLotId
+            if (parkingLotId != null) {
+                ParkingLotDetailScreen(
+                    viewModel = vm,
+                    parkingLotId = parkingLotId,
+                    onCreateVehicleClick = { /* TODO */ },
+                    onManageGateClick = { /* TODO */ }
+                )
+            } else {
+                Text("유효하지 않은 주차장 ID")
             }
-            Text("주차장 상세 화면 (ID: $parkingLotId) - 구현 예정")
         }
     }
 }
