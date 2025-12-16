@@ -14,8 +14,10 @@ import com.sangyoon.parkingpass.domain.usecase.GetOpenSessionsUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetParkingLotDetailUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetParkingLotsUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetSessionHistoryUseCase
+import com.sangyoon.parkingpass.domain.usecase.GetVehiclesUseCase
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
+import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -41,9 +43,11 @@ val appModule = module {
     factoryOf(::GetParkingLotDetailUseCase)
     factoryOf(::GetOpenSessionsUseCase)
     factoryOf(::GetSessionHistoryUseCase)
+    factoryOf(::GetVehiclesUseCase)
     factoryOf(::CreateVehicleUseCase)
 
     // ViewModel
     factory { ParkingLotViewModel(get(), get()) }
     factory { ParkingLotDetailViewModel(get(), get(),get()) }
+    factory { VehicleViewModel(get(), get()) }
 }
