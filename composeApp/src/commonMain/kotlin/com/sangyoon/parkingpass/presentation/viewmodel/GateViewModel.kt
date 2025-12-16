@@ -1,0 +1,55 @@
+package com.sangyoon.parkingpass.presentation.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sangyoon.parkingpass.domain.usecase.GetGatesUseCase
+import com.sangyoon.parkingpass.domain.usecase.RegisterGateUseCase
+import com.sangyoon.parkingpass.presentation.state.GateUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class GateViewModel(
+    private val getGatesUseCase: GetGatesUseCase,
+    private val registerGateUseCase: RegisterGateUseCase
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(GateUiState())
+    val uiState = _uiState.asStateFlow()
+
+    fun loadGates(parkingLotId: Long) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            getGatesUseCase(parkingLotId).fold(
+                onSuccess = { list ->
+                    _uiState.update { it.copy(gates = list, isLoading = false) }
+                },
+                onFailure = { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "게이트 목록 조회 실패") }
+                }
+            )
+        }
+    }
+
+    fun registerGate(
+        parkingLotId: Long,
+        name: String,
+        deviceKey: String,
+        direction: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            registerGateUseCase(parkingLotId, name, deviceKey, direction).fold(
+                onSuccess = {
+                    loadGates(parkingLotId)
+                    onSuccess()
+                },
+                onFailure = { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "게이트 등록 실패") }
+                }
+            )
+        }
+    }
+}

@@ -4,6 +4,7 @@ import com.sangyoon.parkingpass.api.ParkingApiClient
 import com.sangyoon.parkingpass.api.dto.CreateParkingLotRequest
 import com.sangyoon.parkingpass.api.dto.CreateVehicleRequest
 import com.sangyoon.parkingpass.api.dto.ParkingLotResponse
+import com.sangyoon.parkingpass.api.dto.RegisterGateRequest
 
 class ParkingApiDataSource(
     private val apiClient: ParkingApiClient
@@ -21,4 +22,8 @@ class ParkingApiDataSource(
     suspend fun createVehicle(request: CreateVehicleRequest) = apiClient.createVehicle(request)
 
     suspend fun getVehicles(parkingLotId: Long) = apiClient.getVehicles(parkingLotId)
+
+    suspend fun getGates(parkingLotId: Long) = apiClient.getGates(parkingLotId)
+
+    suspend fun registerGate(request: RegisterGateRequest) = apiClient.registerGate(request)
 }
