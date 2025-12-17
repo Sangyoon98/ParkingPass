@@ -67,4 +67,8 @@ class ParkingLotViewModel(
             )
         }
     }
+
+    fun resetCreationSuccess() {
+        _uiState.update { it.copy(creationSuccess = false) }
+    }
 }
