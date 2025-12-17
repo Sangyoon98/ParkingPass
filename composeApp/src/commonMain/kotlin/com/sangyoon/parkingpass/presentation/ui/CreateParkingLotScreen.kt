@@ -64,8 +64,10 @@ fun CreateParkingLotScreen(
             )
 
             LaunchedEffect(uiState.creationSuccess) {
-                onCreated()
-                viewModel.resetCreationSuccess()
+                if (uiState.creationSuccess) {
+                    onCreated()
+                    viewModel.resetCreationSuccess()
+                }
             }
 
             if (uiState.isLoading) {
