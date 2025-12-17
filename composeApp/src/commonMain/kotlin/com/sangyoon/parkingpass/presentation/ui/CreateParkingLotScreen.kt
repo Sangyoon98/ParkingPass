@@ -63,7 +63,7 @@ fun CreateParkingLotScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            LaunchedEffect(uiState.parkingLots) {
+            LaunchedEffect(uiState.creationSuccess) {
                 onCreated()
             }
 

@@ -107,8 +107,10 @@ fun PlateDetectionScreen(
             // 체크 버튼
             Button(
                 onClick = {
-                    viewModel.detectPlate {
-                        // 성공 시 결과 화면 표시 (AlertDialog 등)
+                    if (!uiState.isDetecting) {
+                        viewModel.detectPlate {
+                            // 성공 시 결과 화면 표시 (AlertDialog 등)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -116,7 +118,7 @@ fun PlateDetectionScreen(
                         uiState.selectedGate != null &&
                         uiState.plateNumber.isNotBlank()
             ) {
-                if (uiState.isLoading) {
+                if (uiState.isDetecting) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
                 }

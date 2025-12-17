@@ -8,6 +8,7 @@ data class PlateDetectionUiState(
     val selectedGate: Gate? = null,
     val plateNumber: String = "",
     val isLoading: Boolean = false,
+    val isDetecting: Boolean = false,
     val result: PlateDetectionResult? = null,
     val error: String? = null
 )

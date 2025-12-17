@@ -5,9 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,13 +19,12 @@ import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
 import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
 import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
-import com.sangyoon.parkingpass.presentation.utils.koinViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
-import org.koin.compose.getKoin
+import org.koin.compose.viewmodel.koinViewModel
 
 sealed class Screen(val route: String) {
     object ParkingLotList : Screen("parking_lot_list")
@@ -43,7 +41,7 @@ sealed class Screen(val route: String) {
 fun ParkingAppNavigation(
     navController: NavHostController = rememberNavController()
 ) {
-    var selectedParkingLotId by remember { mutableStateOf<Long?>(null) }
+    var selectedParkingLotId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     NavHost(
         navController = navController,
@@ -105,7 +103,9 @@ fun ParkingAppNavigation(
 
             val lotId = selectedParkingLotId
             if (lotId == null) {
-                Text("유효하지 않은 주차장 ID")
+                LaunchedEffect(Unit) {
+                    navController.popBackStack()
+                }
             } else {
                 VehicleListScreen(
                     viewModel = viewModel,

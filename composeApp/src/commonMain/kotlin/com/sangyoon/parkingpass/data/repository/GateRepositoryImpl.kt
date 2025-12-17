@@ -32,5 +32,6 @@ private fun GateResponse.toDomain() = Gate(
     parkingLotId = parkingLotId,
     name = name,
     deviceKey = deviceKey,
-    direction = GateDirection.valueOf(direction)
+    direction = runCatching { GateDirection.valueOf(direction) }
+        .getOrElse { throw IllegalArgumentException("Unknown gate direction: $direction") }
 )

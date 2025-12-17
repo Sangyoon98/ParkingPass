@@ -53,6 +53,7 @@ class ParkingLotViewModel(
 
             createParkingLotUseCase(name, location).fold(
                 onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, creationSuccess = true) }
                     loadParkingLots()   // 목록 새로고침
                 },
                 onFailure = { error ->

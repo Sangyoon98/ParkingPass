@@ -24,11 +24,13 @@ class PlateDetectionRepositoryImpl(
 
 private fun PlateDetectedResponse.toDomain(): PlateDetectionResult {
     return PlateDetectionResult(
-        action = PlateDetectionAction.valueOf(action),
+        action = runCatching { PlateDetectionAction.valueOf(action) }.getOrElse { PlateDetectionAction.ENTER },
         sessionId = sessionId,
         plateNumber = plateNumber,
         isRegistered = isRegistered,
         vehicleLabel = vehicleLabel,
-        vehicleCategory = vehicleCategory?.let { VehicleCategory.valueOf(it) }
+        vehicleCategory = vehicleCategory?.let {
+            runCatching { VehicleCategory.valueOf(it) }.getOrNull()
+        }
     )
 }

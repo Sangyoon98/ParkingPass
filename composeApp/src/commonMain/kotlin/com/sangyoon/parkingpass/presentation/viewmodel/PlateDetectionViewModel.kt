@@ -47,7 +47,6 @@ class PlateDetectionViewModel(
 
         if (selectedGate == null) {
             _uiState.update { it.copy(error = "게이트를 선택해주세요") }
-
             return
         }
 
@@ -56,13 +55,17 @@ class PlateDetectionViewModel(
             return
         }
 
+        if (_uiState.value.isDetecting) {
+            return  // 이미 감지 중이면 중복 요청 방지
+        }
+
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null, result = null) }
+            _uiState.update { it.copy(isDetecting = true, error = null, result = null) }
             plateDetectedUseCase(selectedGate.deviceKey, plateNumber.trim()).fold(
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
+                            isDetecting = false,
                             result = response,
                             plateNumber = ""  // 성공 후 번호판 초기화
                         )
@@ -72,7 +75,7 @@ class PlateDetectionViewModel(
                 onFailure = { e ->
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
+                            isDetecting = false,
                             error = e.message ?: "입출차 체크 실패"
                         )
                     }
