@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +41,8 @@ fun ParkingLotDetailScreen(
     viewModel: ParkingLotDetailViewModel,
     parkingLotId: Long,
     onCreateVehicleClick: () -> Unit,
-    onManageGateClick: () -> Unit
+    onManageGateClick: () -> Unit,
+    onPlateDetectionClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -57,6 +59,7 @@ fun ParkingLotDetailScreen(
             ) {
                 FloatingActionButton(onClick = onCreateVehicleClick) { Text("차량+") }
                 FloatingActionButton(onClick = onManageGateClick) { Text("게이트") }
+                FloatingActionButton(onClick = onPlateDetectionClick) { Text("체크") }
             }
         }
     ) { innerPadding ->

@@ -16,10 +16,12 @@ import com.sangyoon.parkingpass.presentation.ui.CreateVehicleScreen
 import com.sangyoon.parkingpass.presentation.ui.GateListScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
+import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
 import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
+import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
 import org.koin.compose.getKoin
 
@@ -31,6 +33,7 @@ sealed class Screen(val route: String) {
     object CreateVehicle : Screen("create_vehicle")
     object GateList : Screen("gate_list")
     object CreateGate : Screen("create_gate")
+    object PlateDetection : Screen("plate_detection")
 }
 
 @Composable
@@ -84,6 +87,10 @@ fun ParkingAppNavigation(
                     onManageGateClick = {
                         selectedParkingLotId = parkingLotId
                         navController.navigate(Screen.GateList.route)
+                    },
+                    onPlateDetectionClick = {
+                        selectedParkingLotId = parkingLotId
+                        navController.navigate(Screen.PlateDetection.route)
                     }
                 )
             } else {
@@ -154,6 +161,22 @@ fun ParkingAppNavigation(
                     viewModel = viewModel,
                     parkingLotId = lotId,
                     onCreated = { navController.popBackStack() },
+                    onBack = { navController.popBackStack() }
+                )
+            } else {
+                Text("유효하지 않은 주차장 ID")
+            }
+        }
+
+        composable(Screen.PlateDetection.route) {
+            val koin = getKoin()
+            val viewModel: PlateDetectionViewModel = remember { koin.get<PlateDetectionViewModel>() }
+            val lotId = selectedParkingLotId
+
+            if (lotId != null) {
+                PlateDetectionScreen(
+                    viewModel = viewModel,
+                    parkingLotId = lotId,
                     onBack = { navController.popBackStack() }
                 )
             } else {

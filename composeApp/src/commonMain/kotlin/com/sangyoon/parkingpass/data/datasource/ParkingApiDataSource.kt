@@ -4,6 +4,7 @@ import com.sangyoon.parkingpass.api.ParkingApiClient
 import com.sangyoon.parkingpass.api.dto.CreateParkingLotRequest
 import com.sangyoon.parkingpass.api.dto.CreateVehicleRequest
 import com.sangyoon.parkingpass.api.dto.ParkingLotResponse
+import com.sangyoon.parkingpass.api.dto.PlateDetectedRequest
 import com.sangyoon.parkingpass.api.dto.RegisterGateRequest
 
 class ParkingApiDataSource(
@@ -26,4 +27,6 @@ class ParkingApiDataSource(
     suspend fun getGates(parkingLotId: Long) = apiClient.getGates(parkingLotId)
 
     suspend fun registerGate(request: RegisterGateRequest) = apiClient.registerGate(request)
+
+    suspend fun detectPlate(request: PlateDetectedRequest) = apiClient.postPlateDetected(request)
 }
