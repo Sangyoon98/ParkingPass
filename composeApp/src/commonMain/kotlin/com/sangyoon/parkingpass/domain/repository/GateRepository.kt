@@ -1,6 +1,7 @@
 package com.sangyoon.parkingpass.domain.repository
 
 import com.sangyoon.parkingpass.domain.model.Gate
+import com.sangyoon.parkingpass.domain.model.GateDirection
 
 interface GateRepository {
     suspend fun getGates(parkingLotId: Long): Result<List<Gate>>
@@ -8,6 +9,6 @@ interface GateRepository {
         parkingLotId: Long,
         name: String,
         deviceKey: String,
-        direction: String
+        direction: GateDirection
     ): Result<Gate>
 }

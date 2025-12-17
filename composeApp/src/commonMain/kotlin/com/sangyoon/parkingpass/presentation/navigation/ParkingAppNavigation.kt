@@ -2,10 +2,12 @@ package com.sangyoon.parkingpass.presentation.navigation
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +20,7 @@ import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
 import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
 import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
+import com.sangyoon.parkingpass.presentation.utils.koinViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
@@ -47,8 +50,7 @@ fun ParkingAppNavigation(
         startDestination = Screen.ParkingLotList.route
     ) {
         composable(Screen.ParkingLotList.route) {
-            val koin = getKoin()
-            val viewModel: ParkingLotViewModel = remember { koin.get<ParkingLotViewModel>() }
+            val viewModel = koinViewModel<ParkingLotViewModel>()
             ParkingLotListScreen(
                 viewModel = viewModel,
                 onParkingLotClick = { parkingLotId ->
@@ -62,8 +64,7 @@ fun ParkingAppNavigation(
         }
 
         composable(Screen.CreateParkingLot.route) {
-            val koin = getKoin()
-            val viewModel: ParkingLotViewModel = remember { koin.get<ParkingLotViewModel>() }
+            val viewModel = koinViewModel<ParkingLotViewModel>()
             CreateParkingLotScreen(
                 viewModel = viewModel,
                 onCreated = { navController.popBackStack() },
@@ -72,8 +73,7 @@ fun ParkingAppNavigation(
         }
 
         composable(Screen.ParkingLotDetail.route) {
-            val koin = getKoin()
-            val viewModel: ParkingLotDetailViewModel = remember { koin.get<ParkingLotDetailViewModel>() }
+            val viewModel = koinViewModel<ParkingLotDetailViewModel>()
 
             val parkingLotId = selectedParkingLotId
             if (parkingLotId != null) {
@@ -94,13 +94,14 @@ fun ParkingAppNavigation(
                     }
                 )
             } else {
-                Text("유효하지 않은 주차장 ID")
+                LaunchedEffect(Unit) {
+                    navController.popBackStack()
+                }
             }
         }
 
         composable(Screen.VehicleList.route) {
-            val koin = getKoin()
-            val viewModel: VehicleViewModel = remember { koin.get<VehicleViewModel>() }
+            val viewModel = koinViewModel<VehicleViewModel>()
 
             val lotId = selectedParkingLotId
             if (lotId == null) {
@@ -116,8 +117,7 @@ fun ParkingAppNavigation(
         }
 
         composable(Screen.CreateVehicle.route) {
-            val koin = getKoin()
-            val viewModel: VehicleViewModel = remember { koin.get<VehicleViewModel>() }
+            val viewModel = koinViewModel<VehicleViewModel>()
 
             val lotId = selectedParkingLotId
             if (lotId == null) {
@@ -135,8 +135,7 @@ fun ParkingAppNavigation(
         }
 
         composable(Screen.GateList.route) {
-            val koin = getKoin()
-            val viewModel: GateViewModel = remember { koin.get<GateViewModel>() }
+            val viewModel = koinViewModel<GateViewModel>()
             val lotId = selectedParkingLotId
 
             if (lotId != null) {
@@ -152,8 +151,7 @@ fun ParkingAppNavigation(
         }
 
         composable(Screen.CreateGate.route) {
-            val koin = getKoin()
-            val viewModel: GateViewModel = remember { koin.get<GateViewModel>() }
+            val viewModel = koinViewModel<GateViewModel>()
             val lotId = selectedParkingLotId
 
             if (lotId != null) {
@@ -169,8 +167,7 @@ fun ParkingAppNavigation(
         }
 
         composable(Screen.PlateDetection.route) {
-            val koin = getKoin()
-            val viewModel: PlateDetectionViewModel = remember { koin.get<PlateDetectionViewModel>() }
+            val viewModel = koinViewModel<PlateDetectionViewModel>()
             val lotId = selectedParkingLotId
 
             if (lotId != null) {

@@ -8,7 +8,9 @@ class GetSessionHistoryUseCase(
 ) {
     suspend operator fun invoke(parkingLotId: Long, date: String): Result<List<Session>> {
         if (parkingLotId <= 0) return Result.failure(IllegalArgumentException("유효하지 않은 주차장 ID"))
-        if (date.isBlank()) return Result.failure(IllegalArgumentException("date는 YYYY-MM-DD 형식이어야 합니다"))
+        if (date.isBlank()) return Result.failure(IllegalArgumentException("날짜는 필수입니다"))
+        val datePattern = Regex("""^\d{4}-\d{2}-\d{2}$""")
+        if (date.matches(datePattern).not()) return Result.failure(IllegalArgumentException("date는 YYYY-MM-DD 형식이어야 합니다"))
         return repository.getSessionHistory(parkingLotId, date)
     }
 }

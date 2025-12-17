@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,13 +62,17 @@ fun CreateParkingLotScreen(
                 label = { Text("위치") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            LaunchedEffect(uiState.parkingLots) {
+                onCreated()
+            }
+
             if (uiState.isLoading) {
                 CircularProgressIndicator()
             } else {
                 Button(
                     onClick = {
                         viewModel.createParkingLot(name, location)
-                        onCreated()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("생성") }

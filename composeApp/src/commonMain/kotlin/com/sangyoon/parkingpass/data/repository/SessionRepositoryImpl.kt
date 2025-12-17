@@ -26,10 +26,12 @@ private fun SessionResponse.toDomain() = Session(
     plateNumber = plateNumber,
     vehicleId = vehicleId,
     vehicleLabel = vehicleLabel,
-    vehicleCategory = vehicleCategory?.let { VehicleCategory.valueOf(it) },
+    vehicleCategory = vehicleCategory?.let {
+        runCatching { VehicleCategory.valueOf(it) }.getOrNull()
+    },
     enterGateId = enterGateId,
     exitGateId = exitGateId,
     enteredAt = enteredAt,
     exitedAt = exitedAt,
-    status = SessionStatus.valueOf(status)
+    status = runCatching { SessionStatus.valueOf(status) }.getOrElse { SessionStatus.OPEN }
 )

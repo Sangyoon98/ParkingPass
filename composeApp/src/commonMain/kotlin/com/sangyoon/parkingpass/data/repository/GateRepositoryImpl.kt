@@ -18,10 +18,10 @@ class GateRepositoryImpl(
         parkingLotId: Long,
         name: String,
         deviceKey: String,
-        direction: String
+        direction: GateDirection
     ): Result<Gate> = runCatching {
         val response = dataSource.registerGate(
-            RegisterGateRequest(parkingLotId, name, deviceKey, direction)
+            RegisterGateRequest(parkingLotId, name, deviceKey, direction.name)
         )
         response.toDomain()
     }

@@ -15,11 +15,11 @@ class VehicleRepositoryImpl(
         parkingLotId: Long,
         plateNumber: String,
         label: String,
-        category: String,
+        category: VehicleCategory,
         memo: String?
     ): Result<Vehicle> = runCatching {
         val response = dataSource.createVehicle(
-            CreateVehicleRequest(parkingLotId, plateNumber, label, category, memo)
+            CreateVehicleRequest(parkingLotId, plateNumber, label, category.name, memo)
         )
         response.toDomain()
     }

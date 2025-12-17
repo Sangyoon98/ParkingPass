@@ -47,11 +47,12 @@ class PlateDetectionViewModel(
 
         if (selectedGate == null) {
             _uiState.update { it.copy(error = "게이트를 선택해주세요") }
+
             return
         }
 
         if (plateNumber.isBlank()) {
-            _uiState.update { it.copy(error = "번호판 번호를 입력헤주세요") }
+            _uiState.update { it.copy(error = "번호판 번호를 입력해주세요") }
             return
         }
 

@@ -128,6 +128,9 @@ private fun SessionItem(session: com.sangyoon.parkingpass.domain.model.Session) 
 private fun DateSelector(selected: String?, onSelect: (String) -> Unit) {
     // 단순 입력용(추후 DatePicker 대체 가능)
     var input by remember { mutableStateOf(selected ?: "") }
+    LaunchedEffect(selected) {
+        input = selected ?: ""
+    }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedTextField(
             value = input,

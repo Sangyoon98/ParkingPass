@@ -51,7 +51,6 @@ val appModule = module {
     factoryOf(::GetParkingLotsUseCase)
     factoryOf(::GetParkingLotDetailUseCase)
     factoryOf(::CreateParkingLotUseCase)
-    factoryOf(::GetParkingLotDetailUseCase)
     factoryOf(::GetOpenSessionsUseCase)
     factoryOf(::GetSessionHistoryUseCase)
     factoryOf(::GetVehiclesUseCase)

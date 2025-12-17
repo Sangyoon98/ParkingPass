@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sangyoon.parkingpass.domain.model.GateDirection
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +39,7 @@ fun CreateGateScreen(
 
     var name by remember { mutableStateOf("") }
     var deviceKey by remember { mutableStateOf("") }
-    var direction by remember { mutableStateOf("ENTER") }
+    var direction by remember { mutableStateOf(GateDirection.ENTER) }
 
     Scaffold(
         topBar = {
@@ -76,11 +77,11 @@ fun CreateGateScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                listOf("ENTER", "EXIT", "BOTH").forEach { dir ->
+                GateDirection.entries.forEach { dir ->
                     FilterChip(
                         selected = direction == dir,
                         onClick = { direction = dir },
-                        label = { Text(dir) },
+                        label = { Text(dir.name) },
                         modifier = Modifier.weight(1f)
                     )
                 }

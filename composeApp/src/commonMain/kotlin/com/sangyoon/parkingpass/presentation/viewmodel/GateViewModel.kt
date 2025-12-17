@@ -2,6 +2,7 @@ package com.sangyoon.parkingpass.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sangyoon.parkingpass.domain.model.GateDirection
 import com.sangyoon.parkingpass.domain.usecase.GetGatesUseCase
 import com.sangyoon.parkingpass.domain.usecase.RegisterGateUseCase
 import com.sangyoon.parkingpass.presentation.state.GateUiState
@@ -36,7 +37,7 @@ class GateViewModel(
         parkingLotId: Long,
         name: String,
         deviceKey: String,
-        direction: String,
+        direction: GateDirection,
         onSuccess: () -> Unit
     ) {
         viewModelScope.launch {

@@ -2,6 +2,7 @@ package com.sangyoon.parkingpass.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sangyoon.parkingpass.domain.model.VehicleCategory
 import com.sangyoon.parkingpass.domain.usecase.CreateVehicleUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetVehiclesUseCase
 import com.sangyoon.parkingpass.presentation.state.VehicleUiState
@@ -36,7 +37,7 @@ class VehicleViewModel(
         parkingLotId: Long,
         plateNumber: String,
         label: String,
-        category: String,
+        category: VehicleCategory,
         memo: String?,
         onSuccess: () -> Unit
     ) {

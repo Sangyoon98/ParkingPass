@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sangyoon.parkingpass.domain.model.PlateDetectionAction
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,7 +137,7 @@ fun PlateDetectionScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (result.action == "ENTER") {
+                        containerColor = if (result.action == PlateDetectionAction.ENTER) {
                             MaterialTheme.colorScheme.primaryContainer
                         } else {
                             MaterialTheme.colorScheme.secondaryContainer
@@ -145,7 +146,7 @@ fun PlateDetectionScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = if (result.action == "ENTER") "입차 성공" else "출차 성공",
+                            text = if (result.action == PlateDetectionAction.ENTER) "입차 성공" else "출차 성공",
                             style = MaterialTheme.typography.titleLarge
                         )
                         Spacer(Modifier.height(8.dp))

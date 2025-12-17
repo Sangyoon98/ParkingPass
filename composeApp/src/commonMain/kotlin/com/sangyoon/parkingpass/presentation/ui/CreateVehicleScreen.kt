@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -22,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sangyoon.parkingpass.domain.model.VehicleCategory
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,8 +40,9 @@ fun CreateVehicleScreen(
 
     var plateNumber by remember { mutableStateOf("") }
     var label by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("RESIDENT") }
+    var category by remember { mutableStateOf(VehicleCategory.RESIDENT) }
     var memo by remember { mutableStateOf("") }
+    var expandedCategory by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -68,12 +73,41 @@ fun CreateVehicleScreen(
                 label = { Text("라벨 (예: 101동 1001호)") },
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = category,
-                onValueChange = { category = it },
-                label = { Text("카테고리 (RESIDENT/EMPLOYEE/VISITOR 등)") },
+
+            // 카테고리 드롭다운 메뉴
+            ExposedDropdownMenuBox(
+                expanded = expandedCategory,
+                onExpandedChange = { expandedCategory = it },
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                OutlinedTextField(
+                    value = category.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("카테고리") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expandedCategory)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = expandedCategory,
+                    onDismissRequest = { expandedCategory = false }
+                ) {
+                    VehicleCategory.entries.forEach { cat ->
+                        DropdownMenuItem(
+                            text = { Text(cat.name) },
+                            onClick = {
+                                category = cat
+                                expandedCategory = false
+                            }
+                        )
+                    }
+                }
+            }
+
             OutlinedTextField(
                 value = memo,
                 onValueChange = { memo = it },

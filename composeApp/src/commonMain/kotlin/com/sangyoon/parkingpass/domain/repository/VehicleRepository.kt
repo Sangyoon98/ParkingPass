@@ -1,13 +1,14 @@
 package com.sangyoon.parkingpass.domain.repository
 
 import com.sangyoon.parkingpass.domain.model.Vehicle
+import com.sangyoon.parkingpass.domain.model.VehicleCategory
 
 interface VehicleRepository {
     suspend fun createVehicle(
         parkingLotId: Long,
         plateNumber: String,
         label: String,
-        category: String,
+        category: VehicleCategory,
         memo: String?
     ): Result<Vehicle>
     suspend fun getVehicles(parkingLotId: Long): Result<List<Vehicle>>
