@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
@@ -19,6 +20,7 @@ import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
 import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
 import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
+import com.sangyoon.parkingpass.presentation.utils.koinViewModelWithOwner
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
@@ -47,8 +49,8 @@ fun ParkingAppNavigation(
         navController = navController,
         startDestination = Screen.ParkingLotList.route
     ) {
-        composable(Screen.ParkingLotList.route) {
-            val viewModel = koinViewModel<ParkingLotViewModel>()
+        composable(Screen.ParkingLotList.route) { backStackEntry ->
+            val viewModel = koinViewModelWithOwner<ParkingLotViewModel>(owner = backStackEntry)
             ParkingLotListScreen(
                 viewModel = viewModel,
                 onParkingLotClick = { parkingLotId ->
@@ -61,8 +63,11 @@ fun ParkingAppNavigation(
             )
         }
 
-        composable(Screen.CreateParkingLot.route) {
-            val viewModel = koinViewModel<ParkingLotViewModel>()
+        composable(Screen.CreateParkingLot.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Screen.ParkingLotList.route)
+            }
+            val viewModel = koinViewModelWithOwner<ParkingLotViewModel>(owner = parentEntry)
             CreateParkingLotScreen(
                 viewModel = viewModel,
                 onCreated = { navController.popBackStack() },
