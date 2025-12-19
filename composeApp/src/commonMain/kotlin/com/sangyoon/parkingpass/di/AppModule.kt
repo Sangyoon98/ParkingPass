@@ -26,6 +26,7 @@ import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
+import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -61,8 +62,9 @@ val appModule = module {
 
     // ViewModel
     factory { ParkingLotViewModel(get(), get()) }
-    factory { ParkingLotDetailViewModel(get(), get(),get()) }
+    factory { ParkingLotDetailViewModel(get()) }
     factory { VehicleViewModel(get(), get()) }
     factory { GateViewModel(get(), get()) }
     factory { PlateDetectionViewModel(get(), get()) }
+    factory { SessionViewModel(get(), get()) }
 }

@@ -19,12 +19,14 @@ import com.sangyoon.parkingpass.presentation.ui.GateListScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
 import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
+import com.sangyoon.parkingpass.presentation.ui.SessionListScreen
 import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
 import com.sangyoon.parkingpass.presentation.utils.koinViewModelWithOwner
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
+import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -37,6 +39,7 @@ sealed class Screen(val route: String) {
     object GateList : Screen("gate_list")
     object CreateGate : Screen("create_gate")
     object PlateDetection : Screen("plate_detection")
+    object SessionList : Screen("session_list")
 }
 
 @Composable
@@ -94,6 +97,10 @@ fun ParkingAppNavigation(
                     onPlateDetectionClick = {
                         selectedParkingLotId = parkingLotId
                         navController.navigate(Screen.PlateDetection.route)
+                    },
+                    onSessionListClick = {
+                        selectedParkingLotId = parkingLotId
+                        navController.navigate(Screen.SessionList.route)
                     }
                 )
             } else {
@@ -177,6 +184,21 @@ fun ParkingAppNavigation(
 
             if (lotId != null) {
                 PlateDetectionScreen(
+                    viewModel = viewModel,
+                    parkingLotId = lotId,
+                    onBack = { navController.popBackStack() }
+                )
+            } else {
+                Text("유효하지 않은 주차장 ID")
+            }
+        }
+
+        composable(Screen.SessionList.route) {
+            val viewModel = koinViewModel<SessionViewModel>()
+            val lotId = selectedParkingLotId
+
+            if (lotId != null) {
+                SessionListScreen(
                     viewModel = viewModel,
                     parkingLotId = lotId,
                     onBack = { navController.popBackStack() }
