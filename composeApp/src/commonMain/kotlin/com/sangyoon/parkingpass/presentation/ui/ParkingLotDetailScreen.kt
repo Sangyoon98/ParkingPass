@@ -42,7 +42,8 @@ fun ParkingLotDetailScreen(
     parkingLotId: Long,
     onCreateVehicleClick: () -> Unit,
     onManageGateClick: () -> Unit,
-    onPlateDetectionClick: () -> Unit
+    onPlateDetectionClick: () -> Unit,
+    onSessionListClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -60,6 +61,7 @@ fun ParkingLotDetailScreen(
                 FloatingActionButton(onClick = onCreateVehicleClick) { Text("차량+") }
                 FloatingActionButton(onClick = onManageGateClick) { Text("게이트") }
                 FloatingActionButton(onClick = onPlateDetectionClick) { Text("체크") }
+                FloatingActionButton(onClick = onSessionListClick) { Text("세션") }
             }
         }
     ) { innerPadding ->
@@ -84,27 +86,6 @@ fun ParkingLotDetailScreen(
                         Text(uiState.parkingLot?.name ?: "", style = MaterialTheme.typography.headlineMedium)
                         Spacer(Modifier.height(4.dp))
                         Text(uiState.parkingLot?.location ?: "", style = MaterialTheme.typography.bodyMedium)
-                    }
-
-                    item {
-                        Text("현재 주차 중", style = MaterialTheme.typography.titleMedium)
-                    }
-                    items(uiState.openSessions) { session ->
-                        SessionItem(session)
-                    }
-
-                    item {
-                        Spacer(Modifier.height(8.dp))
-                        Text("입출차 기록", style = MaterialTheme.typography.titleMedium)
-                        DateSelector(
-                            selected = uiState.selectedDate,
-                            onSelect = { date ->
-                                viewModel.load(parkingLotId, date)
-                            }
-                        )
-                    }
-                    items(uiState.history) { session ->
-                        SessionItem(session)
                     }
                 }
             }
