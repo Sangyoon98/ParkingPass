@@ -5,12 +5,12 @@ import com.sangyoon.parkingpass.presentation.navigation.LocalNavigationState
 import com.sangyoon.parkingpass.presentation.navigation.Screen
 import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
-import org.koin.compose.getKoin
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun VehicleListScreenContent(parkingLotId: Long) {
     val navigationState = LocalNavigationState.current
-    val viewModel = getKoin().get<VehicleViewModel>()
+    val viewModel = koinViewModel<VehicleViewModel>()
     
     VehicleListScreen(
         viewModel = viewModel,

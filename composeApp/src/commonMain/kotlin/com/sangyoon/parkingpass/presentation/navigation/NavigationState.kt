@@ -1,10 +1,10 @@
 package com.sangyoon.parkingpass.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 
 /**
  * 상태 기반 네비게이션을 위한 Screen 정의
@@ -25,16 +25,17 @@ sealed class Screen {
  * 네비게이션 스택 관리
  */
 class NavigationState {
-    val backStack = mutableStateOf<List<Screen>>(listOf(Screen.ParkingLotList))
-    val currentScreen: Screen get() = backStack.value.lastOrNull() ?: Screen.ParkingLotList
+    private val _backStack = mutableStateOf<List<Screen>>(listOf(Screen.ParkingLotList))
+    val backStack: State<List<Screen>> get() = _backStack
+    val currentScreen: Screen get() = _backStack.value.lastOrNull() ?: Screen.ParkingLotList
     
     fun push(screen: Screen) {
-        backStack.value = backStack.value + screen
+        _backStack.value = _backStack.value + screen
     }
     
     fun pop(): Boolean {
-        return if (backStack.value.size > 1) {
-            backStack.value = backStack.value.dropLast(1)
+        return if (_backStack.value.size > 1) {
+            _backStack.value = _backStack.value.dropLast(1)
             true
         } else {
             false
@@ -42,11 +43,15 @@ class NavigationState {
     }
     
     fun replace(screen: Screen) {
-        backStack.value = backStack.value.dropLast(1) + screen
+        if (_backStack.value.isNotEmpty()) {
+            _backStack.value = _backStack.value.dropLast(1) + screen
+        } else {
+            _backStack.value = listOf(screen)
+        }
     }
     
     fun popToRoot() {
-        backStack.value = listOf(Screen.ParkingLotList)
+        _backStack.value = listOf(Screen.ParkingLotList)
     }
 }
 

@@ -1,10 +1,10 @@
 package com.sangyoon.parkingpass.presentation.navigation
 
-import androidx.activity.compose.BackHandler
+import androidx.activity.compose.BackHandler as AndroidBackHandler
 import androidx.compose.runtime.Composable
 
 @Composable
 actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
-    BackHandler(enabled = enabled, onBack = onBack)
+    AndroidBackHandler(enabled = enabled, onBack = onBack)
 }
 

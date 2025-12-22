@@ -4,12 +4,12 @@ import androidx.compose.runtime.Composable
 import com.sangyoon.parkingpass.presentation.navigation.LocalNavigationState
 import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
-import org.koin.compose.getKoin
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PlateDetectionScreenContent(parkingLotId: Long) {
     val navigationState = LocalNavigationState.current
-    val viewModel = getKoin().get<PlateDetectionViewModel>()
+    val viewModel = koinViewModel<PlateDetectionViewModel>()
     
     PlateDetectionScreen(
         viewModel = viewModel,
