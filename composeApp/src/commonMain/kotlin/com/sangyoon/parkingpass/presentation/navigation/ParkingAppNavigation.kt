@@ -1,211 +1,43 @@
 package com.sangyoon.parkingpass.presentation.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.sangyoon.parkingpass.presentation.ui.CreateGateScreen
-import com.sangyoon.parkingpass.presentation.ui.CreateParkingLotScreen
-import com.sangyoon.parkingpass.presentation.ui.CreateVehicleScreen
-import com.sangyoon.parkingpass.presentation.ui.GateListScreen
-import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
-import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
-import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
-import com.sangyoon.parkingpass.presentation.ui.SessionListScreen
-import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
-import com.sangyoon.parkingpass.presentation.utils.koinViewModelWithOwner
-import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
-import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
-import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
-import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
-import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
-import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import com.sangyoon.parkingpass.presentation.navigation.screens.*
 
-sealed class Screen(val route: String) {
-    object ParkingLotList : Screen("parking_lot_list")
-    object ParkingLotDetail : Screen("parking_lot_detail")
-    object CreateParkingLot : Screen("create_parking_lot")
-    object VehicleList : Screen("vehicle_list")
-    object CreateVehicle : Screen("create_vehicle")
-    object GateList : Screen("gate_list")
-    object CreateGate : Screen("create_gate")
-    object PlateDetection : Screen("plate_detection")
-    object SessionList : Screen("session_list")
+/**
+ * NavigationState를 CompositionLocal로 제공
+ */
+val LocalNavigationState = compositionLocalOf<NavigationState> {
+    error("NavigationState not provided")
 }
 
 @Composable
-fun ParkingAppNavigation(
-    navController: NavHostController = rememberNavController()
-) {
-    var selectedParkingLotId by rememberSaveable { mutableStateOf<Long?>(null) }
+expect fun BackHandler(enabled: Boolean, onBack: () -> Unit)
 
-    NavHost(
-        navController = navController,
-        startDestination = Screen.ParkingLotList.route
-    ) {
-        composable(Screen.ParkingLotList.route) { backStackEntry ->
-            val viewModel = koinViewModelWithOwner<ParkingLotViewModel>(owner = backStackEntry)
-            ParkingLotListScreen(
-                viewModel = viewModel,
-                onParkingLotClick = { parkingLotId ->
-                    selectedParkingLotId = parkingLotId
-                    navController.navigate(Screen.ParkingLotDetail.route)
-                },
-                onCreateClick = {
-                    navController.navigate(Screen.CreateParkingLot.route)
-                }
-            )
-        }
-
-        composable(Screen.CreateParkingLot.route) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.ParkingLotList.route)
-            }
-            val viewModel = koinViewModelWithOwner<ParkingLotViewModel>(owner = parentEntry)
-            CreateParkingLotScreen(
-                viewModel = viewModel,
-                onCreated = { navController.popBackStack() },
-                onBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(Screen.ParkingLotDetail.route) {
-            val viewModel = koinViewModel<ParkingLotDetailViewModel>()
-
-            val parkingLotId = selectedParkingLotId
-            if (parkingLotId != null) {
-                ParkingLotDetailScreen(
-                    viewModel = viewModel,
-                    parkingLotId = parkingLotId,
-                    onCreateVehicleClick = {
-                        selectedParkingLotId = parkingLotId
-                        navController.navigate(Screen.VehicleList.route)
-                    },
-                    onManageGateClick = {
-                        selectedParkingLotId = parkingLotId
-                        navController.navigate(Screen.GateList.route)
-                    },
-                    onPlateDetectionClick = {
-                        selectedParkingLotId = parkingLotId
-                        navController.navigate(Screen.PlateDetection.route)
-                    },
-                    onSessionListClick = {
-                        selectedParkingLotId = parkingLotId
-                        navController.navigate(Screen.SessionList.route)
-                    }
-                )
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.popBackStack()
-                }
-            }
-        }
-
-        composable(Screen.VehicleList.route) {
-            val viewModel = koinViewModel<VehicleViewModel>()
-
-            val lotId = selectedParkingLotId
-            if (lotId == null) {
-                LaunchedEffect(Unit) {
-                    navController.popBackStack()
-                }
-            } else {
-                VehicleListScreen(
-                    viewModel = viewModel,
-                    parkingLotId = lotId,
-                    onBack = { navController.popBackStack() },
-                    onCreateClick = { navController.navigate(Screen.CreateVehicle.route) }
-                )
-            }
-        }
-
-        composable(Screen.CreateVehicle.route) {
-            val viewModel = koinViewModel<VehicleViewModel>()
-
-            val lotId = selectedParkingLotId
-            if (lotId == null) {
-                Text("유효하지 않은 주차장 ID")
-            } else {
-                CreateVehicleScreen(
-                    viewModel = viewModel,
-                    parkingLotId = lotId,
-                    onCreated = {
-                        navController.popBackStack() // CreateVehicle 닫기
-                    },
-                    onBack = { navController.popBackStack() }
-                )
-            }
-        }
-
-        composable(Screen.GateList.route) {
-            val viewModel = koinViewModel<GateViewModel>()
-            val lotId = selectedParkingLotId
-
-            if (lotId != null) {
-                GateListScreen(
-                    viewModel = viewModel,
-                    parkingLotId = lotId,
-                    onBack = { navController.popBackStack() },
-                    onCreateClick = { navController.navigate(Screen.CreateGate.route) }
-                )
-            } else {
-                Text("유효하지 않은 주차장 ID")
-            }
-        }
-
-        composable(Screen.CreateGate.route) {
-            val viewModel = koinViewModel<GateViewModel>()
-            val lotId = selectedParkingLotId
-
-            if (lotId != null) {
-                CreateGateScreen(
-                    viewModel = viewModel,
-                    parkingLotId = lotId,
-                    onCreated = { navController.popBackStack() },
-                    onBack = { navController.popBackStack() }
-                )
-            } else {
-                Text("유효하지 않은 주차장 ID")
-            }
-        }
-
-        composable(Screen.PlateDetection.route) {
-            val viewModel = koinViewModel<PlateDetectionViewModel>()
-            val lotId = selectedParkingLotId
-
-            if (lotId != null) {
-                PlateDetectionScreen(
-                    viewModel = viewModel,
-                    parkingLotId = lotId,
-                    onBack = { navController.popBackStack() }
-                )
-            } else {
-                Text("유효하지 않은 주차장 ID")
-            }
-        }
-
-        composable(Screen.SessionList.route) {
-            val viewModel = koinViewModel<SessionViewModel>()
-            val lotId = selectedParkingLotId
-
-            if (lotId != null) {
-                SessionListScreen(
-                    viewModel = viewModel,
-                    parkingLotId = lotId,
-                    onBack = { navController.popBackStack() }
-                )
-            } else {
-                Text("유효하지 않은 주차장 ID")
-            }
+@Composable
+fun ParkingAppNavigation() {
+    val navigationState = rememberNavigationState()
+    val backStack by navigationState.backStack
+    val currentScreen = backStack.lastOrNull() ?: Screen.ParkingLotList
+    
+    // Android 뒤로가기 버튼 처리
+    BackHandler(enabled = backStack.size > 1) {
+        navigationState.pop()
+    }
+    
+    CompositionLocalProvider(LocalNavigationState provides navigationState) {
+        when (val screen = currentScreen) {
+            is Screen.ParkingLotList -> ParkingLotListScreenContent()
+            is Screen.CreateParkingLot -> CreateParkingLotScreenContent()
+            is Screen.ParkingLotDetail -> ParkingLotDetailScreenContent(screen.parkingLotId)
+            is Screen.VehicleList -> VehicleListScreenContent(screen.parkingLotId)
+            is Screen.CreateVehicle -> CreateVehicleScreenContent(screen.parkingLotId)
+            is Screen.GateList -> GateListScreenContent(screen.parkingLotId)
+            is Screen.CreateGate -> CreateGateScreenContent(screen.parkingLotId)
+            is Screen.PlateDetection -> PlateDetectionScreenContent(screen.parkingLotId)
+            is Screen.SessionList -> SessionListScreenContent(screen.parkingLotId)
         }
     }
 }
