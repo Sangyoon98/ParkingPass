@@ -24,23 +24,23 @@ class SupabaseGateDeviceRepository(
     }
 
     override suspend fun save(device: GateDevice): GateDevice {
-        return try {
-            if (device.id == 0L) {
-                // Insert: Supabase에만 저장하고, 우리가 가진 객체를 그대로 반환
-                supabase.from("gate_device")
-                    .insert(device)
-                device
-            } else {
-                // Update: Supabase에만 반영하고, 수정된 객체를 그대로 반환
-                supabase.from("gate_device")
-                    .update(device) {
-                        filter { eq("id", device.id) }
+        return if (device.id == 0L) {
+            // Insert: 생성된 ID를 포함한 전체 레코드를 반환받음
+            supabase.from("gate_device")
+                .insert(device) {
+                    select()
+                }
+                .decodeSingle<GateDevice>()
+        } else {
+            // Update: 업데이트된 레코드를 반환받음
+            supabase.from("gate_device")
+                .update(device) {
+                    filter {
+                        eq("id", device.id)
                     }
-                device
-            }
-        } catch (e: Exception) {
-            // 저장 중 예외는 그대로 상위로 올려 보냄
-            throw e
+                    select()
+                }
+                .decodeSingle<GateDevice>()
         }
     }
 

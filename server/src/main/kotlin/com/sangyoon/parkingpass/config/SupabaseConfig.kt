@@ -33,12 +33,13 @@ object SupabaseConfig {
             currentDir = currentDir.parentFile ?: return@repeat
         }
         
-        if (localPropertiesFile != null && localPropertiesFile.exists()) {
+        return localPropertiesFile?.takeIf { it.exists() }?.let { file ->
             val properties = Properties()
-            properties.load(localPropertiesFile.inputStream())
-            return properties.getProperty(key)
+            file.inputStream().use { stream ->
+                properties.load(stream)
+            }
+            properties.getProperty(key)
         }
-        return null
     }
 
     fun createClient(): SupabaseClient {

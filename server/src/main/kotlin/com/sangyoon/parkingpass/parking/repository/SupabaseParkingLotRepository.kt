@@ -10,23 +10,21 @@ class SupabaseParkingLotRepository(
 ) : ParkingLotRepository {
 
     override suspend fun save(lot: ParkingLot): ParkingLot {
-        return try {
-            if (lot.id == 0L) {
-                // Insert: Supabase에만 저장하고, 우리가 가진 객체를 그대로 반환
-                supabase.from("parking_lot")
-                    .insert(lot)
-                lot
-            } else {
-                // Update: Supabase에만 반영하고, 수정된 객체를 그대로 반환
-                supabase.from("parking_lot")
-                    .update(lot) {
-                        filter { eq("id", lot.id) }
-                    }
-                lot
-            }
-        } catch (e: Exception) {
-            // 저장 중 예외는 그대로 상위로 올려 보냄 (StatusPages에서 처리)
-            throw e
+        return if (lot.id == 0L) {
+            // Insert: 생성된 ID를 포함한 레코드를 반환
+            supabase.from("parking_lot")
+                .insert(lot) {
+                    select()
+                }
+                .decodeSingle<ParkingLot>()
+        } else {
+            // Update: 업데이트된 레코드를 반환
+            supabase.from("parking_lot")
+                .update(lot) {
+                    filter { eq("id", lot.id) }
+                    select()
+                }
+                .decodeSingle<ParkingLot>()
         }
     }
 
