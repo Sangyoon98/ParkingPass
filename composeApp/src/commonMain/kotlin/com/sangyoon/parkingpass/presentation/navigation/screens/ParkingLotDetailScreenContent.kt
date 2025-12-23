@@ -15,6 +15,7 @@ fun ParkingLotDetailScreenContent(parkingLotId: Long) {
     ParkingLotDetailScreen(
         viewModel = viewModel,
         parkingLotId = parkingLotId,
+        onBack = { navigationState.pop() },
         onCreateVehicleClick = {
             navigationState.push(Screen.VehicleList(parkingLotId))
         },

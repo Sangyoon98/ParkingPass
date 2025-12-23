@@ -1,10 +1,23 @@
 import io.ktor.plugin.OpenApiPreview
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     application
     kotlin("plugin.serialization") version "2.2.20"
+}
+
+// local.properties에서 Supabase 설정 읽기
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+var supabaseUrl: String? = null
+var supabaseKey: String? = null
+
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+    supabaseUrl = localProperties.getProperty("SUPABASE_URL")
+    supabaseKey = localProperties.getProperty("SUPABASE_SERVICE_ROLE_KEY")
 }
 
 group = "com.sangyoon.parkingpass"
@@ -43,7 +56,31 @@ application {
     mainClass.set("com.sangyoon.parkingpass.ApplicationKt")
     
     val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+    val jvmArgs = mutableListOf("-Dio.ktor.development=$isDevelopment")
+    
+    // local.properties에서 Supabase 설정을 JVM 인자로 추가
+    if (supabaseUrl != null) {
+        jvmArgs.add("-DSUPABASE_URL=$supabaseUrl")
+    }
+    if (supabaseKey != null) {
+        jvmArgs.add("-DSUPABASE_SERVICE_ROLE_KEY=$supabaseKey")
+    }
+    
+    applicationDefaultJvmArgs = jvmArgs
+}
+
+tasks.named<JavaExec>("run") {
+    val isDevelopment: Boolean = project.ext.has("development")
+    val jvmArgs = mutableListOf("-Dio.ktor.development=$isDevelopment")
+    
+    if (supabaseUrl != null) {
+        jvmArgs.add("-DSUPABASE_URL=$supabaseUrl")
+    }
+    if (supabaseKey != null) {
+        jvmArgs.add("-DSUPABASE_SERVICE_ROLE_KEY=$supabaseKey")
+    }
+    
+    jvmArgs(jvmArgs)
 }
 
 dependencies {
@@ -62,6 +99,11 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation.jvm)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.kotlinx.json.jvm)
+
+    // Supabase
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.postgrest)
+    implementation(libs.ktor.client.cio) // HTTP client for Supabase
 
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)

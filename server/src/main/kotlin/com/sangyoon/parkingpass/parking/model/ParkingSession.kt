@@ -1,5 +1,8 @@
 package com.sangyoon.parkingpass.parking.model
 
+import com.sangyoon.parkingpass.common.InstantSerializer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.time.Instant
 
 /**
@@ -16,14 +19,24 @@ import java.time.Instant
  * @property exitedAt 출차 시각, 아직 출차 전이면 null
  * @property status OPEN(주차 중), CLOSED(출차 완료)
  */
+@Serializable
 data class ParkingSession(
-    val id: Long,
+    val id: Long = 0,
+    @SerialName("parking_lot_id")
     val parkingLotId: Long,
+    @SerialName("plate_number")
     val plateNumber: String,
-    val vehicleId: Long?,
+    @SerialName("vehicle_id")
+    val vehicleId: Long? = null,
+    @SerialName("enter_gate_id")
     val enterGateId: Long,
-    val exitGateId: Long?,
+    @SerialName("exit_gate_id")
+    val exitGateId: Long? = null,
+    @SerialName("entered_at")
+    @Serializable(with = InstantSerializer::class)
     val enteredAt: Instant,
-    val exitedAt: Instant?,
+    @SerialName("exited_at")
+    @Serializable(with = InstantSerializer::class)
+    val exitedAt: Instant? = null,
     val status: SessionStatus
 )

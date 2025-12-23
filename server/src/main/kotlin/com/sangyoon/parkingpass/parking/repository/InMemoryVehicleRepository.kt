@@ -10,12 +10,12 @@ class InMemoryVehicleRepository : VehicleRepository {
     private val byLotAndPlate = ConcurrentHashMap<String, Vehicle>()
     private val byId = ConcurrentHashMap<Long, Vehicle>()
 
-    override fun findByParkingLotIdAndPlateNumber(
+    override suspend fun findByParkingLotIdAndPlateNumber(
         parkingLotId: Long,
         plateNumber: String
     ): Vehicle? = byLotAndPlate[key(parkingLotId, plateNumber)]
 
-    override fun save(vehicle: Vehicle): Vehicle {
+    override suspend fun save(vehicle: Vehicle): Vehicle {
         val id = if (vehicle.id != 0L) vehicle.id else idGenerator.getAndIncrement()
         val saved = vehicle.copy(id = id)
         byLotAndPlate[key(saved.parkingLotId, saved.plateNumber)] = saved
@@ -23,7 +23,7 @@ class InMemoryVehicleRepository : VehicleRepository {
         return saved
     }
 
-    override fun findAllByParkingLotId(parkingLotId: Long): List<Vehicle> {
+    override suspend fun findAllByParkingLotId(parkingLotId: Long): List<Vehicle> {
         return byLotAndPlate.values.filter { it.parkingLotId == parkingLotId }
     }
 

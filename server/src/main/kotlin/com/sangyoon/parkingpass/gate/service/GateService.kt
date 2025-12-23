@@ -10,7 +10,7 @@ class GateService(
     private val gateDeviceRepository: GateDeviceRepository,
     private val parkingLotRepository: ParkingLotRepository
 ) {
-    fun registerGate(request: RegisterGateRequest): GateResponse {
+    suspend fun registerGate(request: RegisterGateRequest): GateResponse {
         // 주차장 존재 여부 확인
         val parkingLot = parkingLotRepository.findById(request.parkingLotId)
             ?: throw IllegalArgumentException("존재하지 않는 주차장입니다: ${request.parkingLotId}")
@@ -33,7 +33,7 @@ class GateService(
         return toResponse(saved)
     }
 
-    fun getGates(parkingLotId: Long): List<GateResponse> {
+    suspend fun getGates(parkingLotId: Long): List<GateResponse> {
         return gateDeviceRepository.findAllByParkingLotId(parkingLotId).map { toResponse(it) }
     }
 

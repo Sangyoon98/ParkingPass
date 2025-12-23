@@ -87,3 +87,10 @@ data class SessionResponse(
     val exitedAt: String?,
     val status: String  // "OPEN" or "CLOSED"
 )
+
+// 공통 에러 응답 (서버의 ErrorResponse와 동일한 구조)
+@Serializable
+data class ErrorResponseDto(
+    val code: String,
+    val message: String
+)

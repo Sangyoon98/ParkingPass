@@ -10,7 +10,7 @@ class VehicleService(
     private val vehicleRepository: VehicleRepository,
     private val parkingLotRepository: ParkingLotRepository
 ) {
-    fun createVehicle(request: CreateVehicleRequest): VehicleResponse {
+    suspend fun createVehicle(request: CreateVehicleRequest): VehicleResponse {
         // 주차장 존재 여부 확인
         val parkingLot = parkingLotRepository.findById(request.parkingLotId)
             ?: throw IllegalArgumentException("존재하지 않는 주차장입니다: ${request.parkingLotId}")
@@ -38,9 +38,14 @@ class VehicleService(
         return toResponse(saved)
     }
 
-    fun getVehicles(parkingLotId: Long): List<VehicleResponse> {
-        return vehicleRepository.findAllByParkingLotId(parkingLotId)
-            .map { toResponse(it) }
+    suspend fun getVehicles(parkingLotId: Long): List<VehicleResponse> {
+        return try {
+            vehicleRepository.findAllByParkingLotId(parkingLotId)
+                .map { toResponse(it) }
+        } catch (e: Exception) {
+            // Supabase 조회 에러 등은 UI에 500을 띄우지 않고 "빈 목록"으로 처리
+            emptyList()
+        }
     }
 
     private fun normalizePlateNumber(plate: String): String =

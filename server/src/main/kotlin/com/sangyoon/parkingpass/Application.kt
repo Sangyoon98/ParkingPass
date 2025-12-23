@@ -1,15 +1,13 @@
 package com.sangyoon.parkingpass
 
 import com.sangyoon.parkingpass.common.configureStatusPages
+import com.sangyoon.parkingpass.config.SupabaseConfig
 import com.sangyoon.parkingpass.gate.controller.gateController
 import com.sangyoon.parkingpass.gate.service.GateService
 import com.sangyoon.parkingpass.health.controller.healthController
-import com.sangyoon.parkingpass.parking.repository.ImMemoryParkingLotRepository
-import com.sangyoon.parkingpass.parking.repository.InMemoryGateDeviceRepository
-import com.sangyoon.parkingpass.parking.repository.InMemoryParkingSessionRepository
-import com.sangyoon.parkingpass.parking.repository.InMemoryVehicleRepository
+import com.sangyoon.parkingpass.parking.repository.*
 import com.sangyoon.parkingpass.parkingevent.controller.parkingEventController
-import com.sangyoon.parkingpass.parkingevent.repository.InMemoryParkingEventRepository
+import com.sangyoon.parkingpass.parkingevent.repository.*
 import com.sangyoon.parkingpass.parkingevent.sevice.ParkingEventService
 import com.sangyoon.parkingpass.parkinglot.controller.parkingLotController
 import com.sangyoon.parkingpass.parkinglot.service.ParkingLotService
@@ -32,12 +30,15 @@ fun main() {
 }
 
 fun Application.module() {
-    // Repository 초기화
-    val parkingLotRepository = ImMemoryParkingLotRepository()
-    val gateDeviceRepository = InMemoryGateDeviceRepository()
-    val vehicleRepository = InMemoryVehicleRepository()
-    val parkingSessionRepository = InMemoryParkingSessionRepository()
-    val parkingEventRepository = InMemoryParkingEventRepository()
+    // Supabase 클라이언트 초기화 (local.properties에서 설정 읽음)
+    // local.properties에 값이 없으면 SupabaseConfig.createClient()에서 에러 발생
+    val supabase = SupabaseConfig.createClient()
+    
+    val parkingLotRepository: ParkingLotRepository = SupabaseParkingLotRepository(supabase)
+    val gateDeviceRepository: GateDeviceRepository = SupabaseGateDeviceRepository(supabase)
+    val vehicleRepository: VehicleRepository = SupabaseVehicleRepository(supabase)
+    val parkingSessionRepository: ParkingSessionRepository = SupabaseParkingSessionRepository(supabase)
+    val parkingEventRepository: ParkingEventRepository = SupabaseParkingEventRepository(supabase)
 
     // Service 초기화
     val parkingLotService = ParkingLotService(parkingLotRepository)

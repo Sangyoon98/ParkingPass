@@ -12,24 +12,24 @@ class InMemoryParkingSessionRepository : ParkingSessionRepository {
     private val idGenerator = AtomicLong(1L)
     private val sessions = ConcurrentHashMap<Long, ParkingSession>()
 
-    override fun findOpenSessionByParkingLotIdAndPlateNumber(
+    override suspend fun findOpenSessionByParkingLotIdAndPlateNumber(
         parkingLotId: Long,
         plateNumber: String
     ): ParkingSession? = sessions.values.firstOrNull {
         it.parkingLotId == parkingLotId && it.plateNumber == plateNumber && it.status == SessionStatus.OPEN
     }
 
-    override fun save(session: ParkingSession): ParkingSession {
+    override suspend fun save(session: ParkingSession): ParkingSession {
         val id = if (session.id != 0L) session.id else idGenerator.getAndIncrement()
         val saved = session.copy(id = id)
         sessions[id] = saved
         return saved
     }
 
-    override fun findAllOpenSessions(parkingLotId: Long): List<ParkingSession> =
+    override suspend fun findAllOpenSessions(parkingLotId: Long): List<ParkingSession> =
         sessions.values.filter { it.parkingLotId == parkingLotId && it.status == SessionStatus.OPEN }
 
-    override fun findAllByParkingLotIdAndDate(
+    override suspend fun findAllByParkingLotIdAndDate(
         parkingLotId: Long,
         date: LocalDate
     ): List<ParkingSession> {

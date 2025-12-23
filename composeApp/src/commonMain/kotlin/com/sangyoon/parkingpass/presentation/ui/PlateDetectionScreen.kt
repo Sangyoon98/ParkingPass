@@ -108,8 +108,8 @@ fun PlateDetectionScreen(
             Button(
                 onClick = {
                     if (!uiState.isDetecting) {
-                        viewModel.detectPlate {
-                            // 성공 시 결과 화면 표시 (AlertDialog 등)
+                    viewModel.detectPlate {
+                        // 성공 시 결과 화면 표시 (AlertDialog 등)
                         }
                     }
                 },

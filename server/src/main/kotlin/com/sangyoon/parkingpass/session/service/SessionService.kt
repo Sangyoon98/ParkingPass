@@ -13,12 +13,12 @@ class SessionService(
     private val sessionRepository: ParkingSessionRepository,
     private val vehicleRepository: VehicleRepository
 ) {
-    fun getOpenSessions(parkingLotId: Long): List<SessionResponse> {
+    suspend fun getOpenSessions(parkingLotId: Long): List<SessionResponse> {
         val sessions = sessionRepository.findAllOpenSessions(parkingLotId)
         return sessions.map { toResponse(it) }
     }
 
-    fun getSessionHistory(parkingLotId: Long, date: String): List<SessionResponse> {
+    suspend fun getSessionHistory(parkingLotId: Long, date: String): List<SessionResponse> {
         // 날짜 파싱 (예: "2025-12-03")
         val targetDate = try {
             LocalDate.parse(date)
@@ -34,7 +34,7 @@ class SessionService(
         return sessions.map { toResponse(it) }
     }
 
-    private fun toResponse(session: ParkingSession): SessionResponse {
+    private suspend fun toResponse(session: ParkingSession): SessionResponse {
         val vehicle = session.vehicleId?.let {
             vehicleRepository.findByParkingLotIdAndPlateNumber(
                 parkingLotId = session.parkingLotId,

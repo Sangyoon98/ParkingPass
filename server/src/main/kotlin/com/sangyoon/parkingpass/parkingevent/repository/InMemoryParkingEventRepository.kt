@@ -6,10 +6,10 @@ import java.util.concurrent.CopyOnWriteArrayList
 class InMemoryParkingEventRepository : ParkingEventRepository {
     private val events = CopyOnWriteArrayList<ParkingEvent>()
 
-    override fun save(event: ParkingEvent): ParkingEvent {
+    override suspend fun save(event: ParkingEvent): ParkingEvent {
         events.add(event)
         return event
     }
 
-    override fun findAll(): List<ParkingEvent> = events.toList()
+    override suspend fun findAll(): List<ParkingEvent> = events.toList()
 }
