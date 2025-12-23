@@ -26,8 +26,9 @@ class VehicleViewModel(
                 onSuccess = { list ->
                     _uiState.update { it.copy(vehicles = list, isLoading = false) }
                 },
-                onFailure = { e ->
-                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "차량 목록 조회 실패") }
+                onFailure = {
+                    // 목록 조회 에러는 UI에 에러 메시지를 띄우지 않고, 그냥 로딩만 종료
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }

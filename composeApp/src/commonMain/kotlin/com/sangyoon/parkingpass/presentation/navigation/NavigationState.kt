@@ -1,7 +1,9 @@
 package com.sangyoon.parkingpass.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +55,10 @@ class NavigationState {
     fun popToRoot() {
         _backStack.value = listOf(Screen.ParkingLotList)
     }
+}
+
+val LocalNavigationState = compositionLocalOf<NavigationState> {
+    error("No NavigationState provided")
 }
 
 @Composable

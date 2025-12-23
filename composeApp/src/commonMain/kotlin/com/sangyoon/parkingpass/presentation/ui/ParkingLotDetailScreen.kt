@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -40,6 +41,7 @@ import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 fun ParkingLotDetailScreen(
     viewModel: ParkingLotDetailViewModel,
     parkingLotId: Long,
+    onBack: () -> Unit,
     onCreateVehicleClick: () -> Unit,
     onManageGateClick: () -> Unit,
     onPlateDetectionClick: () -> Unit,
@@ -52,7 +54,16 @@ fun ParkingLotDetailScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("주차장 상세") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("주차장 상세") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Text("←")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),

@@ -9,9 +9,9 @@ class InMemoryGateDeviceRepository : GateDeviceRepository {
     private val byId = ConcurrentHashMap<Long, GateDevice>()
     private val byDeviceKey = ConcurrentHashMap<String, GateDevice>()
 
-    override fun findByDeviceKey(deviceKey: String): GateDevice? = byDeviceKey[deviceKey]
+    override suspend fun findByDeviceKey(deviceKey: String): GateDevice? = byDeviceKey[deviceKey]
 
-    override fun save(device: GateDevice): GateDevice {
+    override suspend fun save(device: GateDevice): GateDevice {
         val id = if (device.id != 0L) device.id else idGenerator.getAndIncrement()
         val saved = device.copy(id = id)
         byId[id] = saved
@@ -19,7 +19,7 @@ class InMemoryGateDeviceRepository : GateDeviceRepository {
         return saved
     }
 
-    override fun findAllByParkingLotId(parkingLotId: Long): List<GateDevice> {
+    override suspend fun findAllByParkingLotId(parkingLotId: Long): List<GateDevice> {
         return byId.values.filter { it.parkingLotId == parkingLotId }
     }
 }

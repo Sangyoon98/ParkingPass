@@ -22,7 +22,7 @@ class ParkingEventService(
 ) {
     private val eventIdGenerator = AtomicLong(1L)
 
-    fun handlePlateDetected(
+    suspend fun handlePlateDetected(
         deviceKey: String,
         plateNumber: String,
         capturedAt: Instant

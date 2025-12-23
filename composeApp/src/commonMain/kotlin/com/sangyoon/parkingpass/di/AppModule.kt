@@ -35,7 +35,8 @@ import org.koin.dsl.module
 val appModule = module {
     // API Client
     single<ParkingApiClient> {
-        ParkingApiClient("http://10.0.2.2:8080")    // Android Emulator
+//        ParkingApiClient("http://10.0.2.2:8080")    // Android Emulator
+        ParkingApiClient("http://127.0.0.1:8080")    // iOS Emulator
     }
 
     // Data Source

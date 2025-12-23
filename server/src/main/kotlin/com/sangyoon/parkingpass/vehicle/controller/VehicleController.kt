@@ -1,6 +1,7 @@
 package com.sangyoon.parkingpass.vehicle.controller
 
 import com.sangyoon.parkingpass.vehicle.dto.CreateVehicleRequest
+import com.sangyoon.parkingpass.vehicle.dto.VehicleResponse
 import com.sangyoon.parkingpass.vehicle.service.VehicleService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
@@ -38,7 +39,12 @@ fun Route.vehicleController(
             val parkingLotId = call.request.queryParameters["parkingLotId"]?.toLongOrNull()
                 ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
 
-            val vehicles = vehicleService.getVehicles(parkingLotId)
+            val vehicles: List<VehicleResponse> = try {
+                vehicleService.getVehicles(parkingLotId)
+            } catch (e: Exception) {
+                // Supabase 조회 등 내부 에러가 나더라도 클라이언트에는 빈 리스트로 응답
+                emptyList()
+            }
             call.respond(HttpStatusCode.OK, vehicles)
         }
     }

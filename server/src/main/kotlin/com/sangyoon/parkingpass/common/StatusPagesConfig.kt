@@ -11,7 +11,7 @@ import io.ktor.server.response.*
  */
 fun Application.configureStatusPages() {
     install(StatusPages) {
-        // 404: 게이트를 찾을 수 없음
+        // 404: 게이트를 찾을 수 없음 (도메인 에러)
         exception<GateNotFoundException> { call, cause ->
             call.respond(
                 status = HttpStatusCode.NotFound,
@@ -22,7 +22,7 @@ fun Application.configureStatusPages() {
             )
         }
 
-        // 400: 잘못된 요청
+        // 400: 잘못된 요청 (이미 등록된 차량, 잘못된 파라미터 등)
         exception<IllegalArgumentException> { call, cause ->
             call.respond(
                 status = HttpStatusCode.BadRequest,
@@ -33,13 +33,13 @@ fun Application.configureStatusPages() {
             )
         }
 
-        // 500: 서버 내부 오류 (예상치 못한 예외)
-        exception<Exception> { call, cause ->
+        // 500: 그 외 모든 예외는 서버 오류로 처리
+        exception<Exception> { call, _ ->
             call.respond(
                 status = HttpStatusCode.InternalServerError,
                 message = ErrorResponse(
                     code = "INTERNAL_SERVER_ERROR",
-                    message = "서버 오류가 발생했습니다: ${cause.message}"
+                    message = "알 수 없는 서버 오류가 발생했습니다."
                 )
             )
         }

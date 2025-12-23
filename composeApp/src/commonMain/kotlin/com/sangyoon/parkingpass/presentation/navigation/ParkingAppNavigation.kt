@@ -2,19 +2,8 @@ package com.sangyoon.parkingpass.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import com.sangyoon.parkingpass.presentation.navigation.screens.*
-
-/**
- * NavigationState를 CompositionLocal로 제공
- */
-val LocalNavigationState = compositionLocalOf<NavigationState> {
-    error("NavigationState not provided")
-}
-
-@Composable
-expect fun BackHandler(enabled: Boolean, onBack: () -> Unit)
 
 @Composable
 fun ParkingAppNavigation() {
@@ -22,7 +11,6 @@ fun ParkingAppNavigation() {
     val backStack by navigationState.backStack
     val currentScreen = backStack.lastOrNull() ?: Screen.ParkingLotList
     
-    // Android 뒤로가기 버튼 처리
     BackHandler(enabled = backStack.size > 1) {
         navigationState.pop()
     }
