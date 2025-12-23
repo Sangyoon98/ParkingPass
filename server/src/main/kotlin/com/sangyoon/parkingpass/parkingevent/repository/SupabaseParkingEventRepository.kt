@@ -18,13 +18,16 @@ class SupabaseParkingEventRepository(
                 }
                 .decodeSingle<ParkingEvent>()
         } else {
-            // Update: 업데이트된 레코드 반환
-            supabase.from("parking_event")
+            // Update: 업데이트된 레코드를 안전하게 조회
+            val updated = supabase.from("parking_event")
                 .update(event) {
                     filter { eq("id", event.id) }
                     select()
                 }
-                .decodeSingle<ParkingEvent>()
+                .decodeList<ParkingEvent>()
+                .singleOrNull()
+
+            updated ?: throw IllegalStateException("ParkingEvent not found for id=${event.id}")
         }
     }
 
