@@ -35,7 +35,7 @@ import org.koin.dsl.module
 val appModule = module {
     // API Client - EC2 서버 주소
     single<ParkingApiClient> {
-        ParkingApiClient("http://3.35.234.9:8080")
+        ParkingApiClient("http://13.124.55.217:8080")
     }
 
     // Data Source
