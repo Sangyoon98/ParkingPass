@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ktor)
     application
     kotlin("plugin.serialization") version "2.2.20"
+    id("com.github.johnrengelman.shadow")
 }
 
 // local.properties에서 Supabase 설정 읽기
@@ -50,6 +51,18 @@ tasks.named("processResources") {
 // build 태스크 실행 시 자동으로 buildOpenApi 실행
 tasks.named("build") {
     dependsOn("buildOpenApi")
+}
+
+// ShadowJar 설정 (Fat JAR 생성)
+tasks.shadowJar {
+    archiveBaseName.set("server")
+    archiveClassifier.set("")
+    archiveVersion.set("")
+    manifest {
+        attributes["Main-Class"] = "com.sangyoon.parkingpass.ApplicationKt"
+    }
+    // 중복 파일 처리 전략
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 application {

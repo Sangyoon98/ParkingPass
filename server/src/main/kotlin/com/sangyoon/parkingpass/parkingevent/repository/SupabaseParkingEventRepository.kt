@@ -11,29 +11,31 @@ class SupabaseParkingEventRepository(
 
     override suspend fun save(event: ParkingEvent): ParkingEvent {
         return if (event.id == 0L) {
-            // Insert: 생성된 ID를 포함한 레코드 반환
+            // Insert: 저장 후 생성된 객체 반환
             supabase.from("parking_event")
                 .insert(event) {
-                    select()
+                    select(Columns.ALL)
                 }
                 .decodeSingle<ParkingEvent>()
         } else {
-            // Update: 업데이트된 레코드를 안전하게 조회
+            // Update: 업데이트 후 생성된 객체 반환
             val updated = supabase.from("parking_event")
                 .update(event) {
-                    filter { eq("id", event.id) }
-                    select()
+                    filter {
+                        eq("id", event.id)
+                    }
+                    select(Columns.ALL)
                 }
                 .decodeList<ParkingEvent>()
                 .singleOrNull()
-
-            updated ?: throw IllegalStateException("ParkingEvent not found for id=${event.id}")
+                ?: throw IllegalStateException("Event not found: ${event.id}")
+            updated
         }
     }
 
     override suspend fun findAll(): List<ParkingEvent> {
         return supabase.from("parking_event")
-            .select(columns = Columns.ALL)
+            .select()
             .decodeList<ParkingEvent>()
     }
 }

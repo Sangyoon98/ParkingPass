@@ -15,8 +15,16 @@ class SessionViewModel(
     private val getSessionHistory: GetSessionHistoryUseCase
 ) : ViewModel() {
 
+    private val _selectedParkingLotId = MutableStateFlow<Long?>(null)
+    val selectedParkingLotId: kotlinx.coroutines.flow.StateFlow<Long?> = _selectedParkingLotId.asStateFlow()
+
     private val _uiState = MutableStateFlow(SessionUiState())
     val uiState = _uiState.asStateFlow()
+
+    fun setSelectedParkingLotId(parkingLotId: Long) {
+        _selectedParkingLotId.value = parkingLotId
+        loadSessions(parkingLotId)
+    }
 
     fun loadSessions(parkingLotId: Long, date: String? = null) {
         viewModelScope.launch {

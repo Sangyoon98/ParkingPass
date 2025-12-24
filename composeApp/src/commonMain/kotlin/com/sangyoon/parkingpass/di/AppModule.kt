@@ -33,10 +33,9 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val appModule = module {
-    // API Client
+    // API Client - EC2 서버 주소
     single<ParkingApiClient> {
-//        ParkingApiClient("http://10.0.2.2:8080")    // Android Emulator
-        ParkingApiClient("http://127.0.0.1:8080")    // iOS Emulator
+        ParkingApiClient("http://13.124.55.217:8080")
     }
 
     // Data Source

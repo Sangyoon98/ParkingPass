@@ -13,38 +13,34 @@ class SupabaseVehicleRepository(
         parkingLotId: Long,
         plateNumber: String
     ): Vehicle? {
-        return try {
-            supabase.from("vehicle")
-                .select {
-                    filter {
-                        eq("parking_lot_id", parkingLotId)
-                        eq("plate_number", plateNumber)
-                    }
+        return supabase.from("vehicle")
+            .select {
+                filter {
+                    eq("parking_lot_id", parkingLotId)
+                    eq("plate_number", plateNumber)
                 }
-                .decodeSingle<Vehicle>()
-        } catch (e: Exception) {
-            null
-        }
+            }
+            .decodeSingleOrNull<Vehicle>()
     }
 
     override suspend fun save(vehicle: Vehicle): Vehicle {
-        return try {
-            if (vehicle.id == 0L) {
-                // Insert: Supabase에만 저장하고, 우리가 가진 객체를 그대로 반환
-                supabase.from("vehicle")
-                    .insert(vehicle)
-                vehicle
-            } else {
-                // Update: Supabase에만 반영하고, 수정된 객체를 그대로 반환
-                supabase.from("vehicle")
-                    .update(vehicle) {
-                        filter { eq("id", vehicle.id) }
+        return if (vehicle.id == 0L) {
+            // Insert: 저장하고 생성된 객체 반환
+            supabase.from("vehicle")
+                .insert(vehicle) {
+                    select(Columns.ALL)
+                }
+                .decodeSingle<Vehicle>()
+        } else {
+            // Update: 업데이트하고 생성된 객체 반환
+            supabase.from("vehicle")
+                .update(vehicle) {
+                    filter {
+                        eq("id", vehicle.id)
                     }
-                vehicle
-            }
-        } catch (e: Exception) {
-            // 저장 중 예외는 그대로 상위로 올려 보냄 (StatusPages에서 처리)
-            throw e
+                    select(Columns.ALL)
+                }
+                .decodeSingle<Vehicle>()
         }
     }
 
@@ -58,7 +54,7 @@ class SupabaseVehicleRepository(
                 }
                 .decodeList<Vehicle>()
         } catch (e: Exception) {
-            // 조회 실패 시 빈 목록 반환 (UI 에러 대신 "차량 없음" 상태로 처리)
+            // 빈 결과나 에러 시 빈 리스트 반환
             emptyList()
         }
     }

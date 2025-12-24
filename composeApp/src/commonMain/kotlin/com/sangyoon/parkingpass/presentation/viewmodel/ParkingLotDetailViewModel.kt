@@ -7,6 +7,7 @@ import com.sangyoon.parkingpass.domain.usecase.GetParkingLotDetailUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetSessionHistoryUseCase
 import com.sangyoon.parkingpass.presentation.state.ParkingLotDetailUiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -15,8 +16,16 @@ class ParkingLotDetailViewModel(
     private val getParkingLotDetail: GetParkingLotDetailUseCase
 ) : ViewModel() {
 
+    private val _selectedParkingLotId = MutableStateFlow<Long?>(null)
+    val selectedParkingLotId: StateFlow<Long?> = _selectedParkingLotId.asStateFlow()
+
     private val _uiState = MutableStateFlow(ParkingLotDetailUiState())
     val uiState = _uiState.asStateFlow()
+
+    fun setSelectedParkingLotId(parkingLotId: Long) {
+        _selectedParkingLotId.value = parkingLotId
+        load(parkingLotId)
+    }
 
     fun load(parkingLotId: Long) {
         viewModelScope.launch {

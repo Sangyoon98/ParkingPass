@@ -16,8 +16,16 @@ class PlateDetectionViewModel(
     private val plateDetectedUseCase: PlateDetectedUseCase
 ): ViewModel() {
 
+    private val _selectedParkingLotId = MutableStateFlow<Long?>(null)
+    val selectedParkingLotId: kotlinx.coroutines.flow.StateFlow<Long?> = _selectedParkingLotId.asStateFlow()
+
     private val _uiState = MutableStateFlow(PlateDetectionUiState())
     val uiState = _uiState.asStateFlow()
+
+    fun setSelectedParkingLotId(parkingLotId: Long) {
+        _selectedParkingLotId.value = parkingLotId
+        loadGates(parkingLotId)
+    }
 
     fun loadGates(parkingLotId: Long) {
         viewModelScope.launch {

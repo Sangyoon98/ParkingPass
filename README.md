@@ -33,8 +33,10 @@ in your IDE’s toolbar or build it directly from the terminal:
 
 ### Build and Run Server
 
+#### Local Development
+
 To build and run the development version of the server, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
+in your IDE's toolbar or run it directly from the terminal:
 - on macOS/Linux
   ```shell
   ./gradlew :server:run
@@ -43,6 +45,47 @@ in your IDE’s toolbar or run it directly from the terminal:
   ```shell
   .\gradlew.bat :server:run
   ```
+
+#### Docker
+
+Build and run with Docker:
+
+1. **Build the image:**
+   ```shell
+   docker build -t parkingpass-server:latest .
+   ```
+
+2. **Run with environment variables:**
+   ```shell
+   docker run -e SUPABASE_URL="https://your-project.supabase.co" \
+              -e SUPABASE_SERVICE_ROLE_KEY="your_service_role_key" \
+              -p 8080:8080 \
+              parkingpass-server:latest
+   ```
+
+3. **Or use docker-compose:**
+   
+   Create a `.env` file with your Supabase credentials:
+   ```shell
+   cp .env.example .env
+   # Edit .env and set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+   docker-compose up -d
+   ```
+   
+   The `.env` file format:
+   ```
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   ```
+
+#### Deployment to AWS EC2
+
+See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions to AWS EC2.
+
+Quick deployment steps:
+1. Build Docker image: `docker build --platform linux/amd64 -t parkingpass-server:latest .`
+2. Push to ECR: Tag and push to your ECR repository
+3. On EC2: Pull image and run with `docker-compose` or `docker run`
 
 ### Build and Run iOS Application
 

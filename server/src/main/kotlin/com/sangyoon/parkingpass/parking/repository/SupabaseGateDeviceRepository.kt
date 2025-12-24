@@ -10,35 +10,31 @@ class SupabaseGateDeviceRepository(
 ) : GateDeviceRepository {
 
     override suspend fun findByDeviceKey(deviceKey: String): GateDevice? {
-        return try {
-            supabase.from("gate_device")
-                .select {
-                    filter {
-                        eq("device_key", deviceKey)
-                    }
+        return supabase.from("gate_device")
+            .select {
+                filter {
+                    eq("device_key", deviceKey)
                 }
-                .decodeSingle<GateDevice>()
-        } catch (e: Exception) {
-            null
-        }
+            }
+            .decodeSingleOrNull<GateDevice>()
     }
 
     override suspend fun save(device: GateDevice): GateDevice {
         return if (device.id == 0L) {
-            // Insert: 생성된 ID를 포함한 전체 레코드를 반환받음
+            // Insert: Supabase에 저장하고 생성된 객체 반환
             supabase.from("gate_device")
                 .insert(device) {
-                    select()
+                    select(Columns.ALL)
                 }
                 .decodeSingle<GateDevice>()
         } else {
-            // Update: 업데이트된 레코드를 반환받음
+            // Update: 업데이트하고 생성된 객체 반환
             supabase.from("gate_device")
                 .update(device) {
                     filter {
                         eq("id", device.id)
                     }
-                    select()
+                    select(Columns.ALL)
                 }
                 .decodeSingle<GateDevice>()
         }
