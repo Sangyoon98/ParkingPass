@@ -1,6 +1,7 @@
 *.iml
 .kotlin
 .gradle
+.vscode/
 **/build/
 **/bin/
 xcuserdata
@@ -18,3 +19,5 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+# Server docs
+server/docs/

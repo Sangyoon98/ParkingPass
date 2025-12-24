@@ -11,40 +11,38 @@ class SupabaseParkingLotRepository(
 
     override suspend fun save(lot: ParkingLot): ParkingLot {
         return if (lot.id == 0L) {
-            // Insert: 생성된 ID를 포함한 레코드를 반환
+            // Insert: Supabase에 저장하고 생성된 객체 반환
             supabase.from("parking_lot")
                 .insert(lot) {
-                    select()
+                    select(Columns.ALL)
                 }
                 .decodeSingle<ParkingLot>()
         } else {
-            // Update: 업데이트된 레코드를 반환
+            // Update: 업데이트하고 생성된 객체 반환
             supabase.from("parking_lot")
                 .update(lot) {
-                    filter { eq("id", lot.id) }
-                    select()
+                    filter {
+                        eq("id", lot.id)
+                    }
+                    select(Columns.ALL)
                 }
                 .decodeSingle<ParkingLot>()
         }
     }
 
     override suspend fun findById(id: Long): ParkingLot? {
-        return try {
-            supabase.from("parking_lot")
-                .select {
-                    filter {
-                        eq("id", id)
-                    }
+        return supabase.from("parking_lot")
+            .select {
+                filter {
+                    eq("id", id)
                 }
-                .decodeSingle<ParkingLot>()
-        } catch (e: Exception) {
-            null
-        }
+            }
+            .decodeSingleOrNull<ParkingLot>()
     }
 
     override suspend fun findAll(): List<ParkingLot> {
         return supabase.from("parking_lot")
-            .select(columns = Columns.ALL)
+            .select()
             .decodeList<ParkingLot>()
     }
 }
