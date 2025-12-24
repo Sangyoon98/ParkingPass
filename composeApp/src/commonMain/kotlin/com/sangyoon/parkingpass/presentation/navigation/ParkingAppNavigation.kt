@@ -1,10 +1,12 @@
 package com.sangyoon.parkingpass.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.sangyoon.parkingpass.presentation.ui.CreateGateScreen
 import com.sangyoon.parkingpass.presentation.ui.CreateParkingLotScreen
 import com.sangyoon.parkingpass.presentation.ui.CreateVehicleScreen
@@ -22,131 +24,189 @@ import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-sealed class Screen {
-    object ParkingLotList : Screen()
-    data class ParkingLotDetail(val parkingLotId: Long) : Screen()
-    object CreateParkingLot : Screen()
-    data class VehicleList(val parkingLotId: Long) : Screen()
-    data class CreateVehicle(val parkingLotId: Long) : Screen()
-    data class GateList(val parkingLotId: Long) : Screen()
-    data class CreateGate(val parkingLotId: Long) : Screen()
-    data class PlateDetection(val parkingLotId: Long) : Screen()
-    data class SessionList(val parkingLotId: Long) : Screen()
+object Routes {
+    const val PARKING_LOT_LIST = "parking_lot_list"
+    const val CREATE_PARKING_LOT = "create_parking_lot"
+    const val PARKING_LOT_DETAIL = "parking_lot_detail"
+    const val VEHICLE_LIST = "vehicle_list"
+    const val CREATE_VEHICLE = "create_vehicle"
+    const val GATE_LIST = "gate_list"
+    const val CREATE_GATE = "create_gate"
+    const val PLATE_DETECTION = "plate_detection"
+    const val SESSION_LIST = "session_list"
 }
 
 @Composable
-fun ParkingAppNavigation() {
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.ParkingLotList) }
+fun ParkingAppNavigation(
+    navController: NavHostController = rememberNavController(),
+    navigationState: NavigationState = rememberNavigationState()
+) {
+    CompositionLocalProvider(LocalNavigationState provides navigationState) {
+        NavHost(
+            navController = navController,
+            startDestination = Routes.PARKING_LOT_LIST
+        ) {
+            composable(Routes.PARKING_LOT_LIST) {
+                val viewModel = koinViewModel<ParkingLotViewModel>()
+                ParkingLotListScreen(
+                    viewModel = viewModel,
+                    onParkingLotClick = { parkingLotId ->
+                        navigationState.setSelectedParkingLotId(parkingLotId)
+                        navController.navigate(Routes.PARKING_LOT_DETAIL)
+                    },
+                    onCreateClick = {
+                        navController.navigate(Routes.CREATE_PARKING_LOT)
+                    }
+                )
+            }
 
-    when (val screen = currentScreen) {
-        is Screen.ParkingLotList -> {
-            val viewModel = koinViewModel<ParkingLotViewModel>()
-            ParkingLotListScreen(
-                viewModel = viewModel,
-                onParkingLotClick = { parkingLotId ->
-                    currentScreen = Screen.ParkingLotDetail(parkingLotId)
-                },
-                onCreateClick = {
-                    currentScreen = Screen.CreateParkingLot
+            composable(Routes.CREATE_PARKING_LOT) {
+                val viewModel = koinViewModel<ParkingLotViewModel>()
+                CreateParkingLotScreen(
+                    viewModel = viewModel,
+                    onCreated = { navController.popBackStack() },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Routes.PARKING_LOT_DETAIL) {
+                val viewModel = koinViewModel<ParkingLotDetailViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+                
+                if (parkingLotId != null) {
+                    LaunchedEffect(parkingLotId) {
+                        viewModel.setSelectedParkingLotId(parkingLotId)
+                    }
+                    
+                    ParkingLotDetailScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onCreateVehicleClick = {
+                            navController.navigate(Routes.VEHICLE_LIST)
+                        },
+                        onManageGateClick = {
+                            navController.navigate(Routes.GATE_LIST)
+                        },
+                        onPlateDetectionClick = {
+                            navController.navigate(Routes.PLATE_DETECTION)
+                        },
+                        onSessionListClick = {
+                            navController.navigate(Routes.SESSION_LIST)
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
                 }
-            )
-        }
+            }
 
-        is Screen.CreateParkingLot -> {
-            val viewModel = koinViewModel<ParkingLotViewModel>()
-            CreateParkingLotScreen(
-                viewModel = viewModel,
-                onCreated = { currentScreen = Screen.ParkingLotList },
-                onBack = { currentScreen = Screen.ParkingLotList }
-            )
-        }
-
-        is Screen.ParkingLotDetail -> {
-            val viewModel = koinViewModel<ParkingLotDetailViewModel>()
-            ParkingLotDetailScreen(
-                viewModel = viewModel,
-                parkingLotId = screen.parkingLotId,
-                onCreateVehicleClick = {
-                    currentScreen = Screen.VehicleList(screen.parkingLotId)
-                },
-                onManageGateClick = {
-                    currentScreen = Screen.GateList(screen.parkingLotId)
-                },
-                onPlateDetectionClick = {
-                    currentScreen = Screen.PlateDetection(screen.parkingLotId)
-                },
-                onSessionListClick = {
-                    currentScreen = Screen.SessionList(screen.parkingLotId)
-                },
-                onBack = { currentScreen = Screen.ParkingLotList }
-            )
-        }
-
-        is Screen.VehicleList -> {
-            val viewModel = koinViewModel<VehicleViewModel>()
-            VehicleListScreen(
-                viewModel = viewModel,
-                parkingLotId = screen.parkingLotId,
-                onBack = { currentScreen = Screen.ParkingLotDetail(screen.parkingLotId) },
-                onCreateClick = {
-                    currentScreen = Screen.CreateVehicle(screen.parkingLotId)
+            composable(Routes.VEHICLE_LIST) {
+                val viewModel = koinViewModel<VehicleViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+                
+                if (parkingLotId != null) {
+                    LaunchedEffect(parkingLotId) {
+                        viewModel.setSelectedParkingLotId(parkingLotId)
+                    }
+                    
+                    VehicleListScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onBack = { navController.popBackStack() },
+                        onCreateClick = {
+                            navController.navigate(Routes.CREATE_VEHICLE)
+                        }
+                    )
                 }
-            )
-        }
+            }
 
-        is Screen.CreateVehicle -> {
-            val viewModel = koinViewModel<VehicleViewModel>()
-            CreateVehicleScreen(
-                viewModel = viewModel,
-                parkingLotId = screen.parkingLotId,
-                onCreated = {
-                    currentScreen = Screen.VehicleList(screen.parkingLotId)
-                },
-                onBack = { currentScreen = Screen.VehicleList(screen.parkingLotId) }
-            )
-        }
-
-        is Screen.GateList -> {
-            val viewModel = koinViewModel<GateViewModel>()
-            GateListScreen(
-                viewModel = viewModel,
-                parkingLotId = screen.parkingLotId,
-                onBack = { currentScreen = Screen.ParkingLotDetail(screen.parkingLotId) },
-                onCreateClick = {
-                    currentScreen = Screen.CreateGate(screen.parkingLotId)
+            composable(Routes.CREATE_VEHICLE) {
+                val viewModel = koinViewModel<VehicleViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+                
+                if (parkingLotId != null) {
+                    LaunchedEffect(parkingLotId) {
+                        viewModel.setSelectedParkingLotId(parkingLotId)
+                    }
+                    
+                    CreateVehicleScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onCreated = { navController.popBackStack() },
+                        onBack = { navController.popBackStack() }
+                    )
                 }
-            )
-        }
+            }
 
-        is Screen.CreateGate -> {
-            val viewModel = koinViewModel<GateViewModel>()
-            CreateGateScreen(
-                viewModel = viewModel,
-                parkingLotId = screen.parkingLotId,
-                onCreated = {
-                    currentScreen = Screen.GateList(screen.parkingLotId)
-                },
-                onBack = { currentScreen = Screen.GateList(screen.parkingLotId) }
-            )
-        }
+            composable(Routes.GATE_LIST) {
+                val viewModel = koinViewModel<GateViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+                
+                if (parkingLotId != null) {
+                    LaunchedEffect(parkingLotId) {
+                        viewModel.setSelectedParkingLotId(parkingLotId)
+                    }
+                    
+                    GateListScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onBack = { navController.popBackStack() },
+                        onCreateClick = {
+                            navController.navigate(Routes.CREATE_GATE)
+                        }
+                    )
+                }
+            }
 
-        is Screen.PlateDetection -> {
-            val viewModel = koinViewModel<PlateDetectionViewModel>()
-            PlateDetectionScreen(
-                viewModel = viewModel,
-                parkingLotId = screen.parkingLotId,
-                onBack = { currentScreen = Screen.ParkingLotDetail(screen.parkingLotId) }
-            )
-        }
+            composable(Routes.CREATE_GATE) {
+                val viewModel = koinViewModel<GateViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+                
+                if (parkingLotId != null) {
+                    LaunchedEffect(parkingLotId) {
+                        viewModel.setSelectedParkingLotId(parkingLotId)
+                    }
+                    
+                    CreateGateScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onCreated = { navController.popBackStack() },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+            }
 
-        is Screen.SessionList -> {
-            val viewModel = koinViewModel<SessionViewModel>()
-            SessionListScreen(
-                viewModel = viewModel,
-                parkingLotId = screen.parkingLotId,
-                onBack = { currentScreen = Screen.ParkingLotDetail(screen.parkingLotId) }
-            )
+            composable(Routes.PLATE_DETECTION) {
+                val viewModel = koinViewModel<PlateDetectionViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+                
+                if (parkingLotId != null) {
+                    LaunchedEffect(parkingLotId) {
+                        viewModel.setSelectedParkingLotId(parkingLotId)
+                    }
+                    
+                    PlateDetectionScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(Routes.SESSION_LIST) {
+                val viewModel = koinViewModel<SessionViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+                
+                if (parkingLotId != null) {
+                    LaunchedEffect(parkingLotId) {
+                        viewModel.setSelectedParkingLotId(parkingLotId)
+                    }
+                    
+                    SessionListScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+            }
         }
     }
 }
-

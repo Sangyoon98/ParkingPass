@@ -16,8 +16,16 @@ class VehicleViewModel(
     private val createVehicleUseCase: CreateVehicleUseCase
 ) : ViewModel() {
 
+    private val _selectedParkingLotId = MutableStateFlow<Long?>(null)
+    val selectedParkingLotId: kotlinx.coroutines.flow.StateFlow<Long?> = _selectedParkingLotId.asStateFlow()
+
     private val _uiState = MutableStateFlow(VehicleUiState())
     val uiState = _uiState.asStateFlow()
+
+    fun setSelectedParkingLotId(parkingLotId: Long) {
+        _selectedParkingLotId.value = parkingLotId
+        loadVehicles(parkingLotId)
+    }
 
     fun loadVehicles(parkingLotId: Long) {
         viewModelScope.launch {

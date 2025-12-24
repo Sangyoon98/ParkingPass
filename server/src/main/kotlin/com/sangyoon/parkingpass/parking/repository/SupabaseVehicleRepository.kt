@@ -3,6 +3,7 @@ package com.sangyoon.parkingpass.parking.repository
 import com.sangyoon.parkingpass.parking.model.Vehicle
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 
 class SupabaseVehicleRepository(
     private val supabase: SupabaseClient
@@ -24,19 +25,22 @@ class SupabaseVehicleRepository(
 
     override suspend fun save(vehicle: Vehicle): Vehicle {
         return if (vehicle.id == 0L) {
-            // Insert: Supabase에 저장 (JSON 파싱 이슈 방지를 위해 입력 객체 반환)
+            // Insert: 저장하고 생성된 객체 반환
             supabase.from("vehicle")
-                .insert(vehicle)
-            vehicle
+                .insert(vehicle) {
+                    select(Columns.ALL)
+                }
+                .decodeSingle<Vehicle>()
         } else {
-            // Update: 업데이트 (JSON 파싱 이슈 방지를 위해 입력 객체 반환)
+            // Update: 업데이트하고 생성된 객체 반환
             supabase.from("vehicle")
                 .update(vehicle) {
                     filter {
                         eq("id", vehicle.id)
                     }
+                    select(Columns.ALL)
                 }
-            vehicle
+                .decodeSingle<Vehicle>()
         }
     }
 

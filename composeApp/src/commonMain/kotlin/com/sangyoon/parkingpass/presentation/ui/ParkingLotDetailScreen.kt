@@ -49,10 +49,6 @@ fun ParkingLotDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(parkingLotId) {
-        viewModel.load(parkingLotId)
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,7 +80,10 @@ fun ParkingLotDetailScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                     Spacer(Modifier.height(12.dp))
-                    Button(onClick = { viewModel.load(parkingLotId) }) { Text("다시 시도") }
+                    Button(onClick = { 
+                        val detailViewModel = viewModel
+                        detailViewModel.setSelectedParkingLotId(parkingLotId)
+                    }) { Text("다시 시도") }
                 }
             }
             else -> {
