@@ -23,7 +23,19 @@ actual class TextRecognizer {
                 )
             }
             
+            // 코루틴 취소 시 정리 작업
+            continuation.invokeOnCancellation {
+                // iOS Vision 프레임워크는 취소 API를 제공하지 않으므로,
+                // 콜백에서 continuation.isActive 체크로 취소된 경우를 처리합니다.
+                // 추가 정리 작업이 필요한 경우 여기에 추가할 수 있습니다.
+            }
+            
             CameraHelper.recognizeTextWithImageData(imageData) { text: String?, confidence: Float, error: NSError? ->
+                // 코루틴이 취소된 경우 콜백 무시 (이중 resume 방지)
+                if (!continuation.isActive) {
+                    return@recognizeTextWithImageData
+                }
+                
                 if (error != null) {
                     continuation.resumeWithException(
                         Exception(error.localizedDescription ?: "Text recognition failed")

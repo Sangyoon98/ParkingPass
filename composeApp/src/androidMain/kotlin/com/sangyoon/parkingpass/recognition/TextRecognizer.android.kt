@@ -76,9 +76,19 @@ actual class TextRecognizer {
                             blocks = blocks
                         )
                     )
+                    
+                    // ML Kit 처리가 완료된 후 Bitmap 메모리 해제 (네이티브 메모리 누수 방지)
+                    if (!bitmap.isRecycled) {
+                        bitmap.recycle()
+                    }
                 }
                 .addOnFailureListener { exception ->
                     continuation.resumeWithException(exception)
+                    
+                    // 에러 발생 시에도 Bitmap 메모리 해제
+                    if (!bitmap.isRecycled) {
+                        bitmap.recycle()
+                    }
                 }
         }
     }
