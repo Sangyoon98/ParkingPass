@@ -12,16 +12,15 @@ import kotlin.coroutines.resumeWithException
  */
 actual class TextRecognizer {
     
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
     actual suspend fun recognize(imageBytes: ByteArray): TextRecognitionResult {
         return suspendCancellableCoroutine { continuation ->
-            val imageData = memScoped {
-                imageBytes.usePinned { pinned ->
-                    NSData.dataWithBytes(
-                        bytes = pinned.addressOf(0),
-                        length = imageBytes.size.toULong()
-                    )
-                }
+            // NSData.create는 바이트를 복사하므로 pinned scope 외부에서 안전하게 사용 가능
+            val imageData = imageBytes.usePinned { pinned ->
+                NSData.create(
+                    bytes = pinned.addressOf(0),
+                    length = imageBytes.size.toULong()
+                )
             }
             
             CameraHelper.recognizeTextWithImageData(imageData) { text: String?, confidence: Float, error: NSError? ->

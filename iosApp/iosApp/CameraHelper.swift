@@ -232,48 +232,63 @@ public class CameraHelper: NSObject {
     
     /// 이미지에서 텍스트 인식
     @objc(recognizeTextWithImageData:completion:) public static func recognizeText(_ imageData: Data, completion: @escaping (String?, Float, Error?) -> Void) {
-        guard let image = UIImage(data: imageData) else {
-            completion(nil, 0, NSError(domain: "CameraHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to create image"]))
-            return
-        }
-        
-        guard let cgImage = image.cgImage else {
-            completion(nil, 0, NSError(domain: "CameraHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get CGImage"]))
-            return
-        }
-        
-        let request = VNRecognizeTextRequest { request, error in
-            if let error = error {
-                completion(nil, 0, error)
+        // 백그라운드 큐에서 이미지 처리를 수행하여 UI 스레드 블로킹 방지
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard let image = UIImage(data: imageData) else {
+                DispatchQueue.main.async {
+                    completion(nil, 0, NSError(domain: "CameraHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to create image"]))
+                }
                 return
             }
             
-            guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                completion(nil, 0, NSError(domain: "CameraHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "No text found"]))
+            guard let cgImage = image.cgImage else {
+                DispatchQueue.main.async {
+                    completion(nil, 0, NSError(domain: "CameraHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get CGImage"]))
+                }
                 return
             }
             
-            var recognizedStrings: [String] = []
-            var maxConfidence: Float = 0
-            
-            for observation in observations {
-                guard let topCandidate = observation.topCandidates(1).first else { continue }
-                recognizedStrings.append(topCandidate.string)
-                maxConfidence = max(maxConfidence, topCandidate.confidence)
+            let request = VNRecognizeTextRequest { request, error in
+                if let error = error {
+                    DispatchQueue.main.async {
+                        completion(nil, 0, error)
+                    }
+                    return
+                }
+                
+                guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                    DispatchQueue.main.async {
+                        completion(nil, 0, NSError(domain: "CameraHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "No text found"]))
+                    }
+                    return
+                }
+                
+                var recognizedStrings: [String] = []
+                var maxConfidence: Float = 0
+                
+                for observation in observations {
+                    guard let topCandidate = observation.topCandidates(1).first else { continue }
+                    recognizedStrings.append(topCandidate.string)
+                    maxConfidence = max(maxConfidence, topCandidate.confidence)
+                }
+                
+                let fullText = recognizedStrings.joined(separator: " ")
+                DispatchQueue.main.async {
+                    completion(fullText, maxConfidence, nil)
+                }
             }
             
-            let fullText = recognizedStrings.joined(separator: " ")
-            completion(fullText, maxConfidence, nil)
-        }
-        
-        request.recognitionLanguages = ["ko-KR", "en-US"]
-        request.recognitionLevel = .accurate
-        
-        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        do {
-            try handler.perform([request])
-        } catch {
-            completion(nil, 0, error)
+            request.recognitionLanguages = ["ko-KR", "en-US"]
+            request.recognitionLevel = .accurate
+            
+            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+            do {
+                try handler.perform([request])
+            } catch {
+                DispatchQueue.main.async {
+                    completion(nil, 0, error)
+                }
+            }
         }
     }
 }

@@ -12,6 +12,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -20,19 +22,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sangyoon.parkingpass.camera.CameraController
 import com.sangyoon.parkingpass.camera.CameraImage
 import com.sangyoon.parkingpass.camera.createCameraController
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +50,10 @@ actual fun CameraScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     var cameraController: CameraController? by remember { mutableStateOf(null) }
     var hasPermission by remember { mutableStateOf(false) }
+    var hasCameraHardware by remember { mutableStateOf(false) }
     var isAnalyzing by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     // 카메라 권한 요청
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -60,8 +67,15 @@ actual fun CameraScreen(
 
     LaunchedEffect(Unit) {
         cameraController = createCameraController(context)
+        val androidController = cameraController
+        hasCameraHardware = androidController?.hasCameraHardware() ?: false
         hasPermission = cameraController?.hasPermission() ?: false
-        if (!hasPermission) {
+        
+        if (!hasCameraHardware) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("이 기기에는 카메라가 없습니다")
+            }
+        } else if (!hasPermission) {
             permissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
@@ -73,6 +87,7 @@ actual fun CameraScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("번호판 촬영") },
@@ -89,7 +104,7 @@ actual fun CameraScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (hasPermission && cameraController != null) {
+            if (hasCameraHardware && hasPermission && cameraController != null) {
                 // 카메라 프리뷰
                 var previewView: PreviewView? by remember { mutableStateOf(null) }
                 
@@ -97,19 +112,21 @@ actual fun CameraScreen(
                     factory = { ctx ->
                         PreviewView(ctx).also { pv ->
                             previewView = pv
-                            val androidController = cameraController as? com.sangyoon.parkingpass.camera.CameraController
-                            androidController?.let {
-                                // startCamera 메서드를 리플렉션으로 호출
+                            // Android 전용 startCamera 메서드 직접 호출
+                            (cameraController as? com.sangyoon.parkingpass.camera.CameraController)?.let { androidController ->
+                                val errorCallback: (String) -> Unit = { errorMessage ->
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(errorMessage)
+                                    }
+                                }
+                                
                                 try {
-                                    val method = it.javaClass.getDeclaredMethod(
-                                        "startCamera",
-                                        PreviewView::class.java,
-                                        LifecycleOwner::class.java
-                                    )
-                                    method.isAccessible = true
-                                    method.invoke(it, pv, lifecycleOwner)
+                                    androidController.startCamera(pv, lifecycleOwner, errorCallback)
                                 } catch (e: Exception) {
-                                    e.printStackTrace()
+                                    // 에러 발생 시 사용자에게 알림
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar("카메라 시작 실패: ${e.message ?: "알 수 없는 오류"}")
+                                    }
                                 }
                             }
                         }
@@ -119,8 +136,8 @@ actual fun CameraScreen(
 
                 // 실시간 번호판 인식 (2초마다 프레임 분석)
                 val currentController = cameraController
-                LaunchedEffect(currentController, hasPermission) {
-                    if (currentController != null && hasPermission) {
+                LaunchedEffect(currentController, hasPermission, hasCameraHardware) {
+                    if (currentController != null && hasPermission && hasCameraHardware) {
                         delay(3000) // 카메라 초기화 대기
                         while (true) {
                             if (!isAnalyzing) {
@@ -137,7 +154,8 @@ actual fun CameraScreen(
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    e.printStackTrace()
+                                    // 에러는 조용히 처리 (연속 분석 중이므로)
+                                    // 필요시 로그만 출력
                                 } finally {
                                     isAnalyzing = false
                                 }
@@ -163,7 +181,11 @@ actual fun CameraScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "카메라 권한이 필요합니다",
+                        when {
+                            !hasCameraHardware -> "이 기기에는 카메라가 없습니다"
+                            !hasPermission -> "카메라 권한이 필요합니다"
+                            else -> "카메라를 사용할 수 없습니다"
+                        },
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
