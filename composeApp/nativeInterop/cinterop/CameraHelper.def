@@ -1,0 +1,8 @@
+language = Objective-C
+headers = CameraHelperBridge.h
+headerFilter = CameraHelperBridge.h
+compilerOpts = -framework Foundation -framework AVFoundation -framework Vision -framework UIKit
+package = com.sangyoon.parkingpass.camera.ios
+staticLibraries = 
+libraryPaths = 
+

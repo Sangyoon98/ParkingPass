@@ -23,12 +23,32 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
+        
+        iosTarget.compilations.getByName("main") {
+            cinterops {
+                val CameraHelper by creating {
+                    defFile(project.file("nativeInterop/cinterop/CameraHelper.def"))
+                    packageName("com.sangyoon.parkingpass.camera.ios")
+                    includeDirs(
+                        project.file("nativeInterop/cinterop")
+                    )
+                }
+            }
+        }
     }
     
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            
+            // ML Kit Text Recognition (한국어)
+            implementation(libs.mlkit.text.recognition.korean)
+            
+            // CameraX
+            implementation(libs.cameraX.camera2)
+            implementation(libs.cameraX.lifecycle)
+            implementation(libs.cameraX.view)
         }
         commonMain.dependencies {
             // Koin

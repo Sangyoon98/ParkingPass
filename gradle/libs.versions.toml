@@ -20,6 +20,8 @@ logback = "1.5.22"
 koin = "4.1.1"
 supabase = "3.0.0"
 navigation-compose = "2.9.1"
+mlkit-text-recognition = "16.0.1"
+cameraX = "1.3.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -63,6 +65,14 @@ supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", v
 
 # Navigation Compose (Multiplatform)
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+
+# ML Kit Text Recognition (Android)
+mlkit-text-recognition-korean = { module = "com.google.mlkit:text-recognition-korean", version.ref = "mlkit-text-recognition" }
+
+# CameraX (Android)
+cameraX-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraX" }
+cameraX-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraX" }
+cameraX-view = { module = "androidx.camera:camera-view", version.ref = "cameraX" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
