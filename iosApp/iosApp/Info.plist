@@ -17,5 +17,7 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>번호판 인식을 위해 카메라를 사용합니다.</string>
 </dict>
 </plist>

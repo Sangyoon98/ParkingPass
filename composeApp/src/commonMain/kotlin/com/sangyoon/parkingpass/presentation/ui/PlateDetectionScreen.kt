@@ -39,7 +39,8 @@ import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
 fun PlateDetectionScreen(
     viewModel: PlateDetectionViewModel,
     parkingLotId: Long,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCameraClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -103,6 +104,15 @@ fun PlateDetectionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading && uiState.selectedGate != null
             )
+            
+            // 카메라 버튼 (번호판 자동 인식)
+            Button(
+                onClick = onCameraClick,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading && uiState.selectedGate != null
+            ) {
+                Text("📷 카메라로 번호판 인식")
+            }
 
             // 체크 버튼
             Button(

@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     application
-    kotlin("plugin.serialization") version "2.2.20"
+    kotlin("plugin.serialization") version libs.versions.kotlin.get()
     id("com.github.johnrengelman.shadow")
 }
 
