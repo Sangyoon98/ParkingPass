@@ -5,6 +5,8 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.getBytes
 import platform.UIKit.UIView
@@ -19,6 +21,9 @@ actual class CameraController(private val viewController: UIViewController) {
     
     @OptIn(ExperimentalForeignApi::class)
     private val cameraHelper = CameraHelper.shared()!!
+    
+    private var analysisScope: CoroutineScope? = null
+    private var analysisChannel: Channel<ByteArray>? = null
     
     @OptIn(ExperimentalForeignApi::class)
     actual suspend fun requestPermission(): Boolean {
@@ -86,6 +91,54 @@ actual class CameraController(private val viewController: UIViewController) {
                 )
             }
         }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    actual fun startImageAnalysis(onFrame: suspend (ByteArray) -> Unit) {
+        // 기존 분석이 실행 중이면 중지
+        stopImageAnalysis()
+        
+        // iOS에서는 suspend 함수를 Objective-C 클로저로 직접 전달할 수 없으므로
+        // Channel을 사용하여 프레임 데이터를 전달합니다
+        val channel = Channel<ByteArray>(Channel.UNLIMITED)
+        analysisChannel = channel
+        
+        val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        analysisScope = scope
+        
+        // 채널에서 데이터를 읽어서 onFrame 콜백 호출
+        scope.launch {
+            try {
+                for (frameData in channel) {
+                    onFrame(frameData)
+                }
+            } catch (e: Exception) {
+                // 채널이 닫히거나 취소된 경우
+            }
+        }
+        
+        // Swift 콜백에서 채널로 데이터 전달
+        cameraHelper.startVideoAnalysisWithCallback { imageData: platform.Foundation.NSData ->
+            val length = imageData.length.toInt()
+            val bytes = ByteArray(length)
+            memScoped {
+                bytes.usePinned { pinned ->
+                    imageData.getBytes(pinned.addressOf(0), length.toULong())
+                }
+            }
+            channel.trySend(bytes)
+        }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    actual fun stopImageAnalysis() {
+        cameraHelper.stopVideoAnalysis()
+        
+        // 채널과 코루틴 스코프 정리
+        analysisChannel?.close()
+        analysisChannel = null
+        analysisScope?.cancel()
+        analysisScope = null
     }
 }
 

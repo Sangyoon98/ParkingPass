@@ -18,6 +18,10 @@ class SessionRepositoryImpl(
     override suspend fun getSessionHistory(parkingLotId: Long, date: String): Result<List<Session>> = runCatching {
         dataSource.getSessionHistory(parkingLotId, date).map { it.toDomain() }
     }
+
+    override suspend fun getCurrentSessionByPlateNumber(parkingLotId: Long, plateNumber: String): Result<Session?> = runCatching {
+        dataSource.getCurrentSessionByPlateNumber(parkingLotId, plateNumber)?.toDomain()
+    }
 }
 
 private fun SessionResponse.toDomain() = Session(

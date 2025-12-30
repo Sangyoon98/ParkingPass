@@ -11,19 +11,27 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 /**
  * Android CameraX 기반 카메라 컨트롤러 구현
  */
 actual class CameraController(private val androidContext: Context) {
     private var imageCapture: ImageCapture? = null
+    private var imageAnalysis: ImageAnalysis? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
+    private var lifecycleOwner: LifecycleOwner? = null
+    private val cameraExecutor: Executor = Executors.newSingleThreadExecutor()
+    private var analysisCallback: (suspend (ByteArray) -> Unit)? = null
 
     companion object {
         private const val TAG = "CameraController"
@@ -73,6 +81,9 @@ actual class CameraController(private val androidContext: Context) {
         lifecycleOwner: LifecycleOwner,
         onError: ((String) -> Unit)? = null
     ) {
+        // LifecycleOwner 저장 (startImageAnalysis에서 사용)
+        this.lifecycleOwner = lifecycleOwner
+        
         // 카메라 하드웨어 가용성 확인
         if (!hasCameraHardware()) {
             val errorMessage = "이 기기에는 카메라가 없습니다"
@@ -96,7 +107,13 @@ actual class CameraController(private val androidContext: Context) {
                         it.setSurfaceProvider(previewView.surfaceProvider)
                     }
 
-                // ImageCapture 설정
+                // ImageAnalysis 설정 (실시간 프레임 분석용)
+                imageAnalysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
+                    .build()
+
+                // ImageCapture 설정 (필요 시 사용)
                 imageCapture = ImageCapture.Builder()
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                     .build()
@@ -106,11 +123,20 @@ actual class CameraController(private val androidContext: Context) {
 
                 // 기존 바인딩 해제 후 재바인딩
                 provider.unbindAll()
+                
+                // Preview가 없으면 에러
+                val previewUseCase = preview
+                if (previewUseCase == null) {
+                    Log.e(TAG, "Preview가 설정되지 않았습니다")
+                    onError?.invoke("Preview가 설정되지 않았습니다")
+                    return@addListener
+                }
+                
+                // Preview만 먼저 바인딩 (ImageAnalysis는 startImageAnalysis에서 추가)
                 provider.bindToLifecycle(
                     lifecycleOwner,
                     cameraSelector,
-                    preview,
-                    imageCapture
+                    previewUseCase
                 )
                 Log.d(TAG, "카메라가 성공적으로 시작되었습니다")
             } catch (e: Exception) {
@@ -122,10 +148,13 @@ actual class CameraController(private val androidContext: Context) {
     }
 
     actual fun stopCamera() {
+        stopImageAnalysis()
         cameraProvider?.unbindAll()
         cameraProvider = null
         preview = null
         imageCapture = null
+        imageAnalysis = null
+        lifecycleOwner = null
     }
 
     actual suspend fun captureImage(): CameraImage? {
@@ -297,6 +326,178 @@ actual class CameraController(private val androidContext: Context) {
                 }
             )
         }
+    }
+
+    /**
+     * ImageProxy를 JPEG ByteArray로 변환
+     */
+    private fun convertImageProxyToJpeg(imageProxy: ImageProxy): ByteArray {
+        val format = imageProxy.format
+
+        return when (format) {
+            AndroidImageFormat.JPEG -> {
+                // 이미 JPEG 형식인 경우 직접 사용
+                val buffer = imageProxy.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                bytes
+            }
+            AndroidImageFormat.YUV_420_888 -> {
+                // YUV_420_888 형식인 경우 JPEG로 변환
+                if (imageProxy.planes.size < 3) {
+                    val buffer = imageProxy.planes[0].buffer
+                    val bytes = ByteArray(buffer.remaining())
+                    buffer.get(bytes)
+                    return bytes
+                }
+
+                val yPlane = imageProxy.planes[0]
+                val uPlane = imageProxy.planes[1]
+                val vPlane = imageProxy.planes[2]
+
+                val width = imageProxy.width
+                val height = imageProxy.height
+
+                val yBuffer = yPlane.buffer
+                val uBuffer = uPlane.buffer
+                val vBuffer = vPlane.buffer
+
+                val yRowStride = yPlane.rowStride
+                val yPixelStride = yPlane.pixelStride
+                val uRowStride = uPlane.rowStride
+                val uPixelStride = uPlane.pixelStride
+                val vRowStride = vPlane.rowStride
+                val vPixelStride = vPlane.pixelStride
+
+                // NV21: Y 플레인 (width * height) + 인터리브된 VU 플레인 (width * height / 2)
+                val nv21Size = width * height * 3 / 2
+                val nv21 = ByteArray(nv21Size)
+
+                // Y 플레인 복사
+                val yBytes = ByteArray(yBuffer.remaining())
+                yBuffer.get(yBytes)
+
+                if (yRowStride == width && yPixelStride == 1) {
+                    // 정렬된 Y 플레인 - 직접 복사
+                    System.arraycopy(yBytes, 0, nv21, 0, width * height)
+                } else {
+                    // 패딩이 있는 경우 - rowStride를 고려하여 복사
+                    var srcPos = 0
+                    var dstPos = 0
+                    for (row in 0 until height) {
+                        System.arraycopy(yBytes, srcPos, nv21, dstPos, width)
+                        srcPos += yRowStride
+                        dstPos += width
+                    }
+                }
+
+                // VU 플레인을 NV21 형식으로 인터리브 (NV21은 VU 순서)
+                val uvOffset = width * height
+                val uvWidth = width / 2
+                val uvHeight = height / 2
+
+                // U와 V 플레인 데이터 읽기
+                val uBytes = ByteArray(uBuffer.remaining())
+                val vBytes = ByteArray(vBuffer.remaining())
+                uBuffer.get(uBytes)
+                vBuffer.get(vBytes)
+
+                // U와 V를 VU 순서로 인터리브
+                var uSrcPos = 0
+                var vSrcPos = 0
+                var dstPos = uvOffset
+
+                for (row in 0 until uvHeight) {
+                    for (col in 0 until uvWidth) {
+                        // NV21은 VU 순서 (V 먼저, U 나중)
+                        if (vSrcPos < vBytes.size) {
+                            nv21[dstPos++] = vBytes[vSrcPos]
+                        }
+                        vSrcPos += vPixelStride
+
+                        if (uSrcPos < uBytes.size) {
+                            nv21[dstPos++] = uBytes[uSrcPos]
+                        }
+                        uSrcPos += uPixelStride
+                    }
+                    // rowStride 보정 - 다음 행으로 이동
+                    uSrcPos += (uRowStride - uvWidth * uPixelStride)
+                    vSrcPos += (vRowStride - uvWidth * vPixelStride)
+                }
+
+                // YUV_420_888을 JPEG로 변환
+                val yuvImage = android.graphics.YuvImage(
+                    nv21,
+                    AndroidImageFormat.NV21,
+                    width,
+                    height,
+                    null
+                )
+
+                val jpegOutputStream = ByteArrayOutputStream()
+                yuvImage.compressToJpeg(
+                    android.graphics.Rect(0, 0, width, height),
+                    90,
+                    jpegOutputStream
+                )
+                jpegOutputStream.toByteArray()
+            }
+            else -> {
+                // 다른 형식인 경우 첫 번째 plane만 사용
+                val buffer = imageProxy.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                bytes
+            }
+        }
+    }
+
+    actual fun startImageAnalysis(onFrame: suspend (ByteArray) -> Unit) {
+        analysisCallback = onFrame
+
+        val analysis = imageAnalysis
+        val provider = cameraProvider
+        val owner = lifecycleOwner
+        
+        if (analysis != null && provider != null && owner != null) {
+            // Analyzer 설정
+            analysis.setAnalyzer(cameraExecutor) { imageProxy ->
+                try {
+                    val jpegBytes = convertImageProxyToJpeg(imageProxy)
+                    // 코루틴 스코프에서 콜백 실행
+                    CoroutineScope(Dispatchers.Default).launch {
+                        analysisCallback?.invoke(jpegBytes)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "프레임 분석 중 오류 발생", e)
+                } finally {
+                    imageProxy.close()
+                }
+            }
+            
+            // ImageAnalysis를 기존 바인딩에 추가
+            val previewUseCase = preview
+            if (previewUseCase != null) {
+                // 기존 바인딩 해제 후 Preview와 ImageAnalysis 함께 바인딩
+                provider.unbindAll()
+                provider.bindToLifecycle(
+                    owner,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    previewUseCase,
+                    analysis
+                )
+                Log.d(TAG, "ImageAnalysis가 바인딩되었습니다")
+            } else {
+                Log.e(TAG, "Preview가 없어 ImageAnalysis를 바인딩할 수 없습니다")
+            }
+        } else {
+            Log.w(TAG, "카메라가 시작되지 않았거나 ImageAnalysis/LifecycleOwner가 설정되지 않았습니다. analysis: ${analysis != null}, provider: ${provider != null}, owner: ${owner != null}")
+        }
+    }
+
+    actual fun stopImageAnalysis() {
+        imageAnalysis?.clearAnalyzer()
+        analysisCallback = null
     }
 }
 

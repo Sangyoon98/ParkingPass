@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,7 +73,7 @@ actual fun CameraScreen(
         val androidController = cameraController
         hasCameraHardware = androidController?.hasCameraHardware() ?: false
         hasPermission = cameraController?.hasPermission() ?: false
-        
+
         if (!hasCameraHardware) {
             coroutineScope.launch {
                 snackbarHostState.showSnackbar("이 기기에는 카메라가 없습니다")
@@ -107,7 +110,7 @@ actual fun CameraScreen(
             if (hasCameraHardware && hasPermission && cameraController != null) {
                 // 카메라 프리뷰
                 var previewView: PreviewView? by remember { mutableStateOf(null) }
-                
+
                 AndroidView(
                     factory = { ctx ->
                         PreviewView(ctx).also { pv ->
@@ -119,7 +122,7 @@ actual fun CameraScreen(
                                         snackbarHostState.showSnackbar(errorMessage)
                                     }
                                 }
-                                
+
                                 try {
                                     androidController.startCamera(pv, lifecycleOwner, errorCallback)
                                 } catch (e: Exception) {
@@ -134,45 +137,48 @@ actual fun CameraScreen(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                // 실시간 번호판 인식 (2초마다 프레임 분석)
+                // 실시간 프레임 분석 시작
                 val currentController = cameraController
-                LaunchedEffect(currentController, hasPermission, hasCameraHardware) {
-                    if (currentController != null && hasPermission && hasCameraHardware) {
-                        delay(3000) // 카메라 초기화 대기
-                        while (true) {
-                            if (!isAnalyzing) {
-                                isAnalyzing = true
-                                try {
-                                    val image = currentController.captureImage()
-                                    if (image != null) {
-                                        // 이미지 분석 - 번호판이 인식되면 true 반환
-                                        val recognized = viewModel.recognizePlateFromImage(image)
-                                        if (recognized) {
-                                            // 번호판 인식 성공 - 카메라 화면 종료
-                                            onImageCaptured(image)
-                                            return@LaunchedEffect
-                                        }
-                                    }
-                                } catch (e: Exception) {
-                                    // 에러는 조용히 처리 (연속 분석 중이므로)
-                                    // 필요시 로그만 출력
-                                } finally {
-                                    isAnalyzing = false
-                                }
+                LaunchedEffect(currentController, hasPermission, hasCameraHardware, previewView) {
+                    if (currentController != null && hasPermission && hasCameraHardware && previewView != null) {
+                        delay(2000) // 카메라 초기화 대기
+                        
+                        println("📷 [CameraScreen] 프레임 분석 시작 준비")
+
+                        // 인식 시작
+                        viewModel.resumeRecognition()
+                        println("📷 [CameraScreen] 인식 상태 재개")
+
+                        // 프레임 분석 시작
+                        try {
+                            currentController.startImageAnalysis { imageBytes ->
+                                println("📸 [CameraScreen] 프레임 수신: ${imageBytes.size} bytes")
+                                viewModel.analyzeFrame(imageBytes)
                             }
-                            delay(2000) // 2초마다 다음 분석
+                            println("📷 [CameraScreen] 프레임 분석 시작 완료")
+                        } catch (e: Exception) {
+                            println("💥 [CameraScreen] 프레임 분석 시작 실패: ${e.message}")
+                            e.printStackTrace()
                         }
                     }
                 }
 
-                // 분석 중 표시
-                if (isAnalyzing) {
-                    Box(
+                // 인식된 번호 오버레이
+                val uiState by viewModel.uiState.collectAsState()
+                if (uiState.recognizedPlate != null) {
+                    Card(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .padding(16.dp)
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     ) {
-                        CircularProgressIndicator()
+                        Text(
+                            text = uiState.recognizedPlate ?: "",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
                     }
                 }
             } else {
@@ -190,6 +196,44 @@ actual fun CameraScreen(
                     )
                 }
             }
+        }
+
+        // 차량 정보 바텀시트 (Box 밖에서 uiState 사용)
+        val uiState by viewModel.uiState.collectAsState()
+        val vehicleInfoForSheet = uiState.vehicleInfo
+        if (vehicleInfoForSheet != null && uiState.showVehicleSheet) {
+            VehicleInfoBottomSheet(
+                vehicleInfo = vehicleInfoForSheet,
+                onEnter = {
+                    val gate = uiState.selectedGate
+                    val plate = vehicleInfoForSheet.plateNumber
+                    if (gate != null && plate.isNotBlank()) {
+                        viewModel.updatePlateNumber(plate)
+                        viewModel.detectPlate {
+                            viewModel.dismissVehicleSheet()
+                            onBack()
+                        }
+                    }
+                },
+                onExit = {
+                    val gate = uiState.selectedGate
+                    val plate = vehicleInfoForSheet.plateNumber
+                    if (gate != null && plate.isNotBlank()) {
+                        viewModel.updatePlateNumber(plate)
+                        viewModel.detectPlate {
+                            viewModel.dismissVehicleSheet()
+                            onBack()
+                        }
+                    }
+                },
+                onRegister = {
+                    // TODO: 차량 등록 화면으로 이동
+                    viewModel.dismissVehicleSheet()
+                },
+                onDismiss = {
+                    viewModel.dismissVehicleSheet()
+                }
+            )
         }
     }
 }

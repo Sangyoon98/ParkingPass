@@ -287,6 +287,47 @@
                 ]
             }
         },
+        "/api/v1/parking-lots/{parkingLotId}/sessions/current/{plateNumber}": {
+            "get": {
+                "summary": "번호판으로 현재 세션 조회",
+                "responses": {
+                    "200": {
+                        "description": "SessionResponse? 현재 세션 (없으면 null)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SessionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Sessions"
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plateNumber",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
         "/api/v1/vehicles": {
             "post": {
                 "summary": "등록 차량 추가",
@@ -352,6 +393,47 @@
                 },
                 "tags": [
                     "Vehicles"
+                ]
+            }
+        },
+        "/api/v1/parking-lots/{parkingLotId}/vehicles/plate/{plateNumber}": {
+            "get": {
+                "summary": "번호판으로 차량 조회",
+                "responses": {
+                    "200": {
+                        "description": "VehicleResponse? 차량 정보 (없으면 null)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VehicleResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Vehicles"
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plateNumber",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ]
             }
         }

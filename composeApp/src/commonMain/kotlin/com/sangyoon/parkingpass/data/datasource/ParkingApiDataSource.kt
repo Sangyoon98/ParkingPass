@@ -29,4 +29,8 @@ class ParkingApiDataSource(
     suspend fun registerGate(request: RegisterGateRequest) = apiClient.registerGate(request)
 
     suspend fun detectPlate(request: PlateDetectedRequest) = apiClient.postPlateDetected(request)
+
+    suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String) = apiClient.getVehicleByPlateNumber(parkingLotId, plateNumber)
+
+    suspend fun getCurrentSessionByPlateNumber(parkingLotId: Long, plateNumber: String) = apiClient.getCurrentSessionByPlateNumber(parkingLotId, plateNumber)
 }

@@ -47,5 +47,27 @@ fun Route.vehicleController(
             }
             call.respond(HttpStatusCode.OK, vehicles)
         }
+
+        /**
+         * 번호판으로 차량 조회
+         *
+         * @param parkingLotId 주차장 ID
+         * @param plateNumber 번호판 번호
+         * @response 200 application/json VehicleResponse? 차량 정보 (없으면 null)
+         * @tag Vehicles
+         */
+        get("/parking-lots/{parkingLotId}/vehicles/plate/{plateNumber}") {
+            val parkingLotId = call.parameters["parkingLotId"]?.toLongOrNull()
+                ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
+            val plateNumber = call.parameters["plateNumber"]
+                ?: throw IllegalArgumentException("plateNumber 파라미터가 필요합니다.")
+
+            val vehicle = vehicleService.getVehicleByPlateNumber(parkingLotId, plateNumber)
+            if (vehicle != null) {
+                call.respond(HttpStatusCode.OK, vehicle)
+            } else {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
     }
 }

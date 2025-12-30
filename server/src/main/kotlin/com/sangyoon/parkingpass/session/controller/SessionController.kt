@@ -44,5 +44,27 @@ fun Route.sessionController(
             val sessions = sessionService.getSessionHistory(parkingLotId, date)
             call.respond(HttpStatusCode.OK, sessions)
         }
+
+        /**
+         * 번호판으로 현재 세션 조회
+         *
+         * @param parkingLotId 주차장 ID
+         * @param plateNumber 번호판 번호
+         * @response 200 application/json SessionResponse? 현재 세션 (없으면 null)
+         * @tag Sessions
+         */
+        get("/parking-lots/{parkingLotId}/sessions/current/{plateNumber}") {
+            val parkingLotId = call.parameters["parkingLotId"]?.toLongOrNull()
+                ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
+            val plateNumber = call.parameters["plateNumber"]
+                ?: throw IllegalArgumentException("plateNumber 파라미터가 필요합니다.")
+
+            val session = sessionService.getCurrentSessionByPlateNumber(parkingLotId, plateNumber)
+            if (session != null) {
+                call.respond(HttpStatusCode.OK, session)
+            } else {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
     }
 }

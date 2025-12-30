@@ -13,14 +13,45 @@ class SupabaseVehicleRepository(
         parkingLotId: Long,
         plateNumber: String
     ): Vehicle? {
-        return supabase.from("vehicle")
-            .select {
-                filter {
-                    eq("parking_lot_id", parkingLotId)
-                    eq("plate_number", plateNumber)
+        println("🔍 [SupabaseVehicleRepository] DB 조회 - parkingLotId: $parkingLotId, plateNumber: '$plateNumber'")
+        println("🔍 [SupabaseVehicleRepository] plateNumber 길이: ${plateNumber.length}, 바이트: ${plateNumber.toByteArray().contentToString()}")
+        
+        val result = try {
+            supabase.from("vehicle")
+                .select {
+                    filter {
+                        eq("parking_lot_id", parkingLotId)
+                        eq("plate_number", plateNumber)
+                    }
                 }
+                .decodeSingleOrNull<Vehicle>()
+        } catch (e: Exception) {
+            println("💥 [SupabaseVehicleRepository] DB 조회 예외: ${e.message}")
+            e.printStackTrace()
+            null
+        }
+        
+        if (result != null) {
+            println("✅ [SupabaseVehicleRepository] 차량 찾음: id=${result.id}, plateNumber='${result.plateNumber}'")
+            println("🔍 [SupabaseVehicleRepository] DB plateNumber 길이: ${result.plateNumber.length}, 바이트: ${result.plateNumber.toByteArray().contentToString()}")
+        } else {
+            println("❌ [SupabaseVehicleRepository] 차량을 찾을 수 없음")
+            // 모든 차량 조회해서 비교
+            try {
+                val allVehicles = supabase.from("vehicle")
+                    .select {
+                        filter {
+                            eq("parking_lot_id", parkingLotId)
+                        }
+                    }
+                    .decodeList<Vehicle>()
+                println("🔍 [SupabaseVehicleRepository] 해당 주차장의 모든 차량: ${allVehicles.map { "'${it.plateNumber}'" }}")
+            } catch (e: Exception) {
+                println("💥 [SupabaseVehicleRepository] 전체 조회 실패: ${e.message}")
             }
-            .decodeSingleOrNull<Vehicle>()
+        }
+        
+        return result
     }
 
     override suspend fun save(vehicle: Vehicle): Vehicle {
