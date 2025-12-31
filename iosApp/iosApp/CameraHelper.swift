@@ -253,8 +253,10 @@ public class CameraHelper: NSObject {
             // 기존 videoOutput이 있으면 제거
             if let existingVideoOutput = self.videoOutput,
                let session = self.captureSession,
-               session.canRemoveOutput(existingVideoOutput) {
+               session.outputs.contains(existingVideoOutput) {
+                session.beginConfiguration()
                 session.removeOutput(existingVideoOutput)
+                session.commitConfiguration()
             }
             
             guard let session = self.captureSession else {
@@ -313,7 +315,7 @@ public class CameraHelper: NSObject {
             
             if let videoOutput = self.videoOutput,
                let session = self.captureSession,
-               session.canRemoveOutput(videoOutput) {
+               session.outputs.contains(videoOutput) {
                 session.beginConfiguration()
                 session.removeOutput(videoOutput)
                 session.commitConfiguration()

@@ -118,7 +118,8 @@ actual class CameraController(private val viewController: UIViewController) {
         }
         
         // Swift 콜백에서 채널로 데이터 전달
-        cameraHelper.startVideoAnalysisWithCallback { imageData: platform.Foundation.NSData ->
+        cameraHelper.startVideoAnalysisWithCallback { imageData: platform.Foundation.NSData? ->
+            if (imageData == null) return@startVideoAnalysisWithCallback
             val length = imageData.length.toInt()
             val bytes = ByteArray(length)
             memScoped {

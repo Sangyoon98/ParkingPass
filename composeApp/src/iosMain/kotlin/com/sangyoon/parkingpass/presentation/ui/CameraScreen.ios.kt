@@ -48,8 +48,10 @@ actual fun CameraScreen(
     val viewController = remember { UIViewController() }
     var cameraController: CameraController? by remember { mutableStateOf(null) }
     var hasPermission by remember { mutableStateOf(false) }
-    var isAnalyzing by remember { mutableStateOf(false) }
     var previewView: UIView? by remember { mutableStateOf(null) }
+
+    // ViewModel의 UI 상태를 관찰
+    val uiState by viewModel.uiState.collectAsState()
 
     // 카메라 컨트롤러 초기화 및 권한 확인
     LaunchedEffect(Unit) {
@@ -127,7 +129,6 @@ actual fun CameraScreen(
                 }
 
                 // 인식된 번호 오버레이
-                val uiState by viewModel.uiState.collectAsState()
                 if (uiState.recognizedPlate != null) {
                     Card(
                         modifier = Modifier
