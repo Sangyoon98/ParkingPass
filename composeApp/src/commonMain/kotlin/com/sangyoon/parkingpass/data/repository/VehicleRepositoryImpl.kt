@@ -27,6 +27,10 @@ class VehicleRepositoryImpl(
     override suspend fun getVehicles(parkingLotId: Long): Result<List<Vehicle>> = runCatching {
         dataSource.getVehicles(parkingLotId).map { it.toDomain() }
     }
+
+    override suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String): Result<Vehicle?> = runCatching {
+        dataSource.getVehicleByPlateNumber(parkingLotId, plateNumber)?.toDomain()
+    }
 }
 
 private fun VehicleResponse.toDomain() = Vehicle(

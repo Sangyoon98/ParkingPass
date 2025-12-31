@@ -48,6 +48,24 @@ class VehicleService(
         }
     }
 
+    suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String): VehicleResponse? {
+        return try {
+            val normalizedPlate = normalizePlateNumber(plateNumber)
+            println("🔍 [VehicleService] 차량 조회 - parkingLotId: $parkingLotId, 원본: '$plateNumber', 정규화: '$normalizedPlate'")
+            val vehicle = vehicleRepository.findByParkingLotIdAndPlateNumber(parkingLotId, normalizedPlate)
+            if (vehicle != null) {
+                println("✅ [VehicleService] 차량 찾음: id=${vehicle.id}, plateNumber=${vehicle.plateNumber}")
+            } else {
+                println("❌ [VehicleService] 차량을 찾을 수 없음")
+            }
+            vehicle?.let { toResponse(it) }
+        } catch (e: Exception) {
+            println("💥 [VehicleService] 차량 조회 예외: ${e.message}")
+            e.printStackTrace()
+            null
+        }
+    }
+
     private fun normalizePlateNumber(plate: String): String =
         plate.replace(" ", "")
 

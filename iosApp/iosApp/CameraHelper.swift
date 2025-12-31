@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 import Vision
 import UIKit
+import CoreImage
 
 /// 카메라 컨트롤러 및 텍스트 인식
 @objc(CameraHelper)
@@ -12,10 +13,20 @@ public class CameraHelper: NSObject {
     
     private var captureSession: AVCaptureSession?
     private var photoOutput: AVCapturePhotoOutput?
+    private var videoOutput: AVCaptureVideoDataOutput?
     private var previewLayer: AVCaptureVideoPreviewLayer?
     private let sessionQueue = DispatchQueue(label: "com.parkingpass.camera.session.queue")
     // PhotoCaptureDelegate를 강하게 유지하기 위한 임시 저장소
     private var currentPhotoCaptureDelegate: PhotoCaptureDelegate?
+    // VideoOutputDelegate를 강하게 유지하기 위한 저장소
+    private var videoOutputDelegate: VideoOutputDelegate?
+    // 비디오 프레임 콜백
+    private var videoFrameCallback: ((Data) -> Void)?
+    // 프레임 스로틀링을 위한 변수
+    private var lastFrameProcessedTime: TimeInterval = 0
+    private let frameProcessingInterval: TimeInterval = 0.33 // 초당 약 3프레임
+    // CIContext 재사용을 위한 프로퍼티 (매 프레임마다 생성하지 않도록)
+    private let ciContext = CIContext()
     
     // MARK: - Permission
     
@@ -163,12 +174,14 @@ public class CameraHelper: NSObject {
     /// 카메라 세션 중지
     @objc public func stopCamera() {
         NSLog("stopCamera called")
+        stopVideoAnalysis()
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             NSLog("stopCamera executing - photoOutput before: \(self.photoOutput != nil), session before: \(self.captureSession != nil)")
             self.captureSession?.stopRunning()
             self.captureSession = nil
             self.photoOutput = nil
+            self.videoOutput = nil
             NSLog("stopCamera executed - photoOutput after: \(self.photoOutput != nil)")
             DispatchQueue.main.async {
                 self.previewLayer = nil
@@ -225,6 +238,92 @@ public class CameraHelper: NSObject {
             NSLog("📸 [CameraHelper] capturePhoto 호출 - settings 생성 완료")
             output.capturePhoto(with: settings, delegate: delegate)
             NSLog("📸 [CameraHelper] capturePhoto 호출 완료 - delegate 설정됨")
+        }
+    }
+    
+    // MARK: - Video Analysis
+    
+    /// 실시간 비디오 프레임 분석 시작
+    @objc(startVideoAnalysisWithCallback:) public func startVideoAnalysis(callback: @escaping (Data) -> Void) {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.videoFrameCallback = callback
+            
+            // 기존 videoOutput이 있으면 제거
+            if let existingVideoOutput = self.videoOutput,
+               let session = self.captureSession,
+               session.canRemoveOutput(existingVideoOutput) {
+                session.removeOutput(existingVideoOutput)
+            }
+            
+            guard let session = self.captureSession else {
+                NSLog("ERROR: Capture session is nil in startVideoAnalysis")
+                return
+            }
+            
+            let videoOutput = AVCaptureVideoDataOutput()
+            videoOutput.videoSettings = [
+                kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)
+            ]
+            
+            let delegate = VideoOutputDelegate { [weak self] sampleBuffer in
+                guard let self = self,
+                      let callback = self.videoFrameCallback else { return }
+                
+                // 프레임 스로틀링 (초당 약 3프레임만 처리)
+                let currentTime = CACurrentMediaTime()
+                guard currentTime - self.lastFrameProcessedTime >= self.frameProcessingInterval else { return }
+                self.lastFrameProcessedTime = currentTime
+                
+                // CMSampleBuffer를 UIImage로 변환
+                guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+                
+                let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+                guard let cgImage = self.ciContext.createCGImage(ciImage, from: ciImage.extent) else { return }
+                
+                let uiImage = UIImage(cgImage: cgImage)
+                
+                // UIImage를 JPEG Data로 변환 (실시간 처리에 적합한 낮은 압축 품질 사용)
+                guard let jpegData = uiImage.jpegData(compressionQuality: 0.6) else { return }
+                
+                // 콜백 호출 (메인 스레드가 아닌 백그라운드 스레드에서 호출)
+                callback(jpegData)
+            }
+            
+            videoOutput.setSampleBufferDelegate(delegate, queue: self.sessionQueue)
+            
+            session.beginConfiguration()
+            if session.canAddOutput(videoOutput) {
+                session.addOutput(videoOutput)
+                self.videoOutput = videoOutput
+                self.videoOutputDelegate = delegate
+                NSLog("Video output added successfully")
+            } else {
+                NSLog("ERROR: Cannot add video output to session")
+            }
+            session.commitConfiguration()
+        }
+    }
+    
+    /// 실시간 비디오 프레임 분석 중지
+    @objc public func stopVideoAnalysis() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            if let videoOutput = self.videoOutput,
+               let session = self.captureSession,
+               session.canRemoveOutput(videoOutput) {
+                session.beginConfiguration()
+                session.removeOutput(videoOutput)
+                session.commitConfiguration()
+            }
+            
+            self.videoOutput?.setSampleBufferDelegate(nil, queue: nil)
+            self.videoOutput = nil
+            self.videoOutputDelegate = nil
+            self.videoFrameCallback = nil
+            self.lastFrameProcessedTime = 0 // 프레임 스로틀링 변수 초기화
         }
     }
     
@@ -304,6 +403,21 @@ public class PreviewView: UIView {
     
     public var previewLayer: AVCaptureVideoPreviewLayer? {
         return layer as? AVCaptureVideoPreviewLayer
+    }
+}
+
+// MARK: - Video Output Delegate
+
+private class VideoOutputDelegate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    private let onFrame: (CMSampleBuffer) -> Void
+    
+    init(onFrame: @escaping (CMSampleBuffer) -> Void) {
+        self.onFrame = onFrame
+        super.init()
+    }
+    
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        onFrame(sampleBuffer)
     }
 }
 

@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupCameraWithCompletion:(void (^)(PreviewView * _Nullable view))completion;
 - (void)stopCamera;
 - (void)capturePhotoWithCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion;
+- (void)startVideoAnalysisWithCallback:(void (^)(NSData *data))callback;
+- (void)stopVideoAnalysis;
 + (void)recognizeTextWithImageData:(NSData *)imageData completion:(void (^)(NSString * _Nullable text, float confidence, NSError * _Nullable error))completion;
 
 @end

@@ -12,4 +12,5 @@ interface VehicleRepository {
         memo: String?
     ): Result<Vehicle>
     suspend fun getVehicles(parkingLotId: Long): Result<List<Vehicle>>
+    suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String): Result<Vehicle?>
 }

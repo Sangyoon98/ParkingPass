@@ -18,7 +18,9 @@ import com.sangyoon.parkingpass.domain.usecase.GetGatesUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetOpenSessionsUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetParkingLotDetailUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetParkingLotsUseCase
+import com.sangyoon.parkingpass.domain.usecase.GetCurrentSessionByPlateUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetSessionHistoryUseCase
+import com.sangyoon.parkingpass.domain.usecase.GetVehicleByPlateUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetVehiclesUseCase
 import com.sangyoon.parkingpass.domain.usecase.PlateDetectedUseCase
 import com.sangyoon.parkingpass.domain.usecase.RegisterGateUseCase
@@ -59,12 +61,14 @@ val appModule = module {
     factoryOf(::GetGatesUseCase)
     factoryOf(::RegisterGateUseCase)
     factoryOf(::PlateDetectedUseCase)
+    factoryOf(::GetVehicleByPlateUseCase)
+    factoryOf(::GetCurrentSessionByPlateUseCase)
 
     // ViewModel
     factory { ParkingLotViewModel(get(), get()) }
     factory { ParkingLotDetailViewModel(get()) }
     factory { VehicleViewModel(get(), get()) }
     factory { GateViewModel(get(), get()) }
-    factory { PlateDetectionViewModel(get(), get()) }
+    factory { PlateDetectionViewModel(get(), get(), get(), get()) }
     factory { SessionViewModel(get(), get()) }
 }

@@ -34,6 +34,25 @@ class SessionService(
         return sessions.map { toResponse(it) }
     }
 
+    suspend fun getCurrentSessionByPlateNumber(parkingLotId: Long, plateNumber: String): SessionResponse? {
+        // 번호판 정규화 (공백 제거)
+        val normalizedPlate = plateNumber.replace(" ", "")
+        println("🔍 [SessionService] 세션 조회 - parkingLotId: $parkingLotId, 원본: '$plateNumber', 정규화: '$normalizedPlate'")
+        
+        val session = sessionRepository.findOpenSessionByParkingLotIdAndPlateNumber(
+            parkingLotId = parkingLotId,
+            plateNumber = normalizedPlate
+        )
+        
+        if (session != null) {
+            println("✅ [SessionService] 세션 찾음: id=${session.id}, plateNumber=${session.plateNumber}")
+        } else {
+            println("❌ [SessionService] 세션을 찾을 수 없음")
+        }
+        
+        return session?.let { toResponse(it) }
+    }
+
     private suspend fun toResponse(session: ParkingSession): SessionResponse {
         val vehicle = session.vehicleId?.let {
             vehicleRepository.findByParkingLotIdAndPlateNumber(

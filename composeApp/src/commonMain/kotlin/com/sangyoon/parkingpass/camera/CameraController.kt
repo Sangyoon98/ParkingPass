@@ -31,6 +31,17 @@ expect class CameraController {
      * @return 캡처된 이미지 (실패 시 null)
      */
     suspend fun captureImage(): CameraImage?
+
+    /**
+     * 실시간 이미지 분석 시작
+     * @param onFrame 각 프레임마다 호출되는 콜백 (JPEG ByteArray)
+     */
+    fun startImageAnalysis(onFrame: suspend (ByteArray) -> Unit)
+
+    /**
+     * 실시간 이미지 분석 중지
+     */
+    fun stopImageAnalysis()
 }
 
 /**

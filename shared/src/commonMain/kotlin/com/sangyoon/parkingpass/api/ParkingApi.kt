@@ -20,7 +20,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
@@ -152,6 +151,68 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
             parameter("date", date)
         }
         return handle(response)
+    }
+
+    // 번호판으로 차량 조회
+    suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String): VehicleResponse? {
+        return try {
+            val url = "$apiBaseUrl/parking-lots/$parkingLotId/vehicles/plate/$plateNumber"
+
+            val response = client.get(url)
+            kotlin.io.println("[API] 차량 조회 응답: status=${response.status.value}")
+
+            if (response.status.value == 404) {
+                kotlin.io.println("[API] 차량을 찾을 수 없음 (404)")
+                return null
+            }
+            
+            if (!response.status.isSuccess()) {
+                kotlin.io.println("[API] 차량 조회 실패: status=${response.status.value}")
+                val errorText = try {
+                    response.bodyAsText()
+                } catch (e: Exception) {
+                    "응답 본문 읽기 실패: ${e.message}"
+                }
+                kotlin.io.println("[API] 에러 응답 본문: $errorText")
+                return null
+            }
+            
+            val vehicle = response.body<VehicleResponse?>()
+            kotlin.io.println("[API] 차량 조회 성공: plateNumber=${vehicle?.plateNumber}, label=${vehicle?.label}")
+            vehicle
+        } catch (e: Exception) {
+            kotlin.io.println("[API] 차량 조회 예외 발생: ${e.message}")
+            e.printStackTrace()
+            null
+        }
+    }
+
+    // 번호판으로 현재 세션 조회
+    suspend fun getCurrentSessionByPlateNumber(parkingLotId: Long, plateNumber: String): SessionResponse? {
+        return try {
+            val url = "$apiBaseUrl/parking-lots/$parkingLotId/sessions/current/$plateNumber"
+            
+            val response = client.get(url)
+            kotlin.io.println("[API] 세션 조회 응답: status=${response.status.value}")
+            
+            if (response.status.value == 404) {
+                kotlin.io.println("[API] 세션을 찾을 수 없음 (404)")
+                return null
+            }
+            
+            if (!response.status.isSuccess()) {
+                kotlin.io.println("[API] 세션 조회 실패: status=${response.status.value}")
+                return null
+            }
+            
+            val session = response.body<SessionResponse?>()
+            kotlin.io.println("[API] 세션 조회 성공: plateNumber=${session?.plateNumber}")
+            session
+        } catch (e: Exception) {
+            kotlin.io.println("[API] 세션 조회 예외 발생: ${e.message}")
+            e.printStackTrace()
+            null
+        }
     }
 
     override fun close() {

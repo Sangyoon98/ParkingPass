@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +15,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -107,55 +110,38 @@ actual fun CameraScreen(
                     Text("카메라 프리뷰 로딩 중...")
                 }
 
-                // 실시간 번호판 인식 (2초마다 프레임 분석)
-                // previewView가 설정된 후에만 시작
+                // 실시간 프레임 분석 시작
                 val currentController = cameraController
                 LaunchedEffect(currentController, hasPermission, previewView) {
                     if (currentController != null && hasPermission && previewView != null) {
-                        println("📷 [CameraScreen] 번호판 인식 시작")
-                        delay(3000) // 카메라 세션이 완전히 시작될 때까지 대기
-                        while (true) {
-                            if (!isAnalyzing) {
-                                isAnalyzing = true
-                                try {
-                                    println("📸 [CameraScreen] 이미지 촬영 시도")
-                                    val image = currentController.captureImage()
-                                    if (image != null) {
-                                        println("🖼️ [CameraScreen] 이미지 촬영 성공, 번호판 인식 시작")
-                                        // 이미지 분석 - 번호판이 인식되면 true 반환
-                                        val recognized = viewModel.recognizePlateFromImage(image)
-                                        if (recognized) {
-                                            println("🎉 [CameraScreen] 번호판 인식 성공, 화면 종료")
-                                            // 번호판 인식 성공 - 카메라 화면 종료
-                                            onImageCaptured(image)
-                                            return@LaunchedEffect
-                                        } else {
-                                            println("❌ [CameraScreen] 번호판 인식 실패, 다음 시도 대기")
-                                        }
-                                    } else {
-                                        println("⚠️ [CameraScreen] 이미지 촬영 실패 (null)")
-                                    }
-                                } catch (e: Exception) {
-                                    // 에러 로그 출력
-                                    println("💥 [CameraScreen] 이미지 처리 에러: ${e.message}")
-                                    e.printStackTrace()
-                                } finally {
-                                    isAnalyzing = false
-                                }
-                            }
-                            delay(2000) // 2초마다 다음 분석
+                        delay(2000) // 카메라 초기화 대기
+                        
+                        // 인식 시작
+                        viewModel.resumeRecognition()
+                        
+                        // 프레임 분석 시작
+                        currentController.startImageAnalysis { imageBytes ->
+                            viewModel.analyzeFrame(imageBytes)
                         }
                     }
                 }
 
-                // 분석 중 표시
-                if (isAnalyzing) {
-                    Box(
+                // 인식된 번호 오버레이
+                val uiState by viewModel.uiState.collectAsState()
+                if (uiState.recognizedPlate != null) {
+                    Card(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .padding(16.dp)
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     ) {
-                        CircularProgressIndicator()
+                        Text(
+                            text = uiState.recognizedPlate ?: "",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
                     }
                 }
             } else {
@@ -168,6 +154,43 @@ actual fun CameraScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
+            }
+            
+            // 차량 정보 바텀시트
+            val vehicleInfo = uiState.vehicleInfo
+            if (vehicleInfo != null && uiState.showVehicleSheet) {
+                VehicleInfoBottomSheet(
+                    vehicleInfo = vehicleInfo,
+                    onEnter = {
+                        val gate = uiState.selectedGate
+                        val plate = vehicleInfo.plateNumber
+                        if (gate != null && plate.isNotBlank()) {
+                            viewModel.updatePlateNumber(plate)
+                            viewModel.detectPlate {
+                                viewModel.dismissVehicleSheet()
+                                onBack()
+                            }
+                        }
+                    },
+                    onExit = {
+                        val gate = uiState.selectedGate
+                        val plate = vehicleInfo.plateNumber
+                        if (gate != null && plate.isNotBlank()) {
+                            viewModel.updatePlateNumber(plate)
+                            viewModel.detectPlate {
+                                viewModel.dismissVehicleSheet()
+                                onBack()
+                            }
+                        }
+                    },
+                    onRegister = {
+                        // TODO: 차량 등록 화면으로 이동
+                        viewModel.dismissVehicleSheet()
+                    },
+                    onDismiss = {
+                        viewModel.dismissVehicleSheet()
+                    }
+                )
             }
         }
     }
