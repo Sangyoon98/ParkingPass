@@ -34,7 +34,7 @@ actual class CameraController(private val androidContext: Context) {
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var lifecycleOwner: LifecycleOwner? = null
-    private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private var analysisCallback: (suspend (ByteArray) -> Unit)? = null
     private var analysisScope: CoroutineScope? = null
 
@@ -173,6 +173,9 @@ actual class CameraController(private val androidContext: Context) {
             Thread.currentThread().interrupt()
             cameraExecutor.shutdownNow()
         }
+        
+        // 종료된 ExecutorService는 재사용할 수 없으므로 새로운 인스턴스 생성
+        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     actual suspend fun captureImage(): CameraImage? {
@@ -474,6 +477,12 @@ actual class CameraController(private val androidContext: Context) {
         analysisCallback = onFrame
         // 분석용 코루틴 스코프 생성 (프레임마다 새로운 스코프를 생성하지 않도록)
         analysisScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+        // ExecutorService가 종료되었으면 재생성 (방어적 프로그래밍)
+        if (cameraExecutor.isShutdown || cameraExecutor.isTerminated) {
+            Log.w(TAG, "cameraExecutor가 종료되어 재생성합니다")
+            cameraExecutor = Executors.newSingleThreadExecutor()
+        }
 
         val analysis = imageAnalysis
         val provider = cameraProvider

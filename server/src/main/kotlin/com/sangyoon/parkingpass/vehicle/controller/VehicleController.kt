@@ -31,7 +31,7 @@ fun Route.vehicleController(
         /**
          * 등록 차량 목록 조회
          *
-         * @query parkingLotId 주차장 ID
+         * @query [Long] parkingLotId 주차장 ID
          * @response 200 application/json List<VehicleResponse> 차량 목록
          * @tag Vehicles
          */
@@ -51,8 +51,8 @@ fun Route.vehicleController(
         /**
          * 번호판으로 차량 조회
          *
-         * @param parkingLotId 주차장 ID
-         * @param plateNumber 번호판 번호
+         * @path [Long] parkingLotId 주차장 ID
+         * @path [String] plateNumber 번호판 번호
          * @response 200 application/json VehicleResponse? 차량 정보 (없으면 null)
          * @tag Vehicles
          */

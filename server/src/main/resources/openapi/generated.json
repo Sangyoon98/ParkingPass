@@ -189,8 +189,7 @@
                         "description": "주차장 ID",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "format": "int64"
+                            "type": "string"
                         }
                     }
                 ],
