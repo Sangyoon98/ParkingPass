@@ -252,19 +252,11 @@ public class CameraHelper: NSObject {
             
             // 기존 videoOutput이 있으면 제거
             if let existingVideoOutput = self.videoOutput,
-               let session = self.captureSession {
-                let canRemove: Bool
-                if #available(iOS 16.0, *) {
-                    canRemove = session.canRemoveOutput(existingVideoOutput)
-                } else {
-                    canRemove = session.outputs.contains(existingVideoOutput)
-                }
-                
-                if canRemove {
-                    session.beginConfiguration()
-                    session.removeOutput(existingVideoOutput)
-                    session.commitConfiguration()
-                }
+               let session = self.captureSession,
+               session.canRemoveOutput(existingVideoOutput) {
+                session.beginConfiguration()
+                session.removeOutput(existingVideoOutput)
+                session.commitConfiguration()
             }
             
             guard let session = self.captureSession else {
@@ -331,19 +323,11 @@ public class CameraHelper: NSObject {
             guard let self = self else { return }
             
             if let videoOutput = self.videoOutput,
-               let session = self.captureSession {
-                let canRemove: Bool
-                if #available(iOS 16.0, *) {
-                    canRemove = session.canRemoveOutput(videoOutput)
-                } else {
-                    canRemove = session.outputs.contains(videoOutput)
-                }
-                
-                if canRemove {
-                    session.beginConfiguration()
-                    session.removeOutput(videoOutput)
-                    session.commitConfiguration()
-                }
+               let session = self.captureSession,
+               session.canRemoveOutput(videoOutput) {
+                session.beginConfiguration()
+                session.removeOutput(videoOutput)
+                session.commitConfiguration()
             }
             
             self.videoOutput?.setSampleBufferDelegate(nil, queue: nil)
