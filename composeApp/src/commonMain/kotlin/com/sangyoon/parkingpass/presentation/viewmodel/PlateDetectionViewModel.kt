@@ -228,45 +228,43 @@ class PlateDetectionViewModel(
     private suspend fun loadVehicleInfo(plateNumber: String) {
         val parkingLotId = _selectedParkingLotId.value ?: return
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+        _uiState.update { it.copy(isLoading = true, error = null) }
 
-            println("🔍 [PlateDetection] 차량 정보 조회 시작 - parkingLotId: $parkingLotId, plateNumber: $plateNumber")
+        println("🔍 [PlateDetection] 차량 정보 조회 시작 - parkingLotId: $parkingLotId, plateNumber: $plateNumber")
 
-            val vehicleResult = getVehicleByPlateUseCase(parkingLotId, plateNumber)
-            val sessionResult = getCurrentSessionByPlateUseCase(parkingLotId, plateNumber)
+        val vehicleResult = getVehicleByPlateUseCase(parkingLotId, plateNumber)
+        val sessionResult = getCurrentSessionByPlateUseCase(parkingLotId, plateNumber)
 
-            // 에러 로그 출력
-            vehicleResult.onFailure { error ->
-                println("❌ [PlateDetection] 차량 조회 실패: ${error.message}")
-                error.printStackTrace()
-            }
-            sessionResult.onFailure { error ->
-                println("❌ [PlateDetection] 세션 조회 실패: ${error.message}")
-                error.printStackTrace()
-            }
+        // 에러 로그 출력
+        vehicleResult.onFailure { error ->
+            println("❌ [PlateDetection] 차량 조회 실패: ${error.message}")
+            error.printStackTrace()
+        }
+        sessionResult.onFailure { error ->
+            println("❌ [PlateDetection] 세션 조회 실패: ${error.message}")
+            error.printStackTrace()
+        }
 
-            val vehicle = vehicleResult.getOrNull()
-            val session = sessionResult.getOrNull()
+        val vehicle = vehicleResult.getOrNull()
+        val session = sessionResult.getOrNull()
 
-            println("🔍 [PlateDetection] 조회 결과 - vehicle: ${vehicle != null}, session: ${session != null}")
-            if (vehicle != null) {
-                println("🔍 [PlateDetection] 차량 정보: id=${vehicle.id}, plateNumber=${vehicle.plateNumber}, label=${vehicle.label}")
-            }
+        println("🔍 [PlateDetection] 조회 결과 - vehicle: ${vehicle != null}, session: ${session != null}")
+        if (vehicle != null) {
+            println("🔍 [PlateDetection] 차량 정보: id=${vehicle.id}, plateNumber=${vehicle.plateNumber}, label=${vehicle.label}")
+        }
 
-            val vehicleInfo = VehicleInfo(
-                plateNumber = plateNumber,
-                vehicle = vehicle,
-                currentSession = session
+        val vehicleInfo = VehicleInfo(
+            plateNumber = plateNumber,
+            vehicle = vehicle,
+            currentSession = session
+        )
+
+        _uiState.update {
+            it.copy(
+                vehicleInfo = vehicleInfo,
+                showVehicleSheet = true,
+                isLoading = false
             )
-
-            _uiState.update {
-                it.copy(
-                    vehicleInfo = vehicleInfo,
-                    showVehicleSheet = true,
-                    isLoading = false
-                )
-            }
         }
     }
 

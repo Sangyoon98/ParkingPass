@@ -22,6 +22,11 @@ public class CameraHelper: NSObject {
     private var videoOutputDelegate: VideoOutputDelegate?
     // 비디오 프레임 콜백
     private var videoFrameCallback: ((Data) -> Void)?
+    // 프레임 스로틀링을 위한 변수
+    private var lastFrameProcessedTime: TimeInterval = 0
+    private let frameProcessingInterval: TimeInterval = 0.33 // 초당 약 3프레임
+    // CIContext 재사용을 위한 프로퍼티 (매 프레임마다 생성하지 않도록)
+    private let ciContext = CIContext()
     
     // MARK: - Permission
     
@@ -266,17 +271,21 @@ public class CameraHelper: NSObject {
                 guard let self = self,
                       let callback = self.videoFrameCallback else { return }
                 
+                // 프레임 스로틀링 (초당 약 3프레임만 처리)
+                let currentTime = CACurrentMediaTime()
+                guard currentTime - self.lastFrameProcessedTime >= self.frameProcessingInterval else { return }
+                self.lastFrameProcessedTime = currentTime
+                
                 // CMSampleBuffer를 UIImage로 변환
                 guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
                 
                 let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-                let context = CIContext()
-                guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+                guard let cgImage = self.ciContext.createCGImage(ciImage, from: ciImage.extent) else { return }
                 
                 let uiImage = UIImage(cgImage: cgImage)
                 
-                // UIImage를 JPEG Data로 변환
-                guard let jpegData = uiImage.jpegData(compressionQuality: 0.9) else { return }
+                // UIImage를 JPEG Data로 변환 (실시간 처리에 적합한 낮은 압축 품질 사용)
+                guard let jpegData = uiImage.jpegData(compressionQuality: 0.6) else { return }
                 
                 // 콜백 호출 (메인 스레드가 아닌 백그라운드 스레드에서 호출)
                 callback(jpegData)
@@ -314,6 +323,7 @@ public class CameraHelper: NSObject {
             self.videoOutput = nil
             self.videoOutputDelegate = nil
             self.videoFrameCallback = nil
+            self.lastFrameProcessedTime = 0 // 프레임 스로틀링 변수 초기화
         }
     }
     

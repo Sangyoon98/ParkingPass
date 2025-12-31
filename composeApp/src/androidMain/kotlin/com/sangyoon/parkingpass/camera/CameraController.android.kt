@@ -13,13 +13,17 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * Android CameraX 기반 카메라 컨트롤러 구현
@@ -30,8 +34,9 @@ actual class CameraController(private val androidContext: Context) {
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var lifecycleOwner: LifecycleOwner? = null
-    private val cameraExecutor: Executor = Executors.newSingleThreadExecutor()
+    private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private var analysisCallback: (suspend (ByteArray) -> Unit)? = null
+    private var analysisScope: CoroutineScope? = null
 
     companion object {
         private const val TAG = "CameraController"
@@ -155,6 +160,19 @@ actual class CameraController(private val androidContext: Context) {
         imageCapture = null
         imageAnalysis = null
         lifecycleOwner = null
+        
+        // ExecutorService 종료 (스레드 누수 방지)
+        try {
+            cameraExecutor.shutdown()
+            if (!cameraExecutor.awaitTermination(2, TimeUnit.SECONDS)) {
+                Log.w(TAG, "cameraExecutor가 2초 내에 종료되지 않아 강제 종료합니다")
+                cameraExecutor.shutdownNow()
+            }
+        } catch (e: InterruptedException) {
+            Log.w(TAG, "cameraExecutor 종료 중 인터럽트 발생", e)
+            Thread.currentThread().interrupt()
+            cameraExecutor.shutdownNow()
+        }
     }
 
     actual suspend fun captureImage(): CameraImage? {
@@ -454,6 +472,8 @@ actual class CameraController(private val androidContext: Context) {
 
     actual fun startImageAnalysis(onFrame: suspend (ByteArray) -> Unit) {
         analysisCallback = onFrame
+        // 분석용 코루틴 스코프 생성 (프레임마다 새로운 스코프를 생성하지 않도록)
+        analysisScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
         val analysis = imageAnalysis
         val provider = cameraProvider
@@ -464,8 +484,8 @@ actual class CameraController(private val androidContext: Context) {
             analysis.setAnalyzer(cameraExecutor) { imageProxy ->
                 try {
                     val jpegBytes = convertImageProxyToJpeg(imageProxy)
-                    // 코루틴 스코프에서 콜백 실행
-                    CoroutineScope(Dispatchers.Default).launch {
+                    // 클래스 레벨 스코프에서 콜백 실행
+                    analysisScope?.launch {
                         analysisCallback?.invoke(jpegBytes)
                     }
                 } catch (e: Exception) {
@@ -498,6 +518,9 @@ actual class CameraController(private val androidContext: Context) {
     actual fun stopImageAnalysis() {
         imageAnalysis?.clearAnalyzer()
         analysisCallback = null
+        // 분석용 코루틴 스코프 취소 및 정리
+        analysisScope?.cancel()
+        analysisScope = null
     }
 }
 
