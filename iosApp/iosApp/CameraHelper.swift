@@ -21,7 +21,7 @@ public class CameraHelper: NSObject {
     // VideoOutputDelegate를 강하게 유지하기 위한 저장소
     private var videoOutputDelegate: VideoOutputDelegate?
     // 비디오 프레임 콜백
-    private var videoFrameCallback: ((Data) -> Void)?
+    private var videoFrameCallback: ((Data?) -> Void)?
     // 프레임 스로틀링을 위한 변수
     private var lastFrameProcessedTime: TimeInterval = 0
     private let frameProcessingInterval: TimeInterval = 0.33 // 초당 약 3프레임
@@ -244,7 +244,7 @@ public class CameraHelper: NSObject {
     // MARK: - Video Analysis
     
     /// 실시간 비디오 프레임 분석 시작
-    @objc(startVideoAnalysisWithCallback:) public func startVideoAnalysis(callback: @escaping (Data) -> Void) {
+    @objc(startVideoAnalysisWithCallback:) public func startVideoAnalysis(callback: @escaping (Data?) -> Void) {
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             
@@ -252,11 +252,19 @@ public class CameraHelper: NSObject {
             
             // 기존 videoOutput이 있으면 제거
             if let existingVideoOutput = self.videoOutput,
-               let session = self.captureSession,
-               session.outputs.contains(existingVideoOutput) {
-                session.beginConfiguration()
-                session.removeOutput(existingVideoOutput)
-                session.commitConfiguration()
+               let session = self.captureSession {
+                let canRemove: Bool
+                if #available(iOS 16.0, *) {
+                    canRemove = session.canRemoveOutput(existingVideoOutput)
+                } else {
+                    canRemove = session.outputs.contains(existingVideoOutput)
+                }
+                
+                if canRemove {
+                    session.beginConfiguration()
+                    session.removeOutput(existingVideoOutput)
+                    session.commitConfiguration()
+                }
             }
             
             guard let session = self.captureSession else {
@@ -279,15 +287,24 @@ public class CameraHelper: NSObject {
                 self.lastFrameProcessedTime = currentTime
                 
                 // CMSampleBuffer를 UIImage로 변환
-                guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+                guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+                    callback(nil)
+                    return
+                }
                 
                 let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-                guard let cgImage = self.ciContext.createCGImage(ciImage, from: ciImage.extent) else { return }
+                guard let cgImage = self.ciContext.createCGImage(ciImage, from: ciImage.extent) else {
+                    callback(nil)
+                    return
+                }
                 
                 let uiImage = UIImage(cgImage: cgImage)
                 
                 // UIImage를 JPEG Data로 변환 (실시간 처리에 적합한 낮은 압축 품질 사용)
-                guard let jpegData = uiImage.jpegData(compressionQuality: 0.6) else { return }
+                guard let jpegData = uiImage.jpegData(compressionQuality: 0.6) else {
+                    callback(nil)
+                    return
+                }
                 
                 // 콜백 호출 (메인 스레드가 아닌 백그라운드 스레드에서 호출)
                 callback(jpegData)
@@ -314,11 +331,19 @@ public class CameraHelper: NSObject {
             guard let self = self else { return }
             
             if let videoOutput = self.videoOutput,
-               let session = self.captureSession,
-               session.outputs.contains(videoOutput) {
-                session.beginConfiguration()
-                session.removeOutput(videoOutput)
-                session.commitConfiguration()
+               let session = self.captureSession {
+                let canRemove: Bool
+                if #available(iOS 16.0, *) {
+                    canRemove = session.canRemoveOutput(videoOutput)
+                } else {
+                    canRemove = session.outputs.contains(videoOutput)
+                }
+                
+                if canRemove {
+                    session.beginConfiguration()
+                    session.removeOutput(videoOutput)
+                    session.commitConfiguration()
+                }
             }
             
             self.videoOutput?.setSampleBufferDelegate(nil, queue: nil)
