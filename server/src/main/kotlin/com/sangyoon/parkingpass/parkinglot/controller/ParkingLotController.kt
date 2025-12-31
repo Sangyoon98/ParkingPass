@@ -41,7 +41,7 @@ fun Route.parkingLotController(
         /**
          * 주차장 조회
          *
-         * @path id 주차장 ID
+         * @path [Long] id 주차장 ID
          * @response 200 application/json ParkingLotResponse 주차장 정보
          * @tag ParkingLots
          */

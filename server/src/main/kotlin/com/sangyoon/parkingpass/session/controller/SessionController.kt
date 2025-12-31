@@ -14,7 +14,7 @@ fun Route.sessionController(
         /**
          * 현재 주차 중 목록 조회
          *
-         * @query parkingLotId 주차장 ID
+         * @query [Long] parkingLotId 주차장 ID
          * @response 200 application/json List<SessionResponse> 현재 주차 중인 세션 목록
          * @tag Sessions
          */
@@ -29,8 +29,8 @@ fun Route.sessionController(
         /**
          * 날짜별 입출차 기록 조회
          *
-         * @query parkingLotId 주차장 ID
-         * @query date 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
+         * @query [Long] parkingLotId 주차장 ID
+         * @query [String] date 조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)
          * @response 200 application/json List<SessionResponse> 해당 날짜의 입출차 기록
          * @tag Sessions
          */
@@ -48,8 +48,8 @@ fun Route.sessionController(
         /**
          * 번호판으로 현재 세션 조회
          *
-         * @param parkingLotId 주차장 ID
-         * @param plateNumber 번호판 번호
+         * @path [Long] parkingLotId 주차장 ID
+         * @path [String] plateNumber 번호판 번호
          * @response 200 application/json SessionResponse? 현재 세션 (없으면 null)
          * @tag Sessions
          */

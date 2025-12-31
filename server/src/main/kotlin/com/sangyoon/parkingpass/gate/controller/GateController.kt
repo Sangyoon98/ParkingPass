@@ -17,7 +17,7 @@ fun Route.gateController(
         /**
          * 게이트 목록 조회
          *
-         * @query parkingLotId 주차장 ID
+         * @query [Long] parkingLotId 주차장 ID
          * @response 200 application/json List<GateResponse> 게이트 목록
          * @tag Gates
          */

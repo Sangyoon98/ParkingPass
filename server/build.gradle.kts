@@ -36,73 +36,9 @@ ktor {
     }
 }
 
-// OpenAPI 파일 후처리: path parameter의 parkingLotId와 id를 integer로 수정
-tasks.register("fixOpenApiTypes") {
-    dependsOn("buildOpenApi")
-    doLast {
-        val openApiFile = file("${layout.buildDirectory.get()}/openapi/generated.json")
-        if (openApiFile.exists()) {
-            var content = openApiFile.readText()
-            
-            // path parameter의 id를 integer로 수정
-            content = content.replace(
-                """                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "주차장 ID",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }""",
-                """                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "주차장 ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }"""
-            )
-            
-            // path parameter의 parkingLotId를 integer로 수정 (모든 발생)
-            content = content.replace(
-                """                        "name": "parkingLotId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }""",
-                """                        "name": "parkingLotId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }"""
-            )
-            
-            openApiFile.writeText(content)
-            println("✅ OpenAPI path parameter types fixed (id, parkingLotId -> integer)")
-        }
-    }
-}
-
 // OpenAPI 파일을 리소스로 복사하는 태스크
 tasks.register<Copy>("copyOpenApiToResources") {
-    dependsOn("fixOpenApiTypes")
+    dependsOn("buildOpenApi")
     from("${layout.buildDirectory.get()}/openapi/generated.json")
     into("${sourceSets.main.get().resources.srcDirs.first()}/openapi")
 }

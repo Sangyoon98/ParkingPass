@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class PlateDetectionViewModel(
     private val getGatesUseCase: GetGatesUseCase,
@@ -28,6 +30,8 @@ class PlateDetectionViewModel(
     val selectedParkingLotId: kotlinx.coroutines.flow.StateFlow<Long?> = _selectedParkingLotId.asStateFlow()
 
     private val _uiState = MutableStateFlow(PlateDetectionUiState())
+    // 프레임 처리 경쟁 상태 방지를 위한 Mutex
+    private val frameProcessingMutex = Mutex()
     val uiState = _uiState.asStateFlow()
 
     fun setSelectedParkingLotId(parkingLotId: Long) {
@@ -180,12 +184,17 @@ class PlateDetectionViewModel(
      * 각 프레임에서 번호판을 인식합니다.
      */
     suspend fun analyzeFrame(imageBytes: ByteArray) {
-        // 인식 중이 아니거나 바텀시트가 열려있으면 분석하지 않음
-        if (!_uiState.value.isRecognizing || _uiState.value.showVehicleSheet) {
+        // 이미 처리 중인 프레임이 있으면 스킵 (경쟁 상태 방지)
+        if (!frameProcessingMutex.tryLock()) {
             return
         }
 
-        return try {
+        try {
+            // 인식 중이 아니거나 바텀시트가 열려있으면 분석하지 않음
+            if (!_uiState.value.isRecognizing || _uiState.value.showVehicleSheet) {
+                return
+            }
+
             // 텍스트 인식
             val textRecognizer = createTextRecognizer()
             val recognitionResult = textRecognizer.recognize(imageBytes)
@@ -208,17 +217,18 @@ class PlateDetectionViewModel(
             if (plateNumber != null && PlateNumberExtractor.isValidPlateNumber(plateNumber)) {
                 println("✅ [PlateDetection] 번호판 인식 성공: $plateNumber")
                 
-                // 인식 성공 시 인식 중지 및 차량 정보 조회
+                // 인식 성공 시 인식 중지 및 차량 정보 조회 (Mutex 보호 하에 실행)
                 stopRecognition()
                 _uiState.update { it.copy(recognizedPlate = plateNumber) }
                 loadVehicleInfo(plateNumber)
-            } else {
-
             }
         } catch (e: Exception) {
             println("❌ [PlateDetection] 프레임 분석 에러: ${e.message}")
             e.printStackTrace()
             // 에러는 조용히 처리 (연속 분석 중이므로)
+        } finally {
+            // Mutex 해제 (항상 실행되도록 finally 블록에서)
+            frameProcessingMutex.unlock()
         }
     }
 
