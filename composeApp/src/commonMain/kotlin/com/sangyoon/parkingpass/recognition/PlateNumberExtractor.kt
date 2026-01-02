@@ -26,19 +26,12 @@ object PlateNumberExtractor {
      */
     private val allowedKoreanCharsPattern = allowedKoreanChars.joinToString("")
     
-    /**
-     * 한국 번호판 패턴 (허용된 한글 문자만 사용)
-     */
-    private val platePatterns = listOf(
-        // 구형: 12가3456, 01가1234
-        Regex("\\d{2}[$allowedKoreanCharsPattern]\\d{4}"),
-        // 신형: 123가4567, 001가1234
-        Regex("\\d{3}[$allowedKoreanCharsPattern]\\d{4}"),
-        // 구형 (공백 포함): 12 가 3456
-        Regex("\\d{2}\\s*[$allowedKoreanCharsPattern]\\s*\\d{4}"),
-        // 신형 (공백 포함): 123 가 4567
-        Regex("\\d{3}\\s*[$allowedKoreanCharsPattern]\\s*\\d{4}")
-    )
+    private const val separatorPattern = "[-\\s]*"
+    private val whitespaceOrHyphen = Regex("[-\\s]+")
+
+    private val standardPlatePattern =
+        Regex("\\d{2,3}$separatorPattern[$allowedKoreanCharsPattern]$separatorPattern\\d{4}")
+    private val temporaryPlatePattern = Regex("임${separatorPattern}\\d{4}")
 
     /**
      * 인식된 텍스트에서 번호판 번호를 추출합니다.
@@ -47,53 +40,30 @@ object PlateNumberExtractor {
      * @return 추출된 번호판 번호 (없으면 null)
      */
     fun extractPlateNumber(recognizedText: String): String? {
-        // 공백 제거
-        val cleanedText = recognizedText.replace(Regex("\\s+"), "")
-        
-        // 패턴 매칭
-        for (pattern in platePatterns) {
-            val match = pattern.find(cleanedText)
-            if (match != null) {
-                val plateNumber = match.value.replace(Regex("\\s+"), "") // 공백 제거
-                // 허용된 한글 문자 확인
-                val koreanChars = plateNumber.filter { it.code in 0xAC00..0xD7A3 }
-                if (koreanChars.isNotEmpty() && koreanChars.all { it.toString() in allowedKoreanChars }) {
-                    return plateNumber
-                }
+        val normalizedText = recognizedText.replace("\n", " ")
+
+        standardPlatePattern.find(normalizedText)?.let { match ->
+            val candidate = match.value.replace(whitespaceOrHyphen, "")
+            if (isValidPlateNumber(candidate)) {
+                return candidate
             }
         }
-        
+
+        temporaryPlatePattern.find(normalizedText)?.let { match ->
+            val candidate = match.value.replace(whitespaceOrHyphen, "")
+            if (isValidPlateNumber(candidate)) {
+                return candidate
+            }
+        }
+
         // 패턴 매칭 실패 시 기본 형식 검증을 수행하여 반환
-        // 최소한의 검증: 길이, 숫자와 허용된 한글 문자만 포함, 형식(숫자+한글+숫자)
-        if (cleanedText.length !in 7..8) {
+        // 최소한의 검증: 길이, 숫자와 허용된 한글 문자만 포함, 형식(숫자+한글+숫자) 또는 임시 번호판
+        val cleanedText = normalizedText.replace(whitespaceOrHyphen, "")
+        if (cleanedText.length !in 5..8) {
             return null
         }
-        
-        // 허용된 문자만 포함되어 있는지 확인 (숫자 + 허용된 한글 문자)
-        val containsOnlyAllowedChars = cleanedText.all { char ->
-            char.isDigit() || (char.code in 0xAC00..0xD7A3 && char.toString() in allowedKoreanChars)
-        }
-        if (!containsOnlyAllowedChars) {
-            return null
-        }
-        
-        // 한글 문자가 포함되어 있는지 확인
-        val koreanChars = cleanedText.filter { it.code in 0xAC00..0xD7A3 }
-        if (koreanChars.isEmpty()) {
-            return null
-        }
-        
-        // 기본 형식 검증: 숫자로 시작하고 끝나야 함
-        if (!cleanedText.first().isDigit() || !cleanedText.last().isDigit()) {
-            return null
-        }
-        
-        // 한글 문자가 허용된 문자 집합에 포함되는지 확인
-        if (!koreanChars.all { it.toString() in allowedKoreanChars }) {
-            return null
-        }
-        
-        return cleanedText
+
+        return if (isValidPlateNumber(cleanedText)) cleanedText else null
     }
 
     /**
@@ -132,23 +102,23 @@ object PlateNumberExtractor {
      * @return 유효하면 true
      */
     fun isValidPlateNumber(plateNumber: String): Boolean {
-        val cleaned = plateNumber.replace(Regex("\\s+"), "")
-        
-        // 패턴 검증
-        val matchesPattern = platePatterns.any { it.matches(cleaned) }
-        if (!matchesPattern) {
+        val cleaned = plateNumber.replace(whitespaceOrHyphen, "")
+
+        if (temporaryPlatePattern.matches(cleaned)) {
+            return cleaned.length == 5 &&
+                cleaned.firstOrNull() == '임' &&
+                cleaned.drop(1).all { it.isDigit() }
+        }
+
+        if (!standardPlatePattern.matches(cleaned)) {
             return false
         }
-        
-        // 한글 문자가 허용된 문자 집합에 포함되는지 추가 검증
-        // 정규식으로 이미 필터링되지만 이중 검증을 위해 확인
-        val koreanChars = cleaned.filter { it.code in 0xAC00..0xD7A3 } // 한글 유니코드 범위
+
+        val koreanChars = cleaned.filter { it.code in 0xAC00..0xD7A3 }
         if (koreanChars.isEmpty()) {
             return false
         }
-        
-        // 각 한글 문자가 허용된 문자 집합에 포함되는지 확인
+
         return koreanChars.all { it.toString() in allowedKoreanChars }
     }
 }
-
