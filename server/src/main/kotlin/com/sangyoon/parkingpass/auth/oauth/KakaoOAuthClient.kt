@@ -23,6 +23,9 @@ import kotlinx.serialization.Serializable
 class KakaoOAuthClient(
     private val httpClient: HttpClient = HttpClient(CIO)
 ) {
+    companion object {
+        val DEFAULT_REDIRECT_URI: String = KakaoOAuthConfig.redirectUri()
+    }
 
     @Serializable
     data class TokenResponse(

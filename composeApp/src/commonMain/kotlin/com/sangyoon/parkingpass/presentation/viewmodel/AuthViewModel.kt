@@ -37,14 +37,6 @@ class AuthViewModel(
         _uiState.update { it.copy(name = name) }
     }
 
-    fun updateKakaoCode(code: String) {
-        _uiState.update { it.copy(kakaoCode = code) }
-    }
-
-    fun updateKakaoRedirectUri(uri: String) {
-        _uiState.update { it.copy(kakaoRedirectUri = uri) }
-    }
-
     fun logout() {
         authRepository.logout()
         _uiState.update { it.copy(password = "", error = null) }
@@ -83,22 +75,36 @@ class AuthViewModel(
         }
     }
 
-    fun loginWithKakao() {
-        val state = _uiState.value
-        if (state.kakaoCode.isBlank()) {
-            _uiState.update { it.copy(error = "카카오 인가 코드를 입력해주세요.") }
-            return
-        }
+    fun beginKakaoLogin() {
+        if (_uiState.value.isLoading) return
+        _uiState.update { it.copy(isLoading = true, error = null) }
+    }
+
+    fun onKakaoLoginCancelled() {
+        _uiState.update { it.copy(isLoading = false) }
+    }
+
+    fun onKakaoAccessToken(accessToken: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
             runCatching {
-                authRepository.loginWithKakao(
-                    code = state.kakaoCode,
-                    redirectUri = state.kakaoRedirectUri.ifBlank { null }
-                )
+                authRepository.loginWithKakao(accessToken = accessToken)
             }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, error = e.message ?: "카카오 로그인에 실패했습니다.") }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "카카오 로그인에 실패했습니다."
+                    )
+                }
             }
+        }
+    }
+
+    fun onKakaoLoginError(message: String) {
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                error = message
+            )
         }
     }
 }

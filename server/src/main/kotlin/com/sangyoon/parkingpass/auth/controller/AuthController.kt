@@ -42,7 +42,11 @@ fun Route.authController(authService: AuthService) {
             val request = call.receive<KakaoLoginRequest>()
             val redirectUri = request.redirectUri
                 ?: KakaoOAuthConfig.redirectUri()
-            val result = authService.loginWithKakao(request.code, redirectUri)
+            val result = authService.loginWithKakao(
+                code = request.code,
+                redirectUri = redirectUri,
+                accessToken = request.accessToken
+            )
             call.respond(HttpStatusCode.OK, result.toResponse())
         }
 
@@ -69,6 +73,7 @@ fun Route.authController(authService: AuthService) {
 
 @kotlinx.serialization.Serializable
 data class KakaoLoginRequest(
-    val code: String,
-    val redirectUri: String? = null
+    val code: String? = null,
+    val redirectUri: String? = null,
+    val accessToken: String? = null
 )

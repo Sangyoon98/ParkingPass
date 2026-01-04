@@ -1,0 +1,5 @@
+language = Objective-C
+headers = KakaoLoginBridge.h
+headerFilter = KakaoLoginBridge.h
+compilerOpts = -framework Foundation -I../iosApp/iosApp
+package = com.sangyoon.parkingpass.auth.bridge

@@ -23,6 +23,7 @@ navigation-compose = "2.9.1"
 mlkit-text-recognition = "16.0.1"
 cameraX = "1.5.2"
 bcrypt = "0.4"
+v2User = "2.23.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -77,6 +78,7 @@ cameraX-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "ca
 cameraX-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraX" }
 cameraX-view = { module = "androidx.camera:camera-view", version.ref = "cameraX" }
 bcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
+v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

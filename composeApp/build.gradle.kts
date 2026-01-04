@@ -33,6 +33,13 @@ kotlin {
                         project.file("nativeInterop/cinterop")
                     )
                 }
+                val KakaoLoginBridge by creating {
+                    defFile(rootProject.file("nativeInterop/cinterop/KakaoLoginBridge.def"))
+                    packageName("com.sangyoon.parkingpass.auth.bridge")
+                    includeDirs(
+                        project.file("nativeInterop/cinterop")
+                    )
+                }
             }
         }
     }
@@ -49,6 +56,8 @@ kotlin {
             implementation(libs.cameraX.camera2)
             implementation(libs.cameraX.lifecycle)
             implementation(libs.cameraX.view)
+
+            implementation(libs.v2.user)
         }
         commonMain.dependencies {
             // Koin
@@ -106,4 +115,3 @@ android {
 dependencies {
     debugImplementation(compose.uiTooling)
 }
-

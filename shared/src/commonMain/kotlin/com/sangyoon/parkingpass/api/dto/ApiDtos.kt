@@ -129,8 +129,9 @@ data class AuthResponse(
 
 @Serializable
 data class KakaoLoginRequest(
-    val code: String,
-    val redirectUri: String? = null
+    val code: String? = null,
+    val redirectUri: String? = null,
+    val accessToken: String? = null
 )
 
 // Membership

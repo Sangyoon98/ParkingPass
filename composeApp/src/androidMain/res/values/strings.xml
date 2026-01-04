@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ParkingPass</string>
+    <string name="kakao_native_app_key">9521f52720a7b086bb94d4f73e50e4e0</string>
 </resources>

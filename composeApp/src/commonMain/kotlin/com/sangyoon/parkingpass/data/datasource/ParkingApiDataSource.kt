@@ -52,8 +52,12 @@ class ParkingApiDataSource(
 
     suspend fun getProfile(): UserResponse = apiClient.getProfile()
 
-    suspend fun loginWithKakao(code: String, redirectUri: String?): AuthResponse =
-        apiClient.loginWithKakao(KakaoLoginRequest(code, redirectUri))
+    suspend fun loginWithKakao(
+        code: String? = null,
+        redirectUri: String? = null,
+        accessToken: String? = null
+    ): AuthResponse =
+        apiClient.loginWithKakao(KakaoLoginRequest(code = code, redirectUri = redirectUri, accessToken = accessToken))
 
     suspend fun getMyParkingLots(): List<ParkingLotResponse> = apiClient.getMyParkingLots()
 

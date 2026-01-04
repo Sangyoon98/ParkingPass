@@ -33,8 +33,12 @@ class AuthRepository(
         return user
     }
 
-    suspend fun loginWithKakao(code: String, redirectUri: String?): User {
-        val response = dataSource.loginWithKakao(code, redirectUri)
+    suspend fun loginWithKakao(
+        code: String? = null,
+        redirectUri: String? = null,
+        accessToken: String? = null
+    ): User {
+        val response = dataSource.loginWithKakao(code, redirectUri, accessToken)
         persistToken(response.token)
         val user = response.user.toDomain()
         _currentUser.value = user

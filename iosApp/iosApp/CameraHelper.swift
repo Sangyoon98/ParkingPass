@@ -140,12 +140,14 @@ public class CameraHelper: NSObject {
                     return
                 }
                 NSLog("After guard - photoOutput exists: true")
-                NSLog("Before startRunning - photoOutput exists: \(photoOutput != nil), captureSession exists: \(self.captureSession != nil)")
+                let hasCaptureSession = self.captureSession != nil
+                NSLog("Before startRunning - photoOutput exists: \(photoOutput != nil), captureSession exists: \(hasCaptureSession)")
                 
                 // 세션 시작 (sessionQueue에서 - 블로킹 호출이므로 완료될 때까지 대기)
                 session.startRunning()
                 
-                NSLog("After startRunning - photoOutput exists: \(self.photoOutput != nil), captureSession exists: \(self.captureSession != nil), isRunning: \(session.isRunning)")
+                let hasSessionAfterStart = self.captureSession != nil
+                NSLog("After startRunning - photoOutput exists: \(self.photoOutput != nil), captureSession exists: \(hasSessionAfterStart), isRunning: \(session.isRunning)")
                 
                 // PreviewView 생성 및 세션 설정 (메인 스레드에서 - Apple 권장사항)
                 DispatchQueue.main.async { [weak self] in
@@ -253,7 +255,7 @@ public class CameraHelper: NSObject {
             // 기존 videoOutput이 있으면 제거
             if let existingVideoOutput = self.videoOutput,
                let session = self.captureSession,
-               session.canRemoveOutput(existingVideoOutput) {
+               session.outputs.contains(existingVideoOutput) {
                 session.beginConfiguration()
                 session.removeOutput(existingVideoOutput)
                 session.commitConfiguration()
@@ -324,7 +326,7 @@ public class CameraHelper: NSObject {
             
             if let videoOutput = self.videoOutput,
                let session = self.captureSession,
-               session.canRemoveOutput(videoOutput) {
+               session.outputs.contains(videoOutput) {
                 session.beginConfiguration()
                 session.removeOutput(videoOutput)
                 session.commitConfiguration()
@@ -468,3 +470,4 @@ private class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
         }
     }
 }
+

@@ -61,9 +61,22 @@ class AuthService(
 
     suspend fun getUserById(userId: UUID): User? = userRepository.findById(userId)
 
-    suspend fun loginWithKakao(code: String, redirectUri: String): AuthResult {
-        val tokenResponse = kakaoOAuthClient.exchangeCode(code, redirectUri)
-        val kakaoUser = kakaoOAuthClient.fetchUser(tokenResponse.accessToken)
+    suspend fun loginWithKakao(
+        code: String?,
+        redirectUri: String?,
+        accessToken: String?
+    ): AuthResult {
+        val oauthAccessToken = when {
+            !accessToken.isNullOrBlank() -> accessToken
+            !code.isNullOrBlank() -> {
+                val safeRedirect = redirectUri ?: KakaoOAuthClient.DEFAULT_REDIRECT_URI
+                val tokenResponse = kakaoOAuthClient.exchangeCode(code, safeRedirect)
+                tokenResponse.accessToken
+            }
+            else -> throw IllegalArgumentException("카카오 로그인 정보가 올바르지 않습니다.")
+        }
+
+        val kakaoUser = kakaoOAuthClient.fetchUser(oauthAccessToken)
         val provider = "kakao"
         val providerUserId = kakaoUser.id.toString()
 
