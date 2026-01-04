@@ -24,14 +24,18 @@ data class PlateDetectedResponse(
 @Serializable
 data class CreateParkingLotRequest(
     val name: String,
-    val location: String
+    val location: String,
+    val isPublic: Boolean = true
 )
 
 @Serializable
 data class ParkingLotResponse(
     val id: Long,
     val name: String,
-    val location: String
+    val location: String,
+    val ownerId: String?,
+    val isPublic: Boolean,
+    val joinCode: String?
 )
 
 // 게이트 관련
@@ -93,4 +97,62 @@ data class SessionResponse(
 data class ErrorResponseDto(
     val code: String,
     val message: String
+)
+
+// Auth
+@Serializable
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    val name: String? = null
+)
+
+@Serializable
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class UserResponse(
+    val id: String,
+    val email: String,
+    val name: String?,
+    val createdAt: String
+)
+
+@Serializable
+data class AuthResponse(
+    val token: String,
+    val user: UserResponse
+)
+
+@Serializable
+data class KakaoLoginRequest(
+    val code: String,
+    val redirectUri: String? = null
+)
+
+// Membership
+@Serializable
+data class ParkingLotMemberResponse(
+    val id: Long,
+    val userId: String,
+    val email: String,
+    val name: String?,
+    val role: String,
+    val status: String,
+    val invitedBy: String?,
+    val joinedAt: String?
+)
+
+@Serializable
+data class InviteMemberRequest(
+    val email: String,
+    val role: String = "MEMBER"
+)
+
+@Serializable
+data class UpdateMemberRoleRequest(
+    val role: String
 )

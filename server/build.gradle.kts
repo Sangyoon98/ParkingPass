@@ -103,6 +103,8 @@ dependencies {
 
     // StatusPages
     implementation(libs.ktor.server.status.pages)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.auth.jwt)
 
     implementation(projects.shared)
     implementation(libs.logback)
@@ -117,6 +119,8 @@ dependencies {
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.postgrest)
     implementation(libs.ktor.client.cio) // HTTP client for Supabase
+
+    implementation(libs.bcrypt)
 
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)

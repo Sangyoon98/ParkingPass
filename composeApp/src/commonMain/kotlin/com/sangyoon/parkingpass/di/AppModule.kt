@@ -7,6 +7,7 @@ import com.sangyoon.parkingpass.data.repository.ParkingLotRepositoryImpl
 import com.sangyoon.parkingpass.data.repository.PlateDetectionRepositoryImpl
 import com.sangyoon.parkingpass.data.repository.SessionRepositoryImpl
 import com.sangyoon.parkingpass.data.repository.VehicleRepositoryImpl
+import com.sangyoon.parkingpass.data.repository.AuthRepository
 import com.sangyoon.parkingpass.domain.repository.GateRepository
 import com.sangyoon.parkingpass.domain.repository.ParkingLotRepository
 import com.sangyoon.parkingpass.domain.repository.PlateDetectionRepository
@@ -30,6 +31,7 @@ import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
+import com.sangyoon.parkingpass.presentation.viewmodel.AuthViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -49,6 +51,7 @@ val appModule = module {
     single<VehicleRepository> { VehicleRepositoryImpl(get()) }
     single<GateRepository> { GateRepositoryImpl(get()) }
     single<PlateDetectionRepository> { PlateDetectionRepositoryImpl(get()) }
+    single { AuthRepository(get()) }
 
     // Use Case
     factoryOf(::GetParkingLotsUseCase)
@@ -71,4 +74,5 @@ val appModule = module {
     factory { GateViewModel(get(), get()) }
     factory { PlateDetectionViewModel(get(), get(), get(), get()) }
     factory { SessionViewModel(get(), get()) }
+    factory { AuthViewModel(get()) }
 }

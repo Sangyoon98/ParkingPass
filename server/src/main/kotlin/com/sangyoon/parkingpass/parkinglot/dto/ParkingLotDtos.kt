@@ -11,7 +11,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreateParkingLotRequest(
     val name: String,
-    val location: String
+    val location: String,
+    val isPublic: Boolean = true
 )
 
 /**
@@ -21,5 +22,8 @@ data class CreateParkingLotRequest(
 data class ParkingLotResponse(
     val id: Long,
     val name: String,
-    val location: String
+    val location: String,
+    val ownerId: String?,
+    val isPublic: Boolean,
+    val joinCode: String?
 )

@@ -1,9 +1,13 @@
 package com.sangyoon.parkingpass.vehicle.controller
 
+import com.sangyoon.parkingpass.common.AuthMiddleware
+import com.sangyoon.parkingpass.parking.model.MemberRole
 import com.sangyoon.parkingpass.vehicle.dto.CreateVehicleRequest
 import com.sangyoon.parkingpass.vehicle.dto.VehicleResponse
 import com.sangyoon.parkingpass.vehicle.service.VehicleService
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -12,61 +16,55 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 
 fun Route.vehicleController(
-    vehicleService: VehicleService
+    vehicleService: VehicleService,
+    authMiddleware: AuthMiddleware
 ) {
-    route("/api/v1") {
-        /**
-         * 등록 차량 추가
-         *
-         * @body application/json CreateVehicleRequest 등록 차량 정보
-         * @response 200 application/json VehicleResponse 생성된 차량 정보
-         * @tag Vehicles
-         */
-        post("/vehicles") {
-            val request = call.receive<CreateVehicleRequest>()
-            val response = vehicleService.createVehicle(request)
-            call.respond(HttpStatusCode.Created, response)
-        }
-
-        /**
-         * 등록 차량 목록 조회
-         *
-         * @query [Long] parkingLotId 주차장 ID
-         * @response 200 application/json List<VehicleResponse> 차량 목록
-         * @tag Vehicles
-         */
-        get("/vehicles") {
-            val parkingLotId = call.request.queryParameters["parkingLotId"]?.toLongOrNull()
-                ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
-
-            val vehicles: List<VehicleResponse> = try {
-                vehicleService.getVehicles(parkingLotId)
-            } catch (e: Exception) {
-                // Supabase 조회 등 내부 에러가 나더라도 클라이언트에는 빈 리스트로 응답
-                emptyList()
+    authenticate("auth-jwt") {
+        route("/api/v1") {
+            /**
+             * 등록 차량 추가 (ADMIN 이상)
+             */
+            post("/vehicles") {
+                val request = call.receive<CreateVehicleRequest>()
+                authMiddleware.requireParkingLotAccess(call, request.parkingLotId, MemberRole.ADMIN)
+                val response = vehicleService.createVehicle(request)
+                call.respond(HttpStatusCode.Created, response)
             }
-            call.respond(HttpStatusCode.OK, vehicles)
-        }
 
-        /**
-         * 번호판으로 차량 조회
-         *
-         * @path [Long] parkingLotId 주차장 ID
-         * @path [String] plateNumber 번호판 번호
-         * @response 200 application/json VehicleResponse? 차량 정보 (없으면 null)
-         * @tag Vehicles
-         */
-        get("/parking-lots/{parkingLotId}/vehicles/plate/{plateNumber}") {
-            val parkingLotId = call.parameters["parkingLotId"]?.toLongOrNull()
-                ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
-            val plateNumber = call.parameters["plateNumber"]
-                ?: throw IllegalArgumentException("plateNumber 파라미터가 필요합니다.")
+            /**
+             * 등록 차량 목록 조회 (멤버)
+             */
+            get("/vehicles") {
+                val parkingLotId = call.request.queryParameters["parkingLotId"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
 
-            val vehicle = vehicleService.getVehicleByPlateNumber(parkingLotId, plateNumber)
-            if (vehicle != null) {
-                call.respond(HttpStatusCode.OK, vehicle)
-            } else {
-                call.respond(HttpStatusCode.NotFound)
+                authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.MEMBER)
+
+                val vehicles: List<VehicleResponse> = try {
+                    vehicleService.getVehicles(parkingLotId)
+                } catch (_: Exception) {
+                    emptyList()
+                }
+                call.respond(HttpStatusCode.OK, vehicles)
+            }
+
+            /**
+             * 번호판으로 차량 조회 (멤버)
+             */
+            get("/parking-lots/{parkingLotId}/vehicles/plate/{plateNumber}") {
+                val parkingLotId = call.parameters["parkingLotId"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
+                val plateNumber = call.parameters["plateNumber"]
+                    ?: throw IllegalArgumentException("plateNumber 파라미터가 필요합니다.")
+
+                authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.MEMBER)
+
+                val vehicle = vehicleService.getVehicleByPlateNumber(parkingLotId, plateNumber)
+                if (vehicle != null) {
+                    call.respond(HttpStatusCode.OK, vehicle)
+                } else {
+                    call.respond(HttpStatusCode.NotFound)
+                }
             }
         }
     }

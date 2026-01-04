@@ -45,6 +45,9 @@ private fun ParkingLotResponse.toDomain(): ParkingLot {
     return ParkingLot(
         id = id,
         name = name,
-        location = location
+        location = location,
+        ownerId = ownerId,
+        isPublic = isPublic,
+        joinCode = joinCode
     )
 }
