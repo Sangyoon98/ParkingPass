@@ -169,7 +169,7 @@ class ParkingLotMemberService(
         minRole: MemberRole = MemberRole.MEMBER
     ): ParkingLotMember = requireMembershipWithRole(parkingLotId, userId, minRole)
 
-    private fun MemberRole.priority: Int
+    private val MemberRole.priority: Int
         get() = when (this) {
             MemberRole.MEMBER -> 1
             MemberRole.ADMIN -> 2

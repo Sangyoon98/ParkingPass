@@ -14,6 +14,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.Parameters
 import io.ktor.http.isSuccess
 import io.ktor.http.contentType
 import kotlinx.serialization.SerialName
@@ -59,19 +60,17 @@ class KakaoOAuthClient(
         code: String,
         redirectUri: String
     ): TokenResponse {
+        val formParameters = Parameters.build {
+            append("grant_type", "authorization_code")
+            append("client_id", KakaoOAuthConfig.clientId)
+            append("code", code)
+            append("redirect_uri", redirectUri)
+            KakaoOAuthConfig.clientSecret?.let { append("client_secret", it) }
+        }
+
         val response: HttpResponse = httpClient.post("https://kauth.kakao.com/oauth/token") {
             contentType(ContentType.Application.FormUrlEncoded)
-            setBody(
-                FormDataContent(
-                    formData {
-                        append("grant_type", "authorization_code")
-                        append("client_id", KakaoOAuthConfig.clientId)
-                        append("code", code)
-                        append("redirect_uri", redirectUri)
-                        KakaoOAuthConfig.clientSecret?.let { append("client_secret", it) }
-                    }
-                )
-            )
+            setBody(FormDataContent(formParameters))
         }
         if (!response.status.isSuccess()) {
             throw IllegalArgumentException("카카오 토큰 발급에 실패했습니다: ${response.status.value}")

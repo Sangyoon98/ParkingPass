@@ -18,9 +18,9 @@ class SupabaseParkingLotMemberRepository(
                 filter {
                     eq("parking_lot_id", parkingLotId)
                 }
-                order("joined_at", ascending = false)
             }
             .decodeList<ParkingLotMember>()
+            .sortedByDescending { it.joinedAt }
     }
 
     override suspend fun findByUserId(userId: UUID): List<ParkingLotMember> {
