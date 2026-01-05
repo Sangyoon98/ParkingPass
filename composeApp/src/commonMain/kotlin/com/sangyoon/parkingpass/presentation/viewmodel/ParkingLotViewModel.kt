@@ -3,6 +3,7 @@ package com.sangyoon.parkingpass.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sangyoon.parkingpass.domain.usecase.GetParkingLotsUseCase
+import com.sangyoon.parkingpass.domain.usecase.GetMyParkingLotsUseCase
 import com.sangyoon.parkingpass.domain.usecase.CreateParkingLotUseCase
 import com.sangyoon.parkingpass.presentation.state.ParkingLotUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class ParkingLotViewModel(
     private val getParkingLotsUseCase: GetParkingLotsUseCase,
+    private val getMyParkingLotsUseCase: GetMyParkingLotsUseCase,
     private val createParkingLotUseCase: CreateParkingLotUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ParkingLotUiState())
@@ -26,24 +28,20 @@ class ParkingLotViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            getParkingLotsUseCase().fold(
-                onSuccess = { parkingLots ->
-                    _uiState.update {
-                        it.copy(
-                            parkingLots = parkingLots,
-                            isLoading = false
-                        )
-                    }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = error.message ?: "알 수 없는 오류가 발생했습니다"
-                        )
-                    }
-                }
-            )
+            val myResult = getMyParkingLotsUseCase()
+            val publicResult = getParkingLotsUseCase()
+
+            val errorMessage = myResult.exceptionOrNull()?.message
+                ?: publicResult.exceptionOrNull()?.message
+
+            _uiState.update {
+                it.copy(
+                    myParkingLots = myResult.getOrDefault(emptyList()),
+                    publicParkingLots = publicResult.getOrDefault(emptyList()),
+                    isLoading = false,
+                    error = errorMessage
+                )
+            }
         }
     }
 

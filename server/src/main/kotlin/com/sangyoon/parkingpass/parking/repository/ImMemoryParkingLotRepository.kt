@@ -18,4 +18,23 @@ class ImMemoryParkingLotRepository : ParkingLotRepository {
     override suspend fun findById(id: Long): ParkingLot? = lots[id]
 
     override suspend fun findAll(): List<ParkingLot> = lots.values.toList()
+
+    override suspend fun findByIds(ids: Collection<Long>): List<ParkingLot> =
+        ids.mapNotNull { lots[it] }
+
+    override suspend fun searchPublicLots(query: String, limit: Int): List<ParkingLot> {
+        val normalized = query.trim()
+        val source = lots.values.filter { it.isPublic }
+        if (normalized.isEmpty()) {
+            return source.take(limit)
+        }
+        return source.filter {
+            it.name.contains(normalized, ignoreCase = true) ||
+                it.location.contains(normalized, ignoreCase = true)
+        }.take(limit)
+    }
+
+    override suspend fun deleteById(id: Long) {
+        lots.remove(id)
+    }
 }

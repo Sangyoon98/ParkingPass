@@ -45,7 +45,8 @@ fun ParkingLotDetailScreen(
     onCreateVehicleClick: () -> Unit,
     onManageGateClick: () -> Unit,
     onPlateDetectionClick: () -> Unit,
-    onSessionListClick: () -> Unit
+    onSessionListClick: () -> Unit,
+    onManageMembersClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -67,6 +68,7 @@ fun ParkingLotDetailScreen(
             ) {
                 FloatingActionButton(onClick = onCreateVehicleClick) { Text("차량+") }
                 FloatingActionButton(onClick = onManageGateClick) { Text("게이트") }
+                FloatingActionButton(onClick = onManageMembersClick) { Text("멤버") }
                 FloatingActionButton(onClick = onPlateDetectionClick) { Text("체크") }
                 FloatingActionButton(onClick = onSessionListClick) { Text("세션") }
             }
@@ -96,6 +98,14 @@ fun ParkingLotDetailScreen(
                         Text(uiState.parkingLot?.name ?: "", style = MaterialTheme.typography.headlineMedium)
                         Spacer(Modifier.height(4.dp))
                         Text(uiState.parkingLot?.location ?: "", style = MaterialTheme.typography.bodyMedium)
+                        Spacer(Modifier.height(8.dp))
+                        uiState.parkingLot?.let { lot ->
+                            val visibilityText = if (lot.isPublic) "공개 주차장" else "비공개 주차장"
+                            Text(visibilityText, style = MaterialTheme.typography.bodySmall)
+                            lot.joinCode?.let { code ->
+                                Text("초대 코드: $code", style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
                     }
                 }
             }

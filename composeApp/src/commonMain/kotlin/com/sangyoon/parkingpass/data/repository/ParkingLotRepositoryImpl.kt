@@ -39,12 +39,23 @@ class ParkingLotRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun getMyParkingLots(): Result<List<ParkingLot>> = runCatching {
+        dataSource.getMyParkingLots().map { it.toDomain() }
+    }
+
+    override suspend fun searchParkingLots(query: String): Result<List<ParkingLot>> = runCatching {
+        dataSource.searchParkingLots(query).map { it.toDomain() }
+    }
 }
 
 private fun ParkingLotResponse.toDomain(): ParkingLot {
     return ParkingLot(
         id = id,
         name = name,
-        location = location
+        location = location,
+        ownerId = ownerId,
+        isPublic = isPublic,
+        joinCode = joinCode
     )
 }

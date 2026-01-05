@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		53E66E862F0AC78A00844FBA /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 53E66E852F0AC78A00844FBA /* KakaoSDKAuth */; };
+		53E66E882F0AC78A00844FBA /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 53E66E872F0AC78A00844FBA /* KakaoSDKCommon */; };
+		53E66E8A2F0AC78A00844FBA /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 53E66E892F0AC78A00844FBA /* KakaoSDKUser */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1ACAE299D7FF4BE12BE37443 /* ParkingPass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ParkingPass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +47,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53E66E882F0AC78A00844FBA /* KakaoSDKCommon in Frameworks */,
+				53E66E862F0AC78A00844FBA /* KakaoSDKAuth in Frameworks */,
+				53E66E8A2F0AC78A00844FBA /* KakaoSDKUser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +94,9 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				53E66E852F0AC78A00844FBA /* KakaoSDKAuth */,
+				53E66E872F0AC78A00844FBA /* KakaoSDKCommon */,
+				53E66E892F0AC78A00844FBA /* KakaoSDKUser */,
 			);
 			productName = iosApp;
 			productReference = 1ACAE299D7FF4BE12BE37443 /* ParkingPass.app */;
@@ -114,6 +126,9 @@
 			);
 			mainGroup = 16CC87AE681D48F1D8AB494B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				53E66E842F0AC78900844FBA /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E17050EAAF18E9D71B9B2A93 /* Products */;
 			projectDirPath = "";
@@ -238,6 +253,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "번호판 인식을 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -247,6 +263,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sangyoon.parkingpass;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -331,6 +348,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "번호판 인식을 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -340,6 +358,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sangyoon.parkingpass;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -368,6 +387,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		53E66E842F0AC78900844FBA /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.27.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		53E66E852F0AC78A00844FBA /* KakaoSDKAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53E66E842F0AC78900844FBA /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKAuth;
+		};
+		53E66E872F0AC78A00844FBA /* KakaoSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53E66E842F0AC78900844FBA /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKCommon;
+		};
+		53E66E892F0AC78A00844FBA /* KakaoSDKUser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53E66E842F0AC78900844FBA /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKUser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7B37F1924CF9B443F991F8CF /* Project object */;
 }

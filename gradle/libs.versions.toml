@@ -22,6 +22,10 @@ supabase = "3.2.6"
 navigation-compose = "2.9.1"
 mlkit-text-recognition = "16.0.1"
 cameraX = "1.5.2"
+bcrypt = "0.4"
+v2User = "2.23.1"
+atomicfu = "0.29.0"
+androidx-security = "1.1.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -45,6 +49,8 @@ ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor
 ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages-jvm", version.ref = "ktor" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth-jvm", version.ref = "ktor" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktor" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
@@ -73,6 +79,10 @@ mlkit-text-recognition-korean = { module = "com.google.mlkit:text-recognition-ko
 cameraX-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraX" }
 cameraX-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraX" }
 cameraX-view = { module = "androidx.camera:camera-view", version.ref = "cameraX" }
+bcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
+v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
+androidx-security-crypto = { module = "androidx.security:security-crypto-ktx", version.ref = "androidx-security" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

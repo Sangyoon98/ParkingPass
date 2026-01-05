@@ -15,6 +15,8 @@ import com.sangyoon.parkingpass.presentation.ui.CreateVehicleScreen
 import com.sangyoon.parkingpass.presentation.ui.GateListScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotDetailScreen
 import com.sangyoon.parkingpass.presentation.ui.ParkingLotListScreen
+import com.sangyoon.parkingpass.presentation.ui.ParkingLotSearchScreen
+import com.sangyoon.parkingpass.presentation.ui.ParkingLotMemberScreen
 import com.sangyoon.parkingpass.presentation.ui.PlateDetectionScreen
 import com.sangyoon.parkingpass.presentation.ui.SessionListScreen
 import com.sangyoon.parkingpass.presentation.ui.VehicleListScreen
@@ -22,6 +24,8 @@ import com.sangyoon.parkingpass.camera.CameraImage
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
+import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotSearchViewModel
+import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotMemberViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.PlateDetectionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
@@ -32,6 +36,8 @@ object Routes {
     const val PARKING_LOT_LIST = "parking_lot_list"
     const val CREATE_PARKING_LOT = "create_parking_lot"
     const val PARKING_LOT_DETAIL = "parking_lot_detail"
+    const val PARKING_LOT_SEARCH = "parking_lot_search"
+    const val PARKING_LOT_MEMBERS = "parking_lot_members"
     const val VEHICLE_LIST = "vehicle_list"
     const val CREATE_VEHICLE = "create_vehicle"
     const val GATE_LIST = "gate_list"
@@ -61,6 +67,9 @@ fun ParkingAppNavigation(
                     },
                     onCreateClick = {
                         navController.navigate(Routes.CREATE_PARKING_LOT)
+                    },
+                    onSearchClick = {
+                        navController.navigate(Routes.PARKING_LOT_SEARCH)
                     }
                 )
             }
@@ -98,9 +107,35 @@ fun ParkingAppNavigation(
                         onSessionListClick = {
                             navController.navigate(Routes.SESSION_LIST)
                         },
+                        onManageMembersClick = {
+                            navController.navigate(Routes.PARKING_LOT_MEMBERS)
+                        },
                         onBack = { navController.popBackStack() }
                     )
                 }
+            }
+            composable(Routes.PARKING_LOT_MEMBERS) {
+                val viewModel = koinViewModel<ParkingLotMemberViewModel>()
+                val parkingLotId = navigationState.selectedParkingLotId
+
+                if (parkingLotId != null) {
+                    ParkingLotMemberScreen(
+                        viewModel = viewModel,
+                        parkingLotId = parkingLotId,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+            }
+            composable(Routes.PARKING_LOT_SEARCH) {
+                val viewModel = koinViewModel<ParkingLotSearchViewModel>()
+                ParkingLotSearchScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() },
+                    onParkingLotClick = { parkingLotId ->
+                        navigationState.setSelectedParkingLotId(parkingLotId)
+                        navController.navigate(Routes.PARKING_LOT_DETAIL)
+                    }
+                )
             }
 
             composable(Routes.VEHICLE_LIST) {

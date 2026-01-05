@@ -33,7 +33,8 @@ import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotViewModel
 fun ParkingLotListScreen(
     viewModel: ParkingLotViewModel,
     onParkingLotClick: (Long) -> Unit,
-    onCreateClick: () -> Unit
+    onCreateClick: () -> Unit,
+    onSearchClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -86,10 +87,38 @@ fun ParkingLotListScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(uiState.parkingLots) { parkingLot ->
+                    item {
+                        Button(
+                            onClick = onSearchClick,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("주차장 검색")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    if (uiState.myParkingLots.isNotEmpty()) {
+                        item {
+                            Text("내 주차장", style = MaterialTheme.typography.titleMedium)
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+                        items(uiState.myParkingLots) { lot ->
+                            ParkingLotItem(
+                                parkingLot = lot,
+                                onClick = { onParkingLotClick(lot.id) },
+                                showBadge = !lot.isPublic
+                            )
+                        }
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+                    }
+                    item {
+                        Text("전체 주차장", style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    items(uiState.publicParkingLots) { parkingLot ->
                         ParkingLotItem(
                             parkingLot = parkingLot,
-                            onClick = { onParkingLotClick(parkingLot.id) }
+                            onClick = { onParkingLotClick(parkingLot.id) },
+                            showBadge = !parkingLot.isPublic
                         )
                     }
                 }
@@ -98,10 +127,12 @@ fun ParkingLotListScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ParkingLotItem(
     parkingLot: com.sangyoon.parkingpass.domain.model.ParkingLot,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    showBadge: Boolean
 ) {
     Card(
         onClick = onClick,
@@ -120,6 +151,14 @@ fun ParkingLotItem(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            if (showBadge) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "비공개 주차장",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

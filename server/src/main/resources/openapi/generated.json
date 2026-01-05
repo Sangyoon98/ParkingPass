@@ -8,23 +8,127 @@
         "license": "Apache/2.0"
     },
     "paths": {
+        "/api/v1/auth/register": {
+            "post": {
+                "requestBody": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "requestBody": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/oauth/kakao": {
+            "post": {
+                "requestBody": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/KakaoLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/me": {
+            "get": {
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/gates": {
             "get": {
-                "summary": "게이트 목록 조회",
+                "summary": "게이트 목록 조회 (ADMIN 이상)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "parkingLotId",
                         "in": "query",
-                        "description": "주차장 ID",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List<GateResponse> 게이트 목록",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -36,17 +140,19 @@
                             }
                         }
                     }
-                },
-                "tags": [
-                    "Gates"
-                ]
+                }
             }
         },
         "/api/v1/gates/register": {
             "post": {
-                "summary": "게이트 등록",
+                "summary": "게이트 등록 (ADMIN 이상)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
                 "requestBody": {
-                    "description": "RegisterGateRequest 게이트 정보",
+                    "description": "",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -55,9 +161,6 @@
                         }
                     }
                 },
-                "tags": [
-                    "Gates"
-                ],
                 "responses": {
                     "201": {
                         "description": "",
@@ -130,9 +233,14 @@
         },
         "/api/v1/parking-lots": {
             "post": {
-                "summary": "주차장 등록",
+                "summary": "주차장 등록 (인증 필요)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
                 "requestBody": {
-                    "description": "CreateParkingLotRequest 주차장 정보",
+                    "description": "",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -143,7 +251,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "ParkingLotResponse 생성된 주차장 정보",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -152,10 +260,7 @@
                             }
                         }
                     }
-                },
-                "tags": [
-                    "ParkingLots"
-                ]
+                }
             },
             "get": {
                 "summary": "주차장 목록 조회",
@@ -179,18 +284,89 @@
                 ]
             }
         },
+        "/api/v1/parking-lots/my-lots": {
+            "get": {
+                "summary": "내가 속한 주차장 목록",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ParkingLotResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/parking-lots/search": {
+            "get": {
+                "summary": "공개 주차장 검색",
+                "parameters": [
+                    {
+                        "name": "[String]",
+                        "in": "query",
+                        "description": "q 검색어",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ParkingLotResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/parking-lots/{id}": {
             "get": {
                 "summary": "주차장 조회",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "[Long]",
                         "in": "path",
-                        "description": "주차장 ID",
+                        "description": "id 주차장 ID",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "format": "int64"
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -211,23 +387,304 @@
                 ]
             }
         },
-        "/api/v1/sessions/open": {
+        "/api/v1/parking-lots/{parkingLotId}/members": {
             "get": {
-                "summary": "현재 주차 중 목록 조회",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "parkingLotId",
-                        "in": "query",
-                        "description": "주차장 ID",
-                        "required": false,
+                        "in": "path",
+                        "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List<SessionResponse> 현재 주차 중인 세션 목록",
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ParkingLotMemberResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/parking-lots/{parkingLotId}/members/join-request": {
+            "post": {
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ParkingLotMemberResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/parking-lots/{parkingLotId}/members/invite": {
+            "post": {
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InviteMemberRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ParkingLotMemberResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/parking-lots/{parkingLotId}/members/{userId}/approve": {
+            "put": {
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ParkingLotMemberResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/parking-lots/{parkingLotId}/members/{userId}/reject": {
+            "put": {
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ParkingLotMemberResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/parking-lots/{parkingLotId}/members/{userId}/role": {
+            "put": {
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMemberRoleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ParkingLotMemberResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/parking-lots/{parkingLotId}/members/{userId}": {
+            "delete": {
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/sessions/open": {
+            "get": {
+                "summary": "현재 주차 중 목록 조회 (ADMIN 이상)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -239,29 +696,30 @@
                             }
                         }
                     }
-                },
-                "tags": [
-                    "Sessions"
-                ]
+                }
             }
         },
         "/api/v1/sessions/history": {
             "get": {
-                "summary": "날짜별 입출차 기록 조회",
+                "summary": "날짜별 입출차 기록 조회 (ADMIN 이상)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "parkingLotId",
                         "in": "query",
-                        "description": "주차장 ID",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     },
                     {
                         "name": "date",
                         "in": "query",
-                        "description": "조회할 날짜 (YYYY-MM-DD 형식, 예: 2025-12-03)",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -270,7 +728,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "List<SessionResponse> 해당 날짜의 입출차 기록",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -282,18 +740,39 @@
                             }
                         }
                     }
-                },
-                "tags": [
-                    "Sessions"
-                ]
+                }
             }
         },
         "/api/v1/parking-lots/{parkingLotId}/sessions/current/{plateNumber}": {
             "get": {
-                "summary": "번호판으로 현재 세션 조회",
+                "summary": "번호판으로 현재 세션 조회 (멤버)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "plateNumber",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "SessionResponse? 현재 세션 (없으면 null)",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -305,36 +784,19 @@
                     "404": {
                         "description": ""
                     }
-                },
-                "tags": [
-                    "Sessions"
-                ],
-                "parameters": [
-                    {
-                        "name": "parkingLotId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    },
-                    {
-                        "name": "plateNumber",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ]
+                }
             }
         },
         "/api/v1/vehicles": {
             "post": {
-                "summary": "등록 차량 추가",
+                "summary": "등록 차량 추가 (ADMIN 이상)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
                 "requestBody": {
-                    "description": "CreateVehicleRequest 등록 차량 정보",
+                    "description": "",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -344,12 +806,6 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "VehicleResponse 생성된 차량 정보",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
                     "201": {
                         "description": "",
                         "content": {
@@ -360,27 +816,29 @@
                             }
                         }
                     }
-                },
-                "tags": [
-                    "Vehicles"
-                ]
+                }
             },
             "get": {
-                "summary": "등록 차량 목록 조회",
+                "summary": "등록 차량 목록 조회 (멤버)",
+                "security": [
+                    {
+                        "auth-jwt": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "parkingLotId",
                         "in": "query",
-                        "description": "주차장 ID",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List<VehicleResponse> 차량 목록",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -392,32 +850,16 @@
                             }
                         }
                     }
-                },
-                "tags": [
-                    "Vehicles"
-                ]
+                }
             }
         },
         "/api/v1/parking-lots/{parkingLotId}/vehicles/plate/{plateNumber}": {
             "get": {
-                "summary": "번호판으로 차량 조회",
-                "responses": {
-                    "200": {
-                        "description": "VehicleResponse? 차량 정보 (없으면 null)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/VehicleResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": ""
+                "summary": "번호판으로 차량 조회 (멤버)",
+                "security": [
+                    {
+                        "auth-jwt": []
                     }
-                },
-                "tags": [
-                    "Vehicles"
                 ],
                 "parameters": [
                     {
@@ -437,12 +879,104 @@
                             "type": "string"
                         }
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VehicleResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": ""
+                    }
+                }
             }
         }
     },
     "components": {
         "schemas": {
+            "RegisterRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthResponse": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    },
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "createdAt": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "LoginRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "KakaoLoginRequest": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/KakaoCodeLoginRequest"
+                    },
+                    {
+                        "$ref": "#/components/schemas/KakaoTokenLoginRequest"
+                    }
+                ]
+            },
+            "UserResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    }
+                }
+            },
             "GateResponse": {
                 "type": "object",
                 "properties": {
@@ -557,6 +1091,9 @@
                     },
                     "location": {
                         "type": "string"
+                    },
+                    "isPublic": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -571,6 +1108,95 @@
                     },
                     "location": {
                         "type": "string"
+                    },
+                    "ownerId": {
+                        "type": "string"
+                    },
+                    "isPublic": {
+                        "type": "boolean"
+                    },
+                    "joinCode": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ParkingLotMemberResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "status": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "invitedBy": {
+                        "type": "string"
+                    },
+                    "joinedAt": {
+                        "type": "string"
+                    }
+                }
+            },
+            "InviteMemberRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            },
+            "UpdateMemberRoleRequest": {
+                "type": "object",
+                "properties": {
+                    "role": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ordinal": {
+                                "type": "integer"
+                            }
+                        }
                     }
                 }
             },
@@ -678,6 +1304,38 @@
                         "type": "string"
                     }
                 }
+            },
+            "KakaoCodeLoginRequest": {
+                "type": "object",
+                "required": [
+                    "code",
+                    "redirectUri"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "redirectUri": {
+                        "type": "string"
+                    }
+                }
+            },
+            "KakaoTokenLoginRequest": {
+                "type": "object",
+                "required": [
+                    "accessToken"
+                ],
+                "properties": {
+                    "accessToken": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "auth-jwt": {
+                "type": "http",
+                "scheme": "bearer"
             }
         }
     }

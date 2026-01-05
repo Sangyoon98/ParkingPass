@@ -1,0 +1,5 @@
+language = Objective-C
+headers = SecureStorageBridge.h
+headerFilter = SecureStorageBridge.h
+compilerOpts = -framework Foundation -framework Security -I../iosApp/iosApp
+package = com.sangyoon.parkingpass.security.bridge
