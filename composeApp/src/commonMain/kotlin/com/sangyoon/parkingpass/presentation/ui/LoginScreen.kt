@@ -15,6 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +35,7 @@ fun LoginScreen(
     val uiState by viewModel.uiState.collectAsState()
     val kakaoLauncher = rememberKakaoLoginLauncher()
     val coroutineScope = rememberCoroutineScope()
+    var password by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -51,8 +55,8 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
-            value = uiState.password,
-            onValueChange = viewModel::updatePassword,
+            value = password,
+            onValueChange = { password = it },
             label = { Text("비밀번호") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
@@ -72,7 +76,10 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { viewModel.login() },
+            onClick = {
+                viewModel.login(password)
+                password = ""
+            },
             enabled = !uiState.isLoading,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -84,7 +91,10 @@ fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Button(
-            onClick = { viewModel.register() },
+            onClick = {
+                viewModel.register(password)
+                password = ""
+            },
             enabled = !uiState.isLoading,
             modifier = Modifier.fillMaxWidth()
         ) {

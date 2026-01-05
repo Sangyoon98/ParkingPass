@@ -85,6 +85,12 @@ class AuthService(
             val email = kakaoUser.account?.email
                 ?: "kakao_${providerUserId}@kakao-user.local"
             val nickname = kakaoUser.account?.profile?.nickname
+
+            val existingByEmail = userRepository.findByEmail(email)
+            if (existingByEmail != null) {
+                throw IllegalArgumentException("이미 해당 이메일로 가입된 계정이 있습니다. 기존 계정으로 로그인해주세요.")
+            }
+
             val placeholderPassword = BCrypt.hashpw(UUID.randomUUID().toString(), BCrypt.gensalt())
             userRepository.createSocialUser(
                 provider = provider,

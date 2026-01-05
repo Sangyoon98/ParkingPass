@@ -17,12 +17,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Parameters
 import io.ktor.http.isSuccess
 import io.ktor.http.contentType
+import java.io.Closeable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class KakaoOAuthClient(
     private val httpClient: HttpClient = HttpClient(CIO)
-) {
+) : Closeable {
     companion object {
         val DEFAULT_REDIRECT_URI: String = KakaoOAuthConfig.redirectUri()
     }
@@ -90,5 +91,9 @@ class KakaoOAuthClient(
             throw IllegalArgumentException("카카오 사용자 정보를 가져오지 못했습니다: ${response.status.value}")
         }
         return response.body()
+    }
+
+    override fun close() {
+        httpClient.close()
     }
 }

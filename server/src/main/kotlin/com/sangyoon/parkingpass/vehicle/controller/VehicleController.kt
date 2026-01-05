@@ -40,11 +40,7 @@ fun Route.vehicleController(
 
                 authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.MEMBER)
 
-                val vehicles: List<VehicleResponse> = try {
-                    vehicleService.getVehicles(parkingLotId)
-                } catch (_: Exception) {
-                    emptyList()
-                }
+                val vehicles = vehicleService.getVehicles(parkingLotId)
                 call.respond(HttpStatusCode.OK, vehicles)
             }
 

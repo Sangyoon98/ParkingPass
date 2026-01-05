@@ -31,14 +31,20 @@ class ParkingLotService(
         )
 
         val saved = parkingLotRepository.save(lot)
-        parkingLotMemberRepository.save(
-            ParkingLotMember(
-                parkingLotId = saved.id,
-                userId = owner.id,
-                role = MemberRole.OWNER,
-                status = MemberStatus.APPROVED
+        try {
+            parkingLotMemberRepository.save(
+                ParkingLotMember(
+                    parkingLotId = saved.id,
+                    userId = owner.id,
+                    role = MemberRole.OWNER,
+                    status = MemberStatus.APPROVED
+                )
             )
-        )
+        } catch (e: Exception) {
+            // 보상 처리: 멤버 저장 실패 시 생성된 주차장 삭제
+            runCatching { parkingLotRepository.deleteById(saved.id) }
+            throw e
+        }
 
         return toResponse(saved)
     }

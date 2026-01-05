@@ -7,6 +7,7 @@ import com.sangyoon.parkingpass.auth.dto.UserResponse
 import com.sangyoon.parkingpass.auth.dto.toResponse
 import com.sangyoon.parkingpass.auth.service.AuthResult
 import com.sangyoon.parkingpass.auth.service.AuthService
+import com.sangyoon.parkingpass.common.AuthenticationException
 import com.sangyoon.parkingpass.config.KakaoOAuthConfig
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -53,9 +54,9 @@ fun Route.authController(authService: AuthService) {
         authenticate("auth-jwt") {
             get("/me") {
                 val principal = call.principal<JWTPrincipal>()
-                    ?: throw IllegalStateException("인증 정보가 없습니다.")
+                    ?: throw AuthenticationException("인증 정보가 없습니다.")
                 val subject = principal.subject
-                    ?: throw IllegalArgumentException("토큰 정보가 올바르지 않습니다.")
+                    ?: throw AuthenticationException("토큰 정보가 올바르지 않습니다.")
                 val userId = UUID.fromString(subject)
                 val user = authService.getUserById(userId)
                     ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다.")

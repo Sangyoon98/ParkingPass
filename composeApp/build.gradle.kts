@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -40,6 +41,13 @@ kotlin {
                         project.file("nativeInterop/cinterop")
                     )
                 }
+                val SecureStorageBridge by creating {
+                    defFile(rootProject.file("nativeInterop/cinterop/SecureStorageBridge.def"))
+                    packageName("com.sangyoon.parkingpass.security.bridge")
+                    includeDirs(
+                        project.file("nativeInterop/cinterop")
+                    )
+                }
             }
         }
     }
@@ -58,6 +66,7 @@ kotlin {
             implementation(libs.cameraX.view)
 
             implementation(libs.v2.user)
+            implementation(libs.androidx.security.crypto)
         }
         commonMain.dependencies {
             // Koin
@@ -89,12 +98,29 @@ android {
     namespace = "com.sangyoon.parkingpass"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    val localProperties = Properties().apply {
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { load(it) }
+        }
+    }
+    val kakaoNativeKey = localProperties.getProperty("kakao.native.app.key")
+        ?: System.getenv("KAKAO_NATIVE_APP_KEY")
+        ?: ""
+
     defaultConfig {
         applicationId = "com.sangyoon.parkingpass"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        resValue("string", "kakao_native_app_key", kakaoNativeKey)
+        manifestPlaceholders["kakaoScheme"] = if (kakaoNativeKey.isNotEmpty()) {
+            "kakao$kakaoNativeKey"
+        } else {
+            ""
+        }
     }
     packaging {
         resources {

@@ -24,6 +24,8 @@ mlkit-text-recognition = "16.0.1"
 cameraX = "1.5.2"
 bcrypt = "0.4"
 v2User = "2.23.0"
+atomicfu = "0.24.0"
+androidx-security = "1.1.0-alpha06"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -79,6 +81,8 @@ cameraX-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref =
 cameraX-view = { module = "androidx.camera:camera-view", version.ref = "cameraX" }
 bcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
 v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
+androidx-security-crypto = { module = "androidx.security:security-crypto-ktx", version.ref = "androidx-security" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

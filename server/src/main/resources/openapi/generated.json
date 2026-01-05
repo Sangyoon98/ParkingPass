@@ -313,17 +313,9 @@
                 "summary": "공개 주차장 검색",
                 "parameters": [
                     {
-                        "name": "[String]",
-                        "in": "query",
-                        "description": "q 검색어",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "name": "q",
                         "in": "query",
+                        "description": "검색어",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -352,20 +344,13 @@
                 "summary": "주차장 조회",
                 "parameters": [
                     {
-                        "name": "[Long]",
-                        "in": "path",
-                        "description": "id 주차장 ID",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "name": "id",
                         "in": "path",
+                        "description": "주차장 ID",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     }
                 ],

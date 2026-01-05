@@ -8,4 +8,5 @@ interface ParkingLotRepository {
     suspend fun findAll(): List<ParkingLot>
     suspend fun findByIds(ids: Collection<Long>): List<ParkingLot>
     suspend fun searchPublicLots(query: String, limit: Int = 20): List<ParkingLot>
+    suspend fun deleteById(id: Long)
 }

@@ -35,6 +35,7 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.core.Closeable
+import kotlinx.atomicfu.atomic
 import kotlinx.serialization.json.Json
 
 /**
@@ -51,14 +52,14 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
 
     private val apiBaseUrl = "$baseUrl/api/v1"
     private val json = Json { ignoreUnknownKeys = true }
-    private var authToken: String? = null
+    private val authToken = atomic<String?>(null)
 
     fun setAuthToken(token: String?) {
-        authToken = token
+        authToken.value = token
     }
 
     private fun io.ktor.client.request.HttpRequestBuilder.applyAuth() {
-        authToken?.let {
+        authToken.value?.let {
             headers.append(HttpHeaders.Authorization, "Bearer $it")
         }
     }

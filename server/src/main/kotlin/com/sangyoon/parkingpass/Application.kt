@@ -46,6 +46,9 @@ fun Application.module() {
 
     val userRepository = SupabaseUserRepository(supabase)
     val kakaoOAuthClient = KakaoOAuthClient()
+    environment.monitor.subscribe(ApplicationStopped) {
+        kakaoOAuthClient.close()
+    }
     val authService = AuthService(userRepository, kakaoOAuthClient)
     
     val parkingLotRepository: ParkingLotRepository = SupabaseParkingLotRepository(supabase)

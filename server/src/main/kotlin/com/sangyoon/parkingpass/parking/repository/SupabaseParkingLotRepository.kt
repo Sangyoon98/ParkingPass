@@ -49,27 +49,37 @@ class SupabaseParkingLotRepository(
     override suspend fun findByIds(ids: Collection<Long>): List<ParkingLot> =
         if (ids.isEmpty()) emptyList()
         else supabase.from("parking_lot")
-            .select()
-            .decodeList<ParkingLot>()
-            .filter { it.id in ids }
-
-    override suspend fun searchPublicLots(query: String, limit: Int): List<ParkingLot> {
-        val base = supabase.from("parking_lot")
             .select {
                 filter {
-                    eq("is_public", true)
+                    isIn("id", ids.toList())
                 }
             }
             .decodeList<ParkingLot>()
 
+    override suspend fun searchPublicLots(query: String, limit: Int): List<ParkingLot> {
         val normalized = query.trim()
-        if (normalized.isBlank()) {
-            return base.take(limit)
-        }
+        return supabase.from("parking_lot")
+            .select {
+                filter {
+                    eq("is_public", true)
+                    if (normalized.isNotBlank()) {
+                        or {
+                            ilike("name", "%$normalized%")
+                            ilike("location", "%$normalized%")
+                        }
+                    }
+                }
+                limit(limit.toLong())
+            }
+            .decodeList<ParkingLot>()
+    }
 
-        return base.filter {
-            it.name.contains(normalized, ignoreCase = true) ||
-                it.location.contains(normalized, ignoreCase = true)
-        }.take(limit)
+    override suspend fun deleteById(id: Long) {
+        supabase.from("parking_lot")
+            .delete {
+                filter {
+                    eq("id", id)
+                }
+            }
     }
 }

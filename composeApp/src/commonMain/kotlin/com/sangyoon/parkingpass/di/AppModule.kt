@@ -9,6 +9,8 @@ import com.sangyoon.parkingpass.data.repository.SessionRepositoryImpl
 import com.sangyoon.parkingpass.data.repository.VehicleRepositoryImpl
 import com.sangyoon.parkingpass.data.repository.AuthRepository
 import com.sangyoon.parkingpass.data.repository.ParkingLotMemberRepositoryImpl
+import com.sangyoon.parkingpass.data.storage.SecureStorage
+import com.sangyoon.parkingpass.data.storage.createSecureStorage
 import com.sangyoon.parkingpass.domain.repository.GateRepository
 import com.sangyoon.parkingpass.domain.repository.ParkingLotMemberRepository
 import com.sangyoon.parkingpass.domain.repository.ParkingLotRepository
@@ -65,7 +67,8 @@ val appModule = module {
     single<GateRepository> { GateRepositoryImpl(get()) }
     single<PlateDetectionRepository> { PlateDetectionRepositoryImpl(get()) }
     single<ParkingLotMemberRepository> { ParkingLotMemberRepositoryImpl(get()) }
-    single { AuthRepository(get()) }
+    single<SecureStorage> { createSecureStorage() }
+    single { AuthRepository(get(), get()) }
 
     // Use Case
     factoryOf(::GetParkingLotsUseCase)

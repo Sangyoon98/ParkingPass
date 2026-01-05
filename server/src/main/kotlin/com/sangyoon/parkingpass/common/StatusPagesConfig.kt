@@ -11,6 +11,17 @@ import io.ktor.server.response.*
  */
 fun Application.configureStatusPages() {
     install(StatusPages) {
+        // 401: 인증 실패
+        exception<AuthenticationException> { call, cause ->
+            call.respond(
+                status = HttpStatusCode.Unauthorized,
+                message = ErrorResponse(
+                    code = "UNAUTHORIZED",
+                    message = cause.message ?: "인증이 필요합니다."
+                )
+            )
+        }
+
         // 404: 게이트를 찾을 수 없음 (도메인 에러)
         exception<GateNotFoundException> { call, cause ->
             call.respond(

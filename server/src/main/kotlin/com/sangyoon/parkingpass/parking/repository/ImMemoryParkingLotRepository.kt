@@ -33,4 +33,8 @@ class ImMemoryParkingLotRepository : ParkingLotRepository {
                 it.location.contains(normalized, ignoreCase = true)
         }.take(limit)
     }
+
+    override suspend fun deleteById(id: Long) {
+        lots.remove(id)
+    }
 }

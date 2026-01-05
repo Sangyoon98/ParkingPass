@@ -14,10 +14,16 @@ class AuthViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AuthUiState())
+    private val _uiState = MutableStateFlow(AuthUiState(isLoading = true))
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            runCatching { authRepository.restoreSession() }
+                .onFailure {
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+        }
         viewModelScope.launch {
             authRepository.currentUser.collect { user ->
                 _uiState.update { it.copy(currentUser = user, isLoading = false, error = null) }
@@ -29,22 +35,19 @@ class AuthViewModel(
         _uiState.update { it.copy(email = email) }
     }
 
-    fun updatePassword(password: String) {
-        _uiState.update { it.copy(password = password) }
-    }
-
     fun updateName(name: String) {
         _uiState.update { it.copy(name = name) }
     }
 
     fun logout() {
-        authRepository.logout()
-        _uiState.update { it.copy(password = "", error = null) }
+        viewModelScope.launch {
+            authRepository.logout()
+            _uiState.update { it.copy(error = null, isLoading = false) }
+        }
     }
 
-    fun login() {
+    fun login(password: String) {
         val email = _uiState.value.email
-        val password = _uiState.value.password
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             runCatching {
@@ -55,12 +58,12 @@ class AuthViewModel(
         }
     }
 
-    fun register() {
+    fun register(password: String) {
         val state = _uiState.value
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             runCatching {
-                authRepository.register(state.email, state.password, state.name.ifBlank { null })
+                authRepository.register(state.email, password, state.name.ifBlank { null })
             }.onFailure { e ->
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "회원가입에 실패했습니다.") }
             }
