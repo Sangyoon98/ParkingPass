@@ -210,6 +210,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
             val vehicle = response.body<VehicleResponse?>()
             vehicle
         } catch (e: Exception) {
+            println("[ParkingApi] Failed to fetch vehicle: ${e.message}")
             null
         }
     }
@@ -234,6 +235,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
             val session = response.body<SessionResponse?>()
             session
         } catch (e: Exception) {
+            println("[ParkingApi] Failed to fetch current session: ${e.message}")
             null
         }
     }

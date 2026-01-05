@@ -951,18 +951,14 @@
                 }
             },
             "KakaoLoginRequest": {
-                "type": "object",
-                "properties": {
-                    "code": {
-                        "type": "string"
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/KakaoCodeLoginRequest"
                     },
-                    "redirectUri": {
-                        "type": "string"
-                    },
-                    "accessToken": {
-                        "type": "string"
+                    {
+                        "$ref": "#/components/schemas/KakaoTokenLoginRequest"
                     }
-                }
+                ]
             },
             "UserResponse": {
                 "type": "object",
@@ -1305,6 +1301,32 @@
                         }
                     },
                     "memo": {
+                        "type": "string"
+                    }
+                }
+            },
+            "KakaoCodeLoginRequest": {
+                "type": "object",
+                "required": [
+                    "code",
+                    "redirectUri"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "redirectUri": {
+                        "type": "string"
+                    }
+                }
+            },
+            "KakaoTokenLoginRequest": {
+                "type": "object",
+                "required": [
+                    "accessToken"
+                ],
+                "properties": {
+                    "accessToken": {
                         "type": "string"
                     }
                 }

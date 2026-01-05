@@ -62,7 +62,8 @@ class AuthRepository(
     suspend fun restoreSession() {
         val savedToken = try {
             secureStorage.getToken()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            println("[AuthRepository] Failed to retrieve token: ${e.message}")
             null
         }
         if (savedToken.isNullOrBlank()) {

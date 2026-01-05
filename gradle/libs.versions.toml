@@ -24,7 +24,7 @@ mlkit-text-recognition = "16.0.1"
 cameraX = "1.5.2"
 bcrypt = "0.4"
 v2User = "2.23.1"
-atomicfu = "0.24.0"
+atomicfu = "0.29.0"
 androidx-security = "1.1.0"
 
 [libraries]
