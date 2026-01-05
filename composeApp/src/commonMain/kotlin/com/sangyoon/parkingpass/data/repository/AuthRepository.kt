@@ -74,6 +74,7 @@ class AuthRepository(
             persistToken(savedToken)
             loadProfile()
         } catch (e: Exception) {
+            println("[AuthRepository] Failed to restore session: ${e.message}")
             persistToken(null)
             _currentUser.value = null
         }

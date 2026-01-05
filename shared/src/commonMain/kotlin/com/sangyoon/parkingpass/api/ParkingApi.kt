@@ -199,30 +199,17 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
             val response = client.get(url) {
                 applyAuth()
             }
-            kotlin.io.println("[API] 차량 조회 응답: status=${response.status.value}")
 
             if (response.status.value == 404) {
-                kotlin.io.println("[API] 차량을 찾을 수 없음 (404)")
                 return null
             }
-            
             if (!response.status.isSuccess()) {
-                kotlin.io.println("[API] 차량 조회 실패: status=${response.status.value}")
-                val errorText = try {
-                    response.bodyAsText()
-                } catch (e: Exception) {
-                    "응답 본문 읽기 실패: ${e.message}"
-                }
-                kotlin.io.println("[API] 에러 응답 본문: $errorText")
                 return null
             }
             
             val vehicle = response.body<VehicleResponse?>()
-            kotlin.io.println("[API] 차량 조회 성공: plateNumber=${vehicle?.plateNumber}, label=${vehicle?.label}")
             vehicle
         } catch (e: Exception) {
-            kotlin.io.println("[API] 차량 조회 예외 발생: ${e.message}")
-            e.printStackTrace()
             null
         }
     }
@@ -235,24 +222,18 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
             val response = client.get(url) {
                 applyAuth()
             }
-            kotlin.io.println("[API] 세션 조회 응답: status=${response.status.value}")
             
             if (response.status.value == 404) {
-                kotlin.io.println("[API] 세션을 찾을 수 없음 (404)")
                 return null
             }
             
             if (!response.status.isSuccess()) {
-                kotlin.io.println("[API] 세션 조회 실패: status=${response.status.value}")
                 return null
             }
             
             val session = response.body<SessionResponse?>()
-            kotlin.io.println("[API] 세션 조회 성공: plateNumber=${session?.plateNumber}")
             session
         } catch (e: Exception) {
-            kotlin.io.println("[API] 세션 조회 예외 발생: ${e.message}")
-            e.printStackTrace()
             null
         }
     }

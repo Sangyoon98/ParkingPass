@@ -1,5 +1,6 @@
 package com.sangyoon.parkingpass.parkinglot.controller
 
+import com.sangyoon.parkingpass.common.AuthMiddleware
 import com.sangyoon.parkingpass.common.requireUserId
 import com.sangyoon.parkingpass.parking.model.MemberRole
 import com.sangyoon.parkingpass.parkinglot.dto.InviteMemberRequest
@@ -32,15 +33,15 @@ private fun ParkingLotMemberInfo.toResponse() = ParkingLotMemberResponse(
 )
 
 fun Route.parkingLotMemberController(
-    memberService: ParkingLotMemberService
+    memberService: ParkingLotMemberService,
+    authMiddleware: AuthMiddleware
 ) {
     authenticate("auth-jwt") {
         route("/api/v1/parking-lots/{parkingLotId}/members") {
             get {
                 val parkingLotId = call.parameters["parkingLotId"]?.toLongOrNull()
                     ?: throw IllegalArgumentException("parkingLotId가 필요합니다.")
-                val userId = call.requireUserId()
-                memberService.ensureAccess(parkingLotId, userId, MemberRole.MEMBER)
+                authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.MEMBER)
 
                 val members = memberService.getMembers(parkingLotId)
                 call.respond(HttpStatusCode.OK, members.map { it.toResponse() })
@@ -57,7 +58,7 @@ fun Route.parkingLotMemberController(
             post("/invite") {
                 val parkingLotId = call.parameters["parkingLotId"]?.toLongOrNull()
                     ?: throw IllegalArgumentException("parkingLotId가 필요합니다.")
-                val inviterId = call.requireUserId()
+                val inviterId = authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.ADMIN)
                 val request = call.receive<InviteMemberRequest>()
                 val result = memberService.inviteMember(
                     parkingLotId = parkingLotId,
@@ -73,7 +74,7 @@ fun Route.parkingLotMemberController(
                     ?: throw IllegalArgumentException("parkingLotId가 필요합니다.")
                 val targetUserId = call.parameters["userId"]?.let(UUID::fromString)
                     ?: throw IllegalArgumentException("userId가 필요합니다.")
-                val approverId = call.requireUserId()
+                val approverId = authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.ADMIN)
                 val member = memberService.approveMember(parkingLotId, targetUserId, approverId)
                 call.respond(HttpStatusCode.OK, member.toResponse())
             }
@@ -83,7 +84,7 @@ fun Route.parkingLotMemberController(
                     ?: throw IllegalArgumentException("parkingLotId가 필요합니다.")
                 val targetUserId = call.parameters["userId"]?.let(UUID::fromString)
                     ?: throw IllegalArgumentException("userId가 필요합니다.")
-                val approverId = call.requireUserId()
+                val approverId = authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.ADMIN)
                 val member = memberService.rejectMember(parkingLotId, targetUserId, approverId)
                 call.respond(HttpStatusCode.OK, member.toResponse())
             }
@@ -93,7 +94,7 @@ fun Route.parkingLotMemberController(
                     ?: throw IllegalArgumentException("parkingLotId가 필요합니다.")
                 val targetUserId = call.parameters["userId"]?.let(UUID::fromString)
                     ?: throw IllegalArgumentException("userId가 필요합니다.")
-                val approverId = call.requireUserId()
+                val approverId = authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.OWNER)
                 val request = call.receive<UpdateMemberRoleRequest>()
                 val member = memberService.updateRole(parkingLotId, targetUserId, approverId, request.role)
                 call.respond(HttpStatusCode.OK, member.toResponse())
@@ -104,7 +105,7 @@ fun Route.parkingLotMemberController(
                     ?: throw IllegalArgumentException("parkingLotId가 필요합니다.")
                 val targetUserId = call.parameters["userId"]?.let(UUID::fromString)
                     ?: throw IllegalArgumentException("userId가 필요합니다.")
-                val requesterId = call.requireUserId()
+                val requesterId = authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.ADMIN)
                 memberService.removeMember(parkingLotId, targetUserId, requesterId)
                 call.respond(HttpStatusCode.NoContent)
             }

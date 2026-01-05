@@ -113,7 +113,7 @@ fun Application.module() {
         healthController()
         authController(authService)
         parkingLotController(parkingLotService)
-        parkingLotMemberController(parkingLotMemberService)
+        parkingLotMemberController(parkingLotMemberService, authMiddleware)
         parkingEventController(parkingEventService)
         vehicleController(vehicleService, authMiddleware)
         sessionController(sessionService, authMiddleware)

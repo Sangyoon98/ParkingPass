@@ -108,6 +108,14 @@ android {
         ?: System.getenv("KAKAO_NATIVE_APP_KEY")
         ?: ""
 
+    val kakaoScheme = if (kakaoNativeKey.isNotEmpty()) {
+        "kakao$kakaoNativeKey"
+    } else {
+        logger.warn("⚠️ kakao.native.app.key / KAKAO_NATIVE_APP_KEY is not configured. Kakao login will not work.")
+        logger.warn("   Add 'kakao.native.app.key=YOUR_KEY' to local.properties or set KAKAO_NATIVE_APP_KEY in the environment.")
+        "kakao-placeholder"
+    }
+
     defaultConfig {
         applicationId = "com.sangyoon.parkingpass"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -116,11 +124,7 @@ android {
         versionName = "1.0"
 
         resValue("string", "kakao_native_app_key", kakaoNativeKey)
-        manifestPlaceholders["kakaoScheme"] = if (kakaoNativeKey.isNotEmpty()) {
-            "kakao$kakaoNativeKey"
-        } else {
-            ""
-        }
+        manifestPlaceholders["kakaoScheme"] = kakaoScheme
     }
     packaging {
         resources {
