@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -7,6 +8,17 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+}
+
+// Keystore.properties (optional)
+val keystorePropertiesFile: File = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+val hasKeystore = if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    true
+} else {
+    logger.warn("⚠️ keystore.properties not found. Release builds will use the default debug signing config.")
+    false
 }
 
 kotlin {
@@ -105,6 +117,7 @@ android {
         }
     }
     val kakaoNativeKey = localProperties.getProperty("kakao.native.app.key")
+        ?: localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
         ?: System.getenv("KAKAO_NATIVE_APP_KEY")
         ?: ""
 
@@ -112,8 +125,19 @@ android {
         "kakao$kakaoNativeKey"
     } else {
         logger.warn("⚠️ kakao.native.app.key / KAKAO_NATIVE_APP_KEY is not configured. Kakao login will not work.")
-        logger.warn("   Add 'kakao.native.app.key=YOUR_KEY' to local.properties or set KAKAO_NATIVE_APP_KEY in the environment.")
+        logger.warn("   Add 'kakao.native.app.key=YOUR_KEY' (or 'KAKAO_NATIVE_APP_KEY=YOUR_KEY') to local.properties or set KAKAO_NATIVE_APP_KEY in the environment.")
         "kakao-placeholder"
+    }
+
+    signingConfigs {
+        if (hasKeystore) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
     }
 
     defaultConfig {
@@ -132,8 +156,13 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
+            signingConfig = if (hasKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
     compileOptions {
