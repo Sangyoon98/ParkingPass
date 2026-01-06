@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -8,6 +9,11 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
+
+// Keystore.properties
+val keystorePropertiesFile: File = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 kotlin {
     androidTarget {
@@ -105,6 +111,7 @@ android {
         }
     }
     val kakaoNativeKey = localProperties.getProperty("kakao.native.app.key")
+        ?: localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
         ?: System.getenv("KAKAO_NATIVE_APP_KEY")
         ?: ""
 
@@ -112,8 +119,17 @@ android {
         "kakao$kakaoNativeKey"
     } else {
         logger.warn("⚠️ kakao.native.app.key / KAKAO_NATIVE_APP_KEY is not configured. Kakao login will not work.")
-        logger.warn("   Add 'kakao.native.app.key=YOUR_KEY' to local.properties or set KAKAO_NATIVE_APP_KEY in the environment.")
+        logger.warn("   Add 'kakao.native.app.key=YOUR_KEY' (or 'KAKAO_NATIVE_APP_KEY=YOUR_KEY') to local.properties or set KAKAO_NATIVE_APP_KEY in the environment.")
         "kakao-placeholder"
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
     }
 
     defaultConfig {
@@ -132,8 +148,9 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
