@@ -4,9 +4,9 @@ import com.sangyoon.parkingpass.config.KakaoOAuthConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
+.import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.accept
 import io.ktor.client.request.forms.FormDataContent
-import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -20,9 +20,19 @@ import io.ktor.http.contentType
 import java.io.Closeable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import io.ktor.serialization.kotlinx.json.json
 
 class KakaoOAuthClient(
-    private val httpClient: HttpClient = HttpClient(CIO)
+    private val httpClient: HttpClient = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                }
+            )
+        }
+    }
 ) : Closeable {
     companion object {
         val DEFAULT_REDIRECT_URI: String = KakaoOAuthConfig.redirectUri()
