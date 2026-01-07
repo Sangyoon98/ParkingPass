@@ -1,16 +1,13 @@
 services:
   parkingpass-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: 915962094178.dkr.ecr.ap-northeast-2.amazonaws.com/parkingpass-server:latest
     ports:
       - "8080:8080"
     environment:
-      # .env 파일에서 환경 변수를 읽어옵니다
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
       KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
-      JWT_SECRET: ${JWT_SECRET}
     restart: unless-stopped
