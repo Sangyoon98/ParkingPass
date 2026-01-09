@@ -1,5 +1,6 @@
 package com.sangyoon.parkingpass.api.dto
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // 번호판 인식 관련
@@ -118,6 +119,7 @@ data class UserResponse(
     val id: String,
     val email: String,
     val name: String?,
+    @SerialName("created_at")
     val createdAt: String
 )
 
