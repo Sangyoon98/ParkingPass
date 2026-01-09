@@ -143,6 +143,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
     // 게이트 등록
     suspend fun registerGate(request: RegisterGateRequest): GateResponse {
         val response = client.post("$apiBaseUrl/gates/register") {
+            applyAuth()
             contentType(ContentType.Application.Json)
             setBody(request)
         }
@@ -152,6 +153,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
     // 게이트 목록 조회
     suspend fun getGates(parkingLotId: Long): List<GateResponse> {
         val response = client.get("$apiBaseUrl/gates") {
+            applyAuth()
             parameter("parkingLotId", parkingLotId)
         }
         return handle(response)
@@ -160,6 +162,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
     // 차량 등록
     suspend fun createVehicle(request: CreateVehicleRequest): VehicleResponse {
         val response = client.post("$apiBaseUrl/vehicles") {
+            applyAuth()
             contentType(ContentType.Application.Json)
             setBody(request)
         }
@@ -169,6 +172,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
     // 차량 목록 조회
     suspend fun getVehicles(parkingLotId: Long): List<VehicleResponse> {
         val response = client.get("$apiBaseUrl/vehicles") {
+            applyAuth()
             parameter("parkingLotId", parkingLotId)
         }
         return handle(response)
@@ -177,6 +181,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
     // 현재 주차 중 목록
     suspend fun getOpenSessions(parkingLotId: Long): List<SessionResponse> {
         val response = client.get("$apiBaseUrl/sessions/open") {
+            applyAuth()
             parameter("parkingLotId", parkingLotId)
         }
         return handle(response)
@@ -185,6 +190,7 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
     // 날짜별 입출차 기록
     suspend fun getSessionHistory(parkingLotId: Long, date: String): List<SessionResponse> {
         val response = client.get("$apiBaseUrl/sessions/history") {
+            applyAuth()
             parameter("parkingLotId", parkingLotId)
             parameter("date", date)
         }
