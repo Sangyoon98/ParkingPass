@@ -9,7 +9,3 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
-    branches:
-      include:
-        - main
-        - dev
