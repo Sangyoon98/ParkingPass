@@ -1,5 +1,0 @@
-{
-  "pullRequestReview": {
-    "customInstructions": "모든 리뷰 코멘트와 요약을 한국어로 작성해주세요. 기술 용어(예: function, class, API 등)는 영어로 유지해도 됩니다."
-  }
-}
