@@ -11,8 +11,18 @@ class NavigationState {
     var selectedParkingLotId by mutableStateOf<Long?>(null)
         private set
 
+    var lastSelectedParkingLotId by mutableStateOf<Long?>(null)
+        private set
+
     fun setSelectedParkingLotId(id: Long) {
         selectedParkingLotId = id
+        lastSelectedParkingLotId = id
+        // TODO: SecureStorage에 저장하여 영속화
+    }
+
+    fun getLastSelectedParkingLotId(): Long? {
+        // TODO: SecureStorage에서 불러오기
+        return lastSelectedParkingLotId
     }
 }
 
