@@ -22,7 +22,7 @@ enum class BottomNavItem(
         unselectedIcon = Icons.Outlined.Dashboard
     ),
     VEHICLES(
-        route = "vehicles_tab",
+        route = "vehicles",
         label = "차량 목록",
         selectedIcon = Icons.Filled.DirectionsCar,
         unselectedIcon = Icons.Outlined.DirectionsCar
