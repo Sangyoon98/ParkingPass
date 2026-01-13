@@ -40,7 +40,7 @@ fun CreateVehicleScreen(
 
     var plateNumber by remember { mutableStateOf("") }
     var label by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf(VehicleCategory.RESIDENT) }
+    var category by remember { mutableStateOf(VehicleCategory.SEDAN) }
     var memo by remember { mutableStateOf("") }
     var expandedCategory by remember { mutableStateOf(false) }
 
@@ -81,7 +81,7 @@ fun CreateVehicleScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = category.name,
+                    value = category.displayName,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("카테고리") },
@@ -98,7 +98,7 @@ fun CreateVehicleScreen(
                 ) {
                     VehicleCategory.entries.forEach { cat ->
                         DropdownMenuItem(
-                            text = { Text(cat.name) },
+                            text = { Text(cat.displayName) },
                             onClick = {
                                 category = cat
                                 expandedCategory = false

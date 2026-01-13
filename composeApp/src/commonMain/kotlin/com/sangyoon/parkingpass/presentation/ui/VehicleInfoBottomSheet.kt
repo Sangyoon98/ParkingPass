@@ -178,10 +178,6 @@ private fun formatTime(dateTimeString: String): String {
 }
 
 private fun getCategoryDisplayName(category: VehicleCategory): String {
-    return when (category) {
-        VehicleCategory.RESIDENT -> "거주자"
-        VehicleCategory.EMPLOYEE -> "직원"
-        VehicleCategory.VISITOR -> "방문자"
-    }
+    return category.displayName
 }
 

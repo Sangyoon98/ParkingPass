@@ -38,6 +38,6 @@ private fun VehicleResponse.toDomain() = Vehicle(
     parkingLotId = parkingLotId,
     plateNumber = plateNumber,
     label = label,
-    category = runCatching { VehicleCategory.valueOf(category) }.getOrElse { VehicleCategory.VISITOR },
+    category = runCatching { VehicleCategory.valueOf(category) }.getOrElse { VehicleCategory.SEDAN },
     memo = memo
 )
