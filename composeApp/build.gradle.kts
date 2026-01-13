@@ -68,10 +68,10 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            
+
             // ML Kit Text Recognition (한국어)
             implementation(libs.mlkit.text.recognition.korean)
-            
+
             // CameraX
             implementation(libs.cameraX.camera2)
             implementation(libs.cameraX.lifecycle)
@@ -93,6 +93,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
