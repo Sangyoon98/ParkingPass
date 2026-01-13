@@ -126,7 +126,7 @@ fun CreateVehicleScreen(
                             label = label,
                             category = category,
                             memo = memo.ifBlank { null },
-                            onSuccess = onCreated
+                            //onSuccess = onCreated
                         )
                     },
                     modifier = Modifier.fillMaxWidth()
