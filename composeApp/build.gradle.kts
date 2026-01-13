@@ -79,10 +79,6 @@ kotlin {
 
             implementation(libs.v2.user)
             implementation(libs.androidx.security.crypto)
-
-            // Material Icons (Android only)
-            implementation(libs.androidx.material.icons.core)
-            implementation(libs.androidx.material.icons.extended)
         }
         commonMain.dependencies {
             // Koin
@@ -97,6 +93,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
