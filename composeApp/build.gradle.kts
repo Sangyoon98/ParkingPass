@@ -68,10 +68,10 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            
+
             // ML Kit Text Recognition (한국어)
             implementation(libs.mlkit.text.recognition.korean)
-            
+
             // CameraX
             implementation(libs.cameraX.camera2)
             implementation(libs.cameraX.lifecycle)
@@ -79,6 +79,10 @@ kotlin {
 
             implementation(libs.v2.user)
             implementation(libs.androidx.security.crypto)
+
+            // Material Icons (Android only)
+            implementation(libs.androidx.material.icons.core)
+            implementation(libs.androidx.material.icons.extended)
         }
         commonMain.dependencies {
             // Koin

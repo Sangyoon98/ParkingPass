@@ -26,6 +26,7 @@ bcrypt = "0.4"
 v2User = "2.23.1"
 atomicfu = "0.29.0"
 androidx-security = "1.1.0"
+materialIconsCore = "1.7.7"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -83,6 +84,8 @@ bcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
 v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
 androidx-security-crypto = { module = "androidx.security:security-crypto-ktx", version.ref = "androidx-security" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsCore" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsCore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
