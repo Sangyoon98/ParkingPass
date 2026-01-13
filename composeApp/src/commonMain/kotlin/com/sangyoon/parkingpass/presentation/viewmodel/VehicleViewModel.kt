@@ -47,15 +47,14 @@ class VehicleViewModel(
         plateNumber: String,
         label: String,
         category: VehicleCategory,
-        memo: String?,
-        onSuccess: () -> Unit
+        memo: String?
     ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update { it.copy(isLoading = true, error = null, creationSuccess = false) }
             createVehicleUseCase(parkingLotId, plateNumber, label, category, memo).fold(
                 onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, creationSuccess = true) }
                     loadVehicles(parkingLotId)
-                    onSuccess()
                 },
                 onFailure = { e ->
                     _uiState.update { it.copy(isLoading = false, error = e.message ?: "차량 등록 실패") }

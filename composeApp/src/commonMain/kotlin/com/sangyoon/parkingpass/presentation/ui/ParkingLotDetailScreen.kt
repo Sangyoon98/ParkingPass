@@ -160,8 +160,8 @@ fun ParkingLotDetailScreen(
 
                                 // Occupancy Progress
                                 OccupancyProgressBar(
-                                    current = 0, // Placeholder
-                                    total = lot.capacity,
+                                    currentOccupancy = 0, // Placeholder
+                                    totalCapacity = 100, // Placeholder - capacity not in domain model yet
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }

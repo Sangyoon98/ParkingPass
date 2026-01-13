@@ -134,13 +134,17 @@ fun PlateDetectionScreen(
                     )
                 }
             } else {
-                FilterChipRow(
-                    items = uiState.gates.map { it.name },
-                    selectedIndex = uiState.gates.indexOfFirst { it.id == uiState.selectedGate?.id },
-                    onItemSelected = { index ->
-                        viewModel.selectGate(uiState.gates[index])
-                    }
-                )
+                val selectedGate = uiState.selectedGate ?: uiState.gates.firstOrNull()
+                if (selectedGate != null) {
+                    FilterChipRow(
+                        filters = uiState.gates,
+                        selectedFilter = selectedGate,
+                        onFilterSelected = { gate ->
+                            viewModel.selectGate(gate)
+                        },
+                        filterLabel = { gate -> gate.name }
+                    )
+                }
 
                 uiState.selectedGate?.let { gate ->
                     Text(

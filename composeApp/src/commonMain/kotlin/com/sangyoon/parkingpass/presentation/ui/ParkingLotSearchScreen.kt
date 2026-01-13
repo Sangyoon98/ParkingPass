@@ -183,8 +183,8 @@ fun ParkingLotSearchScreen(
 
                             // Occupancy
                             OccupancyProgressBar(
-                                current = 0,  // Placeholder
-                                total = parkingLot.capacity,
+                                currentOccupancy = 0,  // Placeholder
+                                totalCapacity = 100, // Placeholder - capacity not in domain model yet
                                 modifier = Modifier.fillMaxWidth()
                             )
 
