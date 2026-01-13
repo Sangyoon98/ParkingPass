@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.sangyoon.parkingpass.domain.usecase.GetParkingLotsUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetMyParkingLotsUseCase
 import com.sangyoon.parkingpass.domain.usecase.CreateParkingLotUseCase
+import com.sangyoon.parkingpass.presentation.state.ParkingLotFilter
 import com.sangyoon.parkingpass.presentation.state.ParkingLotUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,5 +69,9 @@ class ParkingLotViewModel(
 
     fun resetCreationSuccess() {
         _uiState.update { it.copy(creationSuccess = false) }
+    }
+
+    fun selectFilter(filter: ParkingLotFilter) {
+        _uiState.update { it.copy(selectedFilter = filter) }
     }
 }
