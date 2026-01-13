@@ -5,5 +5,6 @@ import com.sangyoon.parkingpass.domain.model.Vehicle
 data class VehicleUiState(
     val vehicles: List<Vehicle> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val creationSuccess: Boolean = false
 )

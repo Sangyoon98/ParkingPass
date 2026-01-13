@@ -134,20 +134,17 @@ fun ParkingLotListScreen(
 
                     // Filter Chips
                     FilterChipRow(
-                        items = listOf("전체", "운영중", "만차"),
-                        selectedIndex = when (uiState.selectedFilter) {
-                            ParkingLotFilter.ALL -> 0
-                            ParkingLotFilter.OPERATING -> 1
-                            ParkingLotFilter.FULL -> 2
-                        },
-                        onItemSelected = { index ->
-                            val filter = when (index) {
-                                0 -> ParkingLotFilter.ALL
-                                1 -> ParkingLotFilter.OPERATING
-                                2 -> ParkingLotFilter.FULL
-                                else -> ParkingLotFilter.ALL
-                            }
+                        filters = listOf(ParkingLotFilter.ALL, ParkingLotFilter.OPERATING, ParkingLotFilter.FULL),
+                        selectedFilter = uiState.selectedFilter,
+                        onFilterSelected = { filter ->
                             viewModel.selectFilter(filter)
+                        },
+                        filterLabel = { filter ->
+                            when (filter) {
+                                ParkingLotFilter.ALL -> "전체"
+                                ParkingLotFilter.OPERATING -> "운영중"
+                                ParkingLotFilter.FULL -> "만차"
+                            }
                         }
                     )
 
@@ -276,8 +273,8 @@ fun ParkingLotCard(
 
             // Occupancy Progress Bar
             OccupancyProgressBar(
-                current = 0,  // Placeholder
-                total = parkingLot.capacity,
+                currentOccupancy = 0,  // Placeholder
+                totalCapacity = 100, // Placeholder - capacity not in domain model yet
                 modifier = Modifier.fillMaxWidth()
             )
         }

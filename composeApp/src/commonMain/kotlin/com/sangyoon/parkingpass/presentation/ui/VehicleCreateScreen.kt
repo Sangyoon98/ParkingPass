@@ -146,9 +146,12 @@ fun VehicleCreateScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 FilterChipRow(
-                    items = categories.map { it.displayName },
-                    selectedIndex = selectedCategoryIndex,
-                    onItemSelected = { selectedCategoryIndex = it }
+                    filters = categories,
+                    selectedFilter = categories[selectedCategoryIndex],
+                    onFilterSelected = { category ->
+                        selectedCategoryIndex = categories.indexOf(category)
+                    },
+                    filterLabel = { it.displayName }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
