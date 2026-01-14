@@ -143,8 +143,8 @@ fun GateListScreen(
                 ) {
                     // Search Bar
                     RoundedSearchBar(
-                        query = searchQuery,
-                        onQueryChange = { searchQuery = it },
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
                         placeholder = "게이트 이름 또는 디바이스 키로 검색",
                         modifier = Modifier
                             .fillMaxWidth()
