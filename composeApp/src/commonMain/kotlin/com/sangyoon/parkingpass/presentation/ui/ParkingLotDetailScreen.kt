@@ -1,6 +1,5 @@
 package com.sangyoon.parkingpass.presentation.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,16 +11,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.DriveEta
+import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SwitchAccount
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,20 +32,26 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sangyoon.parkingpass.presentation.ui.components.ActivityTimelineItem
 import com.sangyoon.parkingpass.presentation.ui.components.OccupancyProgressBar
+import com.sangyoon.parkingpass.presentation.ui.theme.PrimaryBlue
+import com.sangyoon.parkingpass.presentation.ui.theme.StatusEntry
+import com.sangyoon.parkingpass.presentation.ui.theme.StatusExit
 import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.ParkingLotDetailViewModel
 
@@ -56,19 +65,54 @@ fun ParkingLotDetailScreen(
     onManageGateClick: () -> Unit,
     onPlateDetectionClick: () -> Unit,
     onSessionListClick: () -> Unit,
-    onManageMembersClick: () -> Unit
+    onManageMembersClick: () -> Unit,
+    onParkingLotSwitchClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(parkingLotId) {
+        viewModel.setSelectedParkingLotId(parkingLotId)
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("주차장 상세") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Text("←")
+                title = {
+                    Column {
+                        Text(
+                            text = uiState.parkingLot?.name ?: "주차장",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        uiState.parkingLot?.location?.let { location ->
+                            Text(
+                                text = location,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
                     }
-                }
+                },
+                actions = {
+                    IconButton(onClick = onParkingLotSwitchClick) {
+                        Icon(
+                            imageVector = Icons.Default.SwitchAccount,
+                            contentDescription = "주차장 전환",
+                            tint = PrimaryBlue
+                        )
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "설정",
+                            tint = TextSecondary
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { innerPadding ->
@@ -81,6 +125,7 @@ fun ParkingLotDetailScreen(
                     CircularProgressIndicator()
                 }
             }
+
             uiState.error != null -> {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(innerPadding),
@@ -88,7 +133,7 @@ fun ParkingLotDetailScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = uiState.error ?: "",
+                            text = uiState.error ?: "오류가 발생했습니다",
                             color = MaterialTheme.colorScheme.error
                         )
                         Spacer(Modifier.height(12.dp))
@@ -100,162 +145,83 @@ fun ParkingLotDetailScreen(
                     }
                 }
             }
+
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(innerPadding),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    // Header Section
+                    // Occupancy Progress Bar
                     item {
-                        uiState.parkingLot?.let { lot ->
-                            Column {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = lot.name,
-                                            style = MaterialTheme.typography.headlineMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = lot.location,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = TextSecondary
-                                        )
-                                    }
+                        OccupancyProgressBar(
+                            currentOccupancy = 0, // TODO: Real data
+                            totalCapacity = 100, // TODO: Real data
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
-                                    if (!lot.isPublic) {
-                                        Card(
-                                            colors = CardDefaults.cardColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                                            ),
-                                            shape = RoundedCornerShape(8.dp)
-                                        ) {
-                                            Text(
-                                                text = "비공개",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = FontWeight.SemiBold,
-                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                        }
-                                    }
-                                }
+                    // Statistics Grid (2x2)
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                DashboardStatCard(
+                                    icon = Icons.Default.DriveEta,
+                                    title = "게이트 관리",
+                                    value = "2", // TODO: Real data
+                                    trend = null,
+                                    onClick = onManageGateClick,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                DashboardStatCard(
+                                    icon = Icons.Default.DirectionsCar,
+                                    title = "차량 관리",
+                                    value = "0", // TODO: Real data
+                                    trend = null,
+                                    onClick = onCreateVehicleClick,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
 
-                                lot.joinCode?.let { code ->
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = "초대 코드: $code",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = TextSecondary
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                // Occupancy Progress
-                                OccupancyProgressBar(
-                                    currentOccupancy = 0, // Placeholder
-                                    totalCapacity = 100, // Placeholder - capacity not in domain model yet
-                                    modifier = Modifier.fillMaxWidth()
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                DashboardStatCard(
+                                    icon = Icons.Default.Login,
+                                    title = "오늘의 입차",
+                                    value = "0", // TODO: Real data
+                                    trend = "+0",
+                                    onClick = onSessionListClick,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                DashboardStatCard(
+                                    icon = Icons.Default.Logout,
+                                    title = "오늘의 출차",
+                                    value = "0", // TODO: Real data
+                                    trend = "+0",
+                                    onClick = onSessionListClick,
+                                    modifier = Modifier.weight(1f)
                                 )
                             }
                         }
                     }
 
-                    // Statistics Cards
+                    // Recent Activity Section
                     item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            StatCard(
-                                title = "전체 차량",
-                                value = "0", // Placeholder
-                                modifier = Modifier.weight(1f)
-                            )
-                            StatCard(
-                                title = "입차중",
-                                value = "0", // Placeholder
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
-
-                    // Action Buttons
-                    item {
-                        Text(
-                            text = "관리",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            ActionButton(
-                                icon = Icons.Default.Add,
-                                label = "차량 등록",
-                                onClick = onCreateVehicleClick,
-                                modifier = Modifier.weight(1f)
-                            )
-                            ActionButton(
-                                icon = Icons.Default.CheckCircle,
-                                label = "번호판 인식",
-                                onClick = onPlateDetectionClick,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            ActionButton(
-                                icon = Icons.Default.List,
-                                label = "세션 목록",
-                                onClick = onSessionListClick,
-                                modifier = Modifier.weight(1f)
-                            )
-                            ActionButton(
-                                icon = Icons.Default.Lock,
-                                label = "게이트 관리",
-                                onClick = onManageGateClick,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
-
-                    item {
-                        ActionButton(
-                            icon = Icons.Default.Settings,
-                            label = "멤버 관리",
-                            onClick = onManageMembersClick,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    // Recent Activity
-                    item {
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "최근 활동",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
-                    // Placeholder activities (실제 데이터로 교체 필요)
+                    // Activity Timeline (TODO: Replace with real data)
                     items(3) { index ->
                         ActivityTimelineItem(
                             plateNumber = "12가3456",
@@ -264,6 +230,64 @@ fun ParkingLotDetailScreen(
                             vehicleCategory = null
                         )
                     }
+
+                    // View All Button
+                    item {
+                        OutlinedButton(
+                            onClick = onSessionListClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "전체 보기",
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+
+                    // Bottom Action Buttons
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = onPlateDetectionClick,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Text(
+                                    text = "수동 입출차",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+
+                            Button(
+                                onClick = { /* TODO: Camera */ },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = PrimaryBlue,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CameraAlt,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "번호판 스캔",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -271,70 +295,69 @@ fun ParkingLotDetailScreen(
 }
 
 @Composable
-private fun StatCard(
+private fun DashboardStatCard(
+    icon: ImageVector,
     title: String,
     value: String,
+    trend: String?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Spacer(modifier = Modifier.height(4.dp))
+            // Icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = PrimaryBlue,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
+            // Value and Trend
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                trend?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (it.startsWith("+")) StatusEntry else StatusExit,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            // Title
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
-    }
-}
-
-@Composable
-private fun ActionButton(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    OutlinedCard(
-        onClick = onClick,
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = label,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
+                color = TextSecondary
             )
         }
     }
