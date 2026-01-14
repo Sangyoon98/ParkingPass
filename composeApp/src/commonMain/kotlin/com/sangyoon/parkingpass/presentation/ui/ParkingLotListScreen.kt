@@ -168,7 +168,7 @@ fun ParkingLotListScreen(
                                     uiState.myParkingLots,
                                     uiState.selectedFilter
                                 ),
-                                key = { it.id }
+                                key = { "my-${it.id}" }
                             ) { lot ->
                                 ParkingLotCard(
                                     parkingLot = lot,
