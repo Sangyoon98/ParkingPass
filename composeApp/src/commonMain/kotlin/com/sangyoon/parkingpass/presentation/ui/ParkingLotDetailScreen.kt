@@ -156,9 +156,12 @@ fun ParkingLotDetailScreen(
                 ) {
                     // Occupancy Progress Bar
                     item {
+                        val capacity = uiState.parkingLot?.capacity ?: 100
+                        val currentOccupancy = uiState.openSessions.size
+
                         OccupancyProgressBar(
-                            currentOccupancy = 0, // TODO: Real data
-                            totalCapacity = 100, // TODO: Real data
+                            currentOccupancy = currentOccupancy,
+                            totalCapacity = capacity,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -173,7 +176,7 @@ fun ParkingLotDetailScreen(
                                 DashboardStatCard(
                                     icon = Icons.Default.DriveEta,
                                     title = "게이트 관리",
-                                    value = "2", // TODO: Real data
+                                    value = "${uiState.gates.size}",
                                     trend = null,
                                     onClick = onManageGateClick,
                                     modifier = Modifier.weight(1f)
@@ -181,7 +184,7 @@ fun ParkingLotDetailScreen(
                                 DashboardStatCard(
                                     icon = Icons.Default.DirectionsCar,
                                     title = "차량 관리",
-                                    value = "0", // TODO: Real data
+                                    value = "${uiState.vehicles.size}",
                                     trend = null,
                                     onClick = onCreateVehicleClick,
                                     modifier = Modifier.weight(1f)
@@ -195,16 +198,16 @@ fun ParkingLotDetailScreen(
                                 DashboardStatCard(
                                     icon = Icons.Default.Login,
                                     title = "오늘의 입차",
-                                    value = "0", // TODO: Real data
-                                    trend = "+0",
+                                    value = "${uiState.todayEntryCount}",
+                                    trend = if (uiState.todayEntryCount > 0) "+${uiState.todayEntryCount}" else null,
                                     onClick = onSessionListClick,
                                     modifier = Modifier.weight(1f)
                                 )
                                 DashboardStatCard(
                                     icon = Icons.Default.Logout,
                                     title = "오늘의 출차",
-                                    value = "0", // TODO: Real data
-                                    trend = "+0",
+                                    value = "${uiState.todayExitCount}",
+                                    trend = if (uiState.todayExitCount > 0) "+${uiState.todayExitCount}" else null,
                                     onClick = onSessionListClick,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -221,14 +224,31 @@ fun ParkingLotDetailScreen(
                         )
                     }
 
-                    // Activity Timeline (TODO: Replace with real data)
-                    items(3) { index ->
-                        ActivityTimelineItem(
-                            plateNumber = "12가3456",
-                            isEntry = index % 2 == 0,
-                            timestamp = "방금 전",
-                            vehicleCategory = null
-                        )
+                    // Activity Timeline
+                    if (uiState.recentActivities.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "최근 활동이 없습니다",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    } else {
+                        items(uiState.recentActivities) { session ->
+                            ActivityTimelineItem(
+                                plateNumber = session.plateNumber,
+                                isEntry = session.exitedAt == null,
+                                timestamp = formatTimestamp(session.enteredAt),
+                                vehicleCategory = session.vehicleCategory
+                            )
+                        }
                     }
 
                     // View All Button
@@ -360,5 +380,26 @@ private fun DashboardStatCard(
                 color = TextSecondary
             )
         }
+    }
+}
+
+// Helper function to format timestamp
+private fun formatTimestamp(dateTime: String): String {
+    // Format: "2024-01-15T14:30:00" -> "2시간 전" or "방금 전"
+    return try {
+        // 간단한 구현: 시간 부분만 표시
+        val parts = dateTime.split("T")
+        if (parts.size == 2) {
+            val timeParts = parts[1].split(":")
+            if (timeParts.size >= 2) {
+                "${timeParts[0]}:${timeParts[1]}"
+            } else {
+                "방금 전"
+            }
+        } else {
+            "방금 전"
+        }
+    } catch (e: Exception) {
+        "방금 전"
     }
 }

@@ -11,4 +11,11 @@ interface GateRepository {
         deviceKey: String,
         direction: GateDirection
     ): Result<Gate>
+    suspend fun updateGate(
+        gateId: Long,
+        name: String,
+        deviceKey: String,
+        direction: GateDirection
+    ): Result<Gate>
+    suspend fun deleteGate(gateId: Long): Result<Unit>
 }

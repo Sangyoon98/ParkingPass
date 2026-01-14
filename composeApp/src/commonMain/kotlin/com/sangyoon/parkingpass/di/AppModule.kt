@@ -95,7 +95,7 @@ val appModule = module {
 
     // ViewModel
     factory { ParkingLotViewModel(get(), get(), get()) }
-    factory { ParkingLotDetailViewModel(get()) }
+    factory { ParkingLotDetailViewModel(get(), get(), get(), get(), get()) }
     factory { VehicleViewModel(get(), get()) }
     factory { GateViewModel(get(), get()) }
     factory { PlateDetectionViewModel(get(), get(), get(), get()) }
