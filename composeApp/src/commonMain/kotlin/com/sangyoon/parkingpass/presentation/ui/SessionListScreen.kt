@@ -46,17 +46,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sangyoon.parkingpass.domain.model.Session
-import com.sangyoon.parkingpass.domain.model.SessionStatus
+import com.sangyoon.parkingpass.domain.model.SessionStatus as DomainSessionStatus
 import com.sangyoon.parkingpass.domain.model.VehicleCategory
 import com.sangyoon.parkingpass.presentation.ui.components.FilterChipRow
+import com.sangyoon.parkingpass.presentation.ui.components.SessionStatus
 import com.sangyoon.parkingpass.presentation.ui.components.StatusBadge
 import com.sangyoon.parkingpass.presentation.ui.components.VehicleTypeIcon
 import com.sangyoon.parkingpass.presentation.ui.theme.PrimaryBlue
 import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +155,7 @@ fun SessionListScreen(
                                         null -> "전체"
                                         VehicleCategory.SEDAN -> "승용차"
                                         VehicleCategory.SUV -> "SUV"
-                                        VehicleCategory.ELECTRIC_CAR -> "전기차"
+                                        VehicleCategory.ELECTRIC -> "전기차"
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -175,9 +173,8 @@ fun SessionListScreen(
                                     fontWeight = FontWeight.Medium
                                 )
 
-                                val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                                 Text(
-                                    text = "업데이트: ${now.hour.toString().padStart(2, '0')}:${now.minute.toString().padStart(2, '0')}",
+                                    text = "최근 업데이트",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = TextSecondary
                                 )
@@ -299,8 +296,8 @@ private fun SessionCard(
 
                     // Status Badge
                     StatusBadge(
-                        isEntry = session.status == SessionStatus.OPEN,
-                        label = if (session.status == SessionStatus.OPEN) "입차중" else "출차완료"
+                        status = if (session.status == DomainSessionStatus.OPEN) SessionStatus.ENTRY else SessionStatus.EXIT,
+                        timestamp = formatDateTime(session.enteredAt)
                     )
                 }
 

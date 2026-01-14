@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.SwitchAccount
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -213,20 +214,23 @@ private fun GateCard(
                 modifier = Modifier.size(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 color = when (gate.direction) {
-                    GateDirection.ENTRY -> StatusEntry.copy(alpha = 0.2f)
+                    GateDirection.ENTER -> StatusEntry.copy(alpha = 0.2f)
                     GateDirection.EXIT -> StatusExit.copy(alpha = 0.2f)
+                    GateDirection.BOTH -> PrimaryBlue.copy(alpha = 0.2f)
                 }
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = when (gate.direction) {
-                            GateDirection.ENTRY -> Icons.Default.Login
+                            GateDirection.ENTER -> Icons.Default.Login
                             GateDirection.EXIT -> Icons.Default.ExitToApp
+                            GateDirection.BOTH -> Icons.Default.SwitchAccount
                         },
                         contentDescription = null,
                         tint = when (gate.direction) {
-                            GateDirection.ENTRY -> StatusEntry
+                            GateDirection.ENTER -> StatusEntry
                             GateDirection.EXIT -> StatusExit
+                            GateDirection.BOTH -> PrimaryBlue
                         },
                         modifier = Modifier.size(24.dp)
                     )
@@ -255,28 +259,33 @@ private fun GateCard(
                         label = {
                             Text(
                                 text = when (gate.direction) {
-                                    GateDirection.ENTRY -> "입구"
+                                    GateDirection.ENTER -> "입구"
                                     GateDirection.EXIT -> "출구"
+                                    GateDirection.BOTH -> "양방향"
                                 },
                                 style = MaterialTheme.typography.labelSmall
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
                             containerColor = when (gate.direction) {
-                                GateDirection.ENTRY -> StatusEntry.copy(alpha = 0.2f)
+                                GateDirection.ENTER -> StatusEntry.copy(alpha = 0.2f)
                                 GateDirection.EXIT -> StatusExit.copy(alpha = 0.2f)
+                                GateDirection.BOTH -> PrimaryBlue.copy(alpha = 0.2f)
                             },
                             labelColor = when (gate.direction) {
-                                GateDirection.ENTRY -> StatusEntry
+                                GateDirection.ENTER -> StatusEntry
                                 GateDirection.EXIT -> StatusExit
+                                GateDirection.BOTH -> PrimaryBlue
                             },
                             disabledContainerColor = when (gate.direction) {
-                                GateDirection.ENTRY -> StatusEntry.copy(alpha = 0.2f)
+                                GateDirection.ENTER -> StatusEntry.copy(alpha = 0.2f)
                                 GateDirection.EXIT -> StatusExit.copy(alpha = 0.2f)
+                                GateDirection.BOTH -> PrimaryBlue.copy(alpha = 0.2f)
                             },
                             disabledLabelColor = when (gate.direction) {
-                                GateDirection.ENTRY -> StatusEntry
+                                GateDirection.ENTER -> StatusEntry
                                 GateDirection.EXIT -> StatusExit
+                                GateDirection.BOTH -> PrimaryBlue
                             }
                         ),
                         border = null,
