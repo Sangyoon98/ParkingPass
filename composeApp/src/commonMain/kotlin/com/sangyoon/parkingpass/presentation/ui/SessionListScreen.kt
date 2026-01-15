@@ -55,6 +55,8 @@ import com.sangyoon.parkingpass.presentation.ui.components.VehicleTypeIcon
 import com.sangyoon.parkingpass.presentation.ui.theme.PrimaryBlue
 import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -422,48 +424,27 @@ private fun formatDateTime(dateTime: String): String {
 
 private fun calculateDuration(enteredAt: String, exitedAt: String? = null): String {
     return try {
-        // Parse timestamps: "2024-01-15T14:30:00"
-        val entryParts = enteredAt.split("T")
-        val exitParts = exitedAt?.split("T")
-
-        if (entryParts.size < 2) return "계산 불가"
-
-        val entryTimeParts = entryParts[1].split(":")
-        val entryHour = entryTimeParts.getOrNull(0)?.toIntOrNull() ?: 0
-        val entryMinute = entryTimeParts.getOrNull(1)?.toIntOrNull() ?: 0
-
-        val exitHour: Int
-        val exitMinute: Int
-
-        if (exitedAt != null && exitParts != null && exitParts.size >= 2) {
-            val exitTimeParts = exitParts[1].split(":")
-            exitHour = exitTimeParts.getOrNull(0)?.toIntOrNull() ?: 0
-            exitMinute = exitTimeParts.getOrNull(1)?.toIntOrNull() ?: 0
+        // Parse timestamps using kotlinx.datetime for accurate multi-day calculation
+        val entryInstant = kotlinx.datetime.Instant.parse(enteredAt.replace(" ", "T") + if (!enteredAt.contains("Z")) "Z" else "")
+        val exitInstant = if (exitedAt != null) {
+            kotlinx.datetime.Instant.parse(exitedAt.replace(" ", "T") + if (!exitedAt.contains("Z")) "Z" else "")
         } else {
-            // 현재 시간 사용 (간단한 가정: 오늘 날짜의 현재 시간)
-            // 실제로는 kotlinx.datetime 사용 권장
-            exitHour = 12  // 임시값
-            exitMinute = 0
+            kotlinx.datetime.Clock.System.now()
         }
 
-        // 시간 차이 계산
-        var diffHours = exitHour - entryHour
-        var diffMinutes = exitMinute - entryMinute
-
-        if (diffMinutes < 0) {
-            diffMinutes += 60
-            diffHours -= 1
-        }
-
-        if (diffHours < 0) diffHours += 24
+        // Calculate total duration in minutes
+        val durationMs = (exitInstant - entryInstant).inWholeMinutes
+        val hours = durationMs / 60
+        val minutes = durationMs % 60
 
         when {
-            diffHours > 0 && diffMinutes > 0 -> "${diffHours}시간 ${diffMinutes}분"
-            diffHours > 0 -> "${diffHours}시간"
-            diffMinutes > 0 -> "${diffMinutes}분"
+            hours > 0 && minutes > 0 -> "${hours}시간 ${minutes}분"
+            hours > 0 -> "${hours}시간"
+            minutes > 0 -> "${minutes}분"
             else -> "1분 미만"
         }
     } catch (e: Exception) {
+        println("Duration calculation error: ${e.message}")
         "계산 불가"
     }
 }
