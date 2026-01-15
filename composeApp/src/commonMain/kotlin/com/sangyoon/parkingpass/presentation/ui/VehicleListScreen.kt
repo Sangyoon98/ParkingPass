@@ -339,9 +339,9 @@ private fun EditVehicleDialog(
     onDismiss: () -> Unit,
     onConfirm: (label: String, category: VehicleCategory, memo: String?) -> Unit
 ) {
-    var label by remember { mutableStateOf(vehicle.label) }
-    var memo by remember { mutableStateOf(vehicle.memo ?: "") }
-    var selectedCategory by remember { mutableStateOf(vehicle.category) }
+    var label by remember(vehicle.id) { mutableStateOf(vehicle.label) }
+    var memo by remember(vehicle.id) { mutableStateOf(vehicle.memo ?: "") }
+    var selectedCategory by remember(vehicle.id) { mutableStateOf(vehicle.category) }
     var categoryExpanded by remember { mutableStateOf(false) }
 
     AlertDialog(

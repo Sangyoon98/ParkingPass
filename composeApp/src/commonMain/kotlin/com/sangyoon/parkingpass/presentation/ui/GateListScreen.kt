@@ -395,9 +395,9 @@ private fun EditGateDialog(
     onDismiss: () -> Unit,
     onConfirm: (name: String, deviceKey: String, direction: GateDirection) -> Unit
 ) {
-    var name by remember { mutableStateOf(gate.name) }
-    var deviceKey by remember { mutableStateOf(gate.deviceKey) }
-    var selectedDirection by remember { mutableStateOf(gate.direction) }
+    var name by remember(gate.id) { mutableStateOf(gate.name) }
+    var deviceKey by remember(gate.id) { mutableStateOf(gate.deviceKey) }
+    var selectedDirection by remember(gate.id) { mutableStateOf(gate.direction) }
     var directionExpanded by remember { mutableStateOf(false) }
 
     AlertDialog(
