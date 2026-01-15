@@ -68,8 +68,9 @@ class ParkingLotDetailViewModel(
                 val todayEntryCount = todayHistory.size
                 val todayExitCount = todayHistory.count { it.exitedAt != null }
 
-                // 최근 활동 (최근 3개 세션)
+                // 최근 활동 (최근 3개 세션, 중복 제거)
                 val recentActivities = (openSessions + todayHistory)
+                    .distinctBy { it.id }
                     .sortedByDescending { it.enteredAt }
                     .take(3)
 
