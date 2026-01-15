@@ -30,6 +30,14 @@ class InMemoryVehicleRepository : VehicleRepository {
     override suspend fun findById(id: Long): Vehicle? = byId[id]
 
     override suspend fun update(vehicle: Vehicle): Vehicle {
+        val existing = byId[vehicle.id]
+        if (existing != null) {
+            val existingKey = key(existing.parkingLotId, existing.plateNumber)
+            val newKey = key(vehicle.parkingLotId, vehicle.plateNumber)
+            if (existingKey != newKey) {
+                byLotAndPlate.remove(existingKey)
+            }
+        }
         byId[vehicle.id] = vehicle
         byLotAndPlate[key(vehicle.parkingLotId, vehicle.plateNumber)] = vehicle
         return vehicle
