@@ -66,6 +66,47 @@ class VehicleService(
         }
     }
 
+    suspend fun updateVehicle(id: Long, request: CreateVehicleRequest): VehicleResponse {
+        // 차량 존재 여부 확인
+        val existing = vehicleRepository.findById(id)
+            ?: throw IllegalArgumentException("존재하지 않는 차량입니다: $id")
+
+        // 주차장 ID 검증
+        if (existing.parkingLotId != request.parkingLotId) {
+            throw IllegalArgumentException("다른 주차장의 차량입니다")
+        }
+
+        // 번호판 변경 불가 (번호판 변경은 삭제 후 재등록으로 처리)
+        if (normalizePlateNumber(existing.plateNumber) != normalizePlateNumber(request.plateNumber)) {
+            throw IllegalArgumentException("차량 번호판은 변경할 수 없습니다")
+        }
+
+        val updated = existing.copy(
+            label = request.label,
+            category = request.category,
+            memo = request.memo
+        )
+
+        val saved = vehicleRepository.update(updated)
+        return toResponse(saved)
+    }
+
+    suspend fun deleteVehicle(id: Long, parkingLotId: Long) {
+        // 차량 존재 여부 확인
+        val existing = vehicleRepository.findById(id)
+            ?: throw IllegalArgumentException("존재하지 않는 차량입니다: $id")
+
+        // 주차장 ID 검증
+        if (existing.parkingLotId != parkingLotId) {
+            throw IllegalArgumentException("다른 주차장의 차량입니다")
+        }
+
+        val success = vehicleRepository.delete(id)
+        if (!success) {
+            throw RuntimeException("차량 삭제에 실패했습니다")
+        }
+    }
+
     private fun normalizePlateNumber(plate: String): String =
         plate.replace(" ", "")
 

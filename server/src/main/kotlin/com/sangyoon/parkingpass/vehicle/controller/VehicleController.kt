@@ -11,8 +11,10 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
 fun Route.vehicleController(
@@ -61,6 +63,32 @@ fun Route.vehicleController(
                 } else {
                     call.respond(HttpStatusCode.NotFound)
                 }
+            }
+
+            /**
+             * 차량 정보 수정 (ADMIN 이상)
+             */
+            put("/vehicles/{id}") {
+                val id = call.parameters["id"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("유효하지 않은 차량 ID입니다.")
+                val request = call.receive<CreateVehicleRequest>()
+                authMiddleware.requireParkingLotAccess(call, request.parkingLotId, MemberRole.ADMIN)
+                val response = vehicleService.updateVehicle(id, request)
+                call.respond(HttpStatusCode.OK, response)
+            }
+
+            /**
+             * 차량 삭제 (ADMIN 이상)
+             */
+            delete("/vehicles/{id}") {
+                val id = call.parameters["id"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("유효하지 않은 차량 ID입니다.")
+                val parkingLotId = call.request.queryParameters["parkingLotId"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
+
+                authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.ADMIN)
+                vehicleService.deleteVehicle(id, parkingLotId)
+                call.respond(HttpStatusCode.NoContent)
             }
         }
     }
