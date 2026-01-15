@@ -158,6 +158,9 @@ fun SessionListScreen(
                                         VehicleCategory.SEDAN -> "승용차"
                                         VehicleCategory.SUV -> "SUV"
                                         VehicleCategory.ELECTRIC -> "전기차"
+                                        VehicleCategory.TRUCK -> "트럭"
+                                        VehicleCategory.VAN -> "밴"
+                                        VehicleCategory.MOTORCYCLE -> "오토바이"
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -425,22 +428,22 @@ private fun formatDateTime(dateTime: String): String {
 private fun calculateDuration(enteredAt: String, exitedAt: String? = null): String {
     return try {
         // Parse timestamps using kotlinx.datetime for accurate multi-day calculation
-        val entryInstant = kotlinx.datetime.Instant.parse(enteredAt.replace(" ", "T") + if (!enteredAt.contains("Z")) "Z" else "")
+        val entryInstant = Instant.parse(enteredAt.replace(" ", "T") + if (!enteredAt.contains("Z")) "Z" else "")
         val exitInstant = if (exitedAt != null) {
-            kotlinx.datetime.Instant.parse(exitedAt.replace(" ", "T") + if (!exitedAt.contains("Z")) "Z" else "")
+            Instant.parse(exitedAt.replace(" ", "T") + if (!exitedAt.contains("Z")) "Z" else "")
         } else {
-            kotlinx.datetime.Clock.System.now()
+            Clock.System.now()
         }
 
         // Calculate total duration in minutes
-        val durationMs = (exitInstant - entryInstant).inWholeMinutes
-        val hours = durationMs / 60
-        val minutes = durationMs % 60
+        val durationMinutes = (exitInstant - entryInstant).inWholeMinutes
+        val hours = durationMinutes / 60
+        val minutes = durationMinutes % 60
 
         when {
-            hours > 0 && minutes > 0 -> "${hours}시간 ${minutes}분"
-            hours > 0 -> "${hours}시간"
-            minutes > 0 -> "${minutes}분"
+            hours > 0L && minutes > 0L -> "${hours}시간 ${minutes}분"
+            hours > 0L -> "${hours}시간"
+            minutes > 0L -> "${minutes}분"
             else -> "1분 미만"
         }
     } catch (e: Exception) {
