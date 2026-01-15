@@ -25,6 +25,24 @@ class GateRepositoryImpl(
         )
         response.toDomain()
     }
+
+    override suspend fun updateGate(
+        gateId: Long,
+        parkingLotId: Long,
+        name: String,
+        deviceKey: String,
+        direction: GateDirection
+    ): Result<Gate> = runCatching {
+        val response = dataSource.updateGate(
+            gateId,
+            RegisterGateRequest(parkingLotId, name, deviceKey, direction.name)
+        )
+        response.toDomain()
+    }
+
+    override suspend fun deleteGate(gateId: Long, parkingLotId: Long): Result<Unit> = runCatching {
+        dataSource.deleteGate(gateId, parkingLotId)
+    }
 }
 
 private fun GateResponse.toDomain() = Gate(

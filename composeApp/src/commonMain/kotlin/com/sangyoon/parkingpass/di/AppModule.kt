@@ -19,6 +19,8 @@ import com.sangyoon.parkingpass.domain.repository.SessionRepository
 import com.sangyoon.parkingpass.domain.repository.VehicleRepository
 import com.sangyoon.parkingpass.domain.usecase.CreateParkingLotUseCase
 import com.sangyoon.parkingpass.domain.usecase.CreateVehicleUseCase
+import com.sangyoon.parkingpass.domain.usecase.DeleteGateUseCase
+import com.sangyoon.parkingpass.domain.usecase.DeleteVehicleUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetMyParkingLotsUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetGatesUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetOpenSessionsUseCase
@@ -34,6 +36,8 @@ import com.sangyoon.parkingpass.domain.usecase.PlateDetectedUseCase
 import com.sangyoon.parkingpass.domain.usecase.RegisterGateUseCase
 import com.sangyoon.parkingpass.domain.usecase.SearchParkingLotsUseCase
 import com.sangyoon.parkingpass.domain.usecase.RequestJoinParkingLotUseCase
+import com.sangyoon.parkingpass.domain.usecase.UpdateGateUseCase
+import com.sangyoon.parkingpass.domain.usecase.UpdateVehicleUseCase
 import com.sangyoon.parkingpass.domain.usecase.ApproveParkingLotMemberUseCase
 import com.sangyoon.parkingpass.domain.usecase.RejectParkingLotMemberUseCase
 import com.sangyoon.parkingpass.domain.usecase.UpdateMemberRoleUseCase
@@ -79,8 +83,12 @@ val appModule = module {
     factoryOf(::GetSessionHistoryUseCase)
     factoryOf(::GetVehiclesUseCase)
     factoryOf(::CreateVehicleUseCase)
+    factoryOf(::UpdateVehicleUseCase)
+    factoryOf(::DeleteVehicleUseCase)
     factoryOf(::GetGatesUseCase)
     factoryOf(::RegisterGateUseCase)
+    factoryOf(::UpdateGateUseCase)
+    factoryOf(::DeleteGateUseCase)
     factoryOf(::PlateDetectedUseCase)
     factoryOf(::GetVehicleByPlateUseCase)
     factoryOf(::GetCurrentSessionByPlateUseCase)
@@ -96,8 +104,8 @@ val appModule = module {
     // ViewModel
     factory { ParkingLotViewModel(get(), get(), get()) }
     factory { ParkingLotDetailViewModel(get(), get(), get(), get(), get()) }
-    factory { VehicleViewModel(get(), get()) }
-    factory { GateViewModel(get(), get()) }
+    factory { VehicleViewModel(get(), get(), get(), get()) }
+    factory { GateViewModel(get(), get(), get(), get()) }
     factory { PlateDetectionViewModel(get(), get(), get(), get()) }
     factory { SessionViewModel(get(), get()) }
     factory { AuthViewModel(get()) }

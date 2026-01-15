@@ -31,6 +31,25 @@ class VehicleRepositoryImpl(
     override suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String): Result<Vehicle?> = runCatching {
         dataSource.getVehicleByPlateNumber(parkingLotId, plateNumber)?.toDomain()
     }
+
+    override suspend fun updateVehicle(
+        vehicleId: Long,
+        parkingLotId: Long,
+        plateNumber: String,
+        label: String,
+        category: VehicleCategory,
+        memo: String?
+    ): Result<Vehicle> = runCatching {
+        val response = dataSource.updateVehicle(
+            vehicleId,
+            CreateVehicleRequest(parkingLotId, plateNumber, label, category.name, memo)
+        )
+        response.toDomain()
+    }
+
+    override suspend fun deleteVehicle(vehicleId: Long, parkingLotId: Long): Result<Unit> = runCatching {
+        dataSource.deleteVehicle(vehicleId, parkingLotId)
+    }
 }
 
 private fun VehicleResponse.toDomain() = Vehicle(

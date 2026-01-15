@@ -15,9 +15,11 @@ interface VehicleRepository {
     suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String): Result<Vehicle?>
     suspend fun updateVehicle(
         vehicleId: Long,
+        parkingLotId: Long,
+        plateNumber: String,
         label: String,
         category: VehicleCategory,
         memo: String?
     ): Result<Vehicle>
-    suspend fun deleteVehicle(vehicleId: Long): Result<Unit>
+    suspend fun deleteVehicle(vehicleId: Long, parkingLotId: Long): Result<Unit>
 }

@@ -159,6 +159,25 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
         return handle(response)
     }
 
+    // 게이트 수정
+    suspend fun updateGate(gateId: Long, request: RegisterGateRequest): GateResponse {
+        val response = client.put("$apiBaseUrl/gates/$gateId") {
+            applyAuth()
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+        return handle(response)
+    }
+
+    // 게이트 삭제
+    suspend fun deleteGate(gateId: Long, parkingLotId: Long) {
+        val response = client.delete("$apiBaseUrl/gates/$gateId") {
+            applyAuth()
+            parameter("parkingLotId", parkingLotId)
+        }
+        handle<Unit>(response)
+    }
+
     // 차량 등록
     suspend fun createVehicle(request: CreateVehicleRequest): VehicleResponse {
         val response = client.post("$apiBaseUrl/vehicles") {
@@ -176,6 +195,25 @@ class ParkingApiClient(baseUrl: String = "http://localhost:8080") : Closeable {
             parameter("parkingLotId", parkingLotId)
         }
         return handle(response)
+    }
+
+    // 차량 수정
+    suspend fun updateVehicle(vehicleId: Long, request: CreateVehicleRequest): VehicleResponse {
+        val response = client.put("$apiBaseUrl/vehicles/$vehicleId") {
+            applyAuth()
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+        return handle(response)
+    }
+
+    // 차량 삭제
+    suspend fun deleteVehicle(vehicleId: Long, parkingLotId: Long) {
+        val response = client.delete("$apiBaseUrl/vehicles/$vehicleId") {
+            applyAuth()
+            parameter("parkingLotId", parkingLotId)
+        }
+        handle<Unit>(response)
     }
 
     // 현재 주차 중 목록
