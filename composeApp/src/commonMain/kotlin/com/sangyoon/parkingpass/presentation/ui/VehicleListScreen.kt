@@ -214,11 +214,10 @@ fun VehicleListScreen(
                 showEditDialog = false
                 vehicleToEdit = null
             },
-            onConfirm = { plateNumber, label, category, memo ->
+            onConfirm = { label, category, memo ->
                 viewModel.updateVehicle(
                     vehicleId = vehicleToEdit!!.id,
                     parkingLotId = parkingLotId,
-                    plateNumber = plateNumber,
                     label = label,
                     category = category,
                     memo = memo,
@@ -337,9 +336,8 @@ private fun VehicleItem(
 private fun EditVehicleDialog(
     vehicle: Vehicle,
     onDismiss: () -> Unit,
-    onConfirm: (plateNumber: String, label: String, category: VehicleCategory, memo: String?) -> Unit
+    onConfirm: (label: String, category: VehicleCategory, memo: String?) -> Unit
 ) {
-    var plateNumber by rememberSaveable { mutableStateOf(vehicle.plateNumber) }
     var label by rememberSaveable { mutableStateOf(vehicle.label) }
     var memo by rememberSaveable { mutableStateOf(vehicle.memo ?: "") }
     var selectedCategory by rememberSaveable { mutableStateOf(vehicle.category) }
@@ -350,10 +348,13 @@ private fun EditVehicleDialog(
         title = { Text("차량 수정") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                // 차량 번호는 수정 불가 (readOnly)
                 OutlinedTextField(
-                    value = plateNumber,
-                    onValueChange = { plateNumber = it },
-                    label = { Text("차량 번호") },
+                    value = vehicle.plateNumber,
+                    onValueChange = {},
+                    label = { Text("차량 번호 (수정 불가)") },
+                    readOnly = true,
+                    enabled = false,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -441,11 +442,11 @@ private fun EditVehicleDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (plateNumber.isNotBlank() && label.isNotBlank()) {
-                        onConfirm(plateNumber, label, selectedCategory, memo.ifBlank { null })
+                    if (label.isNotBlank()) {
+                        onConfirm(label, selectedCategory, memo.ifBlank { null })
                     }
                 },
-                enabled = plateNumber.isNotBlank() && label.isNotBlank()
+                enabled = label.isNotBlank()
             ) {
                 Text("수정")
             }

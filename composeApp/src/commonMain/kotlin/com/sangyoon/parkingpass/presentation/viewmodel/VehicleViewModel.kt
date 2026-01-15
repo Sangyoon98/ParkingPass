@@ -70,7 +70,6 @@ class VehicleViewModel(
     fun updateVehicle(
         vehicleId: Long,
         parkingLotId: Long,
-        plateNumber: String,
         label: String,
         category: VehicleCategory,
         memo: String?,
@@ -78,7 +77,7 @@ class VehicleViewModel(
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            updateVehicleUseCase(vehicleId, parkingLotId, plateNumber, label, category, memo).fold(
+            updateVehicleUseCase(vehicleId, parkingLotId, label, category, memo).fold(
                 onSuccess = {
                     loadVehicles(parkingLotId)
                     onSuccess()
