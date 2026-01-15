@@ -10,8 +10,10 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
 fun Route.gateController(
@@ -41,6 +43,32 @@ fun Route.gateController(
                 authMiddleware.requireParkingLotAccess(call, request.parkingLotId, MemberRole.ADMIN)
                 val response = gateService.registerGate(request)
                 call.respond(HttpStatusCode.Created, response)
+            }
+
+            /**
+             * 게이트 수정 (ADMIN 이상)
+             */
+            put("/gates/{id}") {
+                val id = call.parameters["id"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("유효하지 않은 게이트 ID입니다.")
+                val request = call.receive<RegisterGateRequest>()
+                authMiddleware.requireParkingLotAccess(call, request.parkingLotId, MemberRole.ADMIN)
+                val response = gateService.updateGate(id, request)
+                call.respond(HttpStatusCode.OK, response)
+            }
+
+            /**
+             * 게이트 삭제 (ADMIN 이상)
+             */
+            delete("/gates/{id}") {
+                val id = call.parameters["id"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("유효하지 않은 게이트 ID입니다.")
+                val parkingLotId = call.request.queryParameters["parkingLotId"]?.toLongOrNull()
+                    ?: throw IllegalArgumentException("parkingLotId 파라미터가 필요합니다.")
+
+                authMiddleware.requireParkingLotAccess(call, parkingLotId, MemberRole.ADMIN)
+                gateService.deleteGate(id, parkingLotId)
+                call.respond(HttpStatusCode.NoContent)
             }
         }
     }

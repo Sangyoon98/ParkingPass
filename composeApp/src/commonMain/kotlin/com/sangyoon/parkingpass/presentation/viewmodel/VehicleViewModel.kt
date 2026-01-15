@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sangyoon.parkingpass.domain.model.VehicleCategory
 import com.sangyoon.parkingpass.domain.usecase.CreateVehicleUseCase
+import com.sangyoon.parkingpass.domain.usecase.DeleteVehicleUseCase
 import com.sangyoon.parkingpass.domain.usecase.GetVehiclesUseCase
+import com.sangyoon.parkingpass.domain.usecase.UpdateVehicleUseCase
 import com.sangyoon.parkingpass.presentation.state.VehicleUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +15,9 @@ import kotlinx.coroutines.launch
 
 class VehicleViewModel(
     private val getVehiclesUseCase: GetVehiclesUseCase,
-    private val createVehicleUseCase: CreateVehicleUseCase
+    private val createVehicleUseCase: CreateVehicleUseCase,
+    private val updateVehicleUseCase: UpdateVehicleUseCase,
+    private val deleteVehicleUseCase: DeleteVehicleUseCase
 ) : ViewModel() {
 
     private val _selectedParkingLotId = MutableStateFlow<Long?>(null)
@@ -58,6 +62,47 @@ class VehicleViewModel(
                 },
                 onFailure = { e ->
                     _uiState.update { it.copy(isLoading = false, error = e.message ?: "차량 등록 실패") }
+                }
+            )
+        }
+    }
+
+    fun updateVehicle(
+        vehicleId: Long,
+        parkingLotId: Long,
+        label: String,
+        category: VehicleCategory,
+        memo: String?,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            updateVehicleUseCase(vehicleId, parkingLotId, label, category, memo).fold(
+                onSuccess = {
+                    loadVehicles(parkingLotId)
+                    onSuccess()
+                },
+                onFailure = { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "차량 수정 실패") }
+                }
+            )
+        }
+    }
+
+    fun deleteVehicle(
+        vehicleId: Long,
+        parkingLotId: Long,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            deleteVehicleUseCase(vehicleId, parkingLotId).fold(
+                onSuccess = {
+                    loadVehicles(parkingLotId)
+                    onSuccess()
+                },
+                onFailure = { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message ?: "차량 삭제 실패") }
                 }
             )
         }

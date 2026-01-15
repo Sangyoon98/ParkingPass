@@ -31,6 +31,29 @@ class VehicleRepositoryImpl(
     override suspend fun getVehicleByPlateNumber(parkingLotId: Long, plateNumber: String): Result<Vehicle?> = runCatching {
         dataSource.getVehicleByPlateNumber(parkingLotId, plateNumber)?.toDomain()
     }
+
+    override suspend fun updateVehicle(
+        vehicleId: Long,
+        parkingLotId: Long,
+        label: String,
+        category: VehicleCategory,
+        memo: String?
+    ): Result<Vehicle> = runCatching {
+        // 기존 차량 정보를 조회하여 plateNumber를 가져옴
+        val vehicles = dataSource.getVehicles(parkingLotId)
+        val existingVehicle = vehicles.find { it.id == vehicleId }
+            ?: throw IllegalArgumentException("차량을 찾을 수 없습니다: $vehicleId")
+
+        val response = dataSource.updateVehicle(
+            vehicleId,
+            CreateVehicleRequest(parkingLotId, existingVehicle.plateNumber, label, category.name, memo)
+        )
+        response.toDomain()
+    }
+
+    override suspend fun deleteVehicle(vehicleId: Long, parkingLotId: Long): Result<Unit> = runCatching {
+        dataSource.deleteVehicle(vehicleId, parkingLotId)
+    }
 }
 
 private fun VehicleResponse.toDomain() = Vehicle(

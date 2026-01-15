@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class SessionViewModel(
     private val getOpenSessions: GetOpenSessionsUseCase,
@@ -38,12 +41,16 @@ class SessionViewModel(
             }
 
             if (openResult.isSuccess && historyResult.isSuccess) {
+                val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                val timestamp = "${now.year}-${now.monthNumber.toString().padStart(2, '0')}-${now.dayOfMonth.toString().padStart(2, '0')}T${now.hour.toString().padStart(2, '0')}:${now.minute.toString().padStart(2, '0')}:${now.second.toString().padStart(2, '0')}"
+
                 _uiState.update {
                     it.copy(
                         openSessions = openResult.getOrDefault(emptyList()),
                         history = historyResult.getOrDefault(emptyList()),
                         selectedDate = date,
-                        isLoading = false
+                        isLoading = false,
+                        lastUpdatedAt = timestamp
                     )
                 }
             } else {

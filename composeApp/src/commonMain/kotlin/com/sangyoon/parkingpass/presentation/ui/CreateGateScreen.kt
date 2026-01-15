@@ -55,7 +55,7 @@ fun CreateGateScreen(
 
     var name by remember { mutableStateOf("") }
     var deviceKey by remember { mutableStateOf("") }
-    var direction by remember { mutableStateOf(GateDirection.ENTRY) }
+    var direction by remember { mutableStateOf(GateDirection.ENTER) }
 
     Scaffold(
         topBar = {
@@ -149,8 +149,9 @@ fun CreateGateScreen(
                             label = {
                                 Text(
                                     text = when (dir) {
-                                        GateDirection.ENTRY -> "입구"
+                                        GateDirection.ENTER -> "입구"
                                         GateDirection.EXIT -> "출구"
+                                        GateDirection.BOTH -> "양방향"
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
@@ -161,19 +162,22 @@ fun CreateGateScreen(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                                 labelColor = TextSecondary,
                                 selectedContainerColor = when (dir) {
-                                    GateDirection.ENTRY -> StatusEntry.copy(alpha = 0.2f)
+                                    GateDirection.ENTER -> StatusEntry.copy(alpha = 0.2f)
                                     GateDirection.EXIT -> StatusExit.copy(alpha = 0.2f)
+                                    GateDirection.BOTH -> PrimaryBlue.copy(alpha = 0.2f)
                                 },
                                 selectedLabelColor = when (dir) {
-                                    GateDirection.ENTRY -> StatusEntry
+                                    GateDirection.ENTER -> StatusEntry
                                     GateDirection.EXIT -> StatusExit
+                                    GateDirection.BOTH -> PrimaryBlue
                                 }
                             ),
                             border = FilterChipDefaults.filterChipBorder(
                                 borderColor = MaterialTheme.colorScheme.outline,
                                 selectedBorderColor = when (dir) {
-                                    GateDirection.ENTRY -> StatusEntry
+                                    GateDirection.ENTER -> StatusEntry
                                     GateDirection.EXIT -> StatusExit
+                                    GateDirection.BOTH -> PrimaryBlue
                                 },
                                 enabled = true,
                                 selected = isSelected

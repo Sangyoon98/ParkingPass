@@ -6,4 +6,7 @@ interface GateDeviceRepository {
     suspend fun findByDeviceKey(deviceKey: String): GateDevice?
     suspend fun save(device: GateDevice): GateDevice
     suspend fun findAllByParkingLotId(parkingLotId: Long): List<GateDevice>
+    suspend fun findById(id: Long): GateDevice?
+    suspend fun update(device: GateDevice): GateDevice
+    suspend fun delete(id: Long): Boolean
 }

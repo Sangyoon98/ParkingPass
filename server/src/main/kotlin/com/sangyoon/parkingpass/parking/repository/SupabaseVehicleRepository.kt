@@ -89,5 +89,40 @@ class SupabaseVehicleRepository(
             emptyList()
         }
     }
+
+    override suspend fun findById(id: Long): Vehicle? {
+        return supabase.from("vehicle")
+            .select {
+                filter {
+                    eq("id", id)
+                }
+            }
+            .decodeSingleOrNull<Vehicle>()
+    }
+
+    override suspend fun update(vehicle: Vehicle): Vehicle {
+        return supabase.from("vehicle")
+            .update(vehicle) {
+                filter {
+                    eq("id", vehicle.id)
+                }
+                select(Columns.ALL)
+            }
+            .decodeSingle<Vehicle>()
+    }
+
+    override suspend fun delete(id: Long): Boolean {
+        return try {
+            supabase.from("vehicle")
+                .delete {
+                    filter {
+                        eq("id", id)
+                    }
+                }
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
 

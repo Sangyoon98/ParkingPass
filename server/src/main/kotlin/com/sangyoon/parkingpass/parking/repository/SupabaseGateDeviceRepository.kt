@@ -49,5 +49,40 @@ class SupabaseGateDeviceRepository(
             }
             .decodeList<GateDevice>()
     }
+
+    override suspend fun findById(id: Long): GateDevice? {
+        return supabase.from("gate_device")
+            .select {
+                filter {
+                    eq("id", id)
+                }
+            }
+            .decodeSingleOrNull<GateDevice>()
+    }
+
+    override suspend fun update(device: GateDevice): GateDevice {
+        return supabase.from("gate_device")
+            .update(device) {
+                filter {
+                    eq("id", device.id)
+                }
+                select(Columns.ALL)
+            }
+            .decodeSingle<GateDevice>()
+    }
+
+    override suspend fun delete(id: Long): Boolean {
+        return try {
+            supabase.from("gate_device")
+                .delete {
+                    filter {
+                        eq("id", id)
+                    }
+                }
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
 

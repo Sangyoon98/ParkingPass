@@ -36,9 +36,17 @@ class ParkingApiDataSource(
 
     suspend fun getVehicles(parkingLotId: Long) = apiClient.getVehicles(parkingLotId)
 
+    suspend fun updateVehicle(vehicleId: Long, request: CreateVehicleRequest) = apiClient.updateVehicle(vehicleId, request)
+
+    suspend fun deleteVehicle(vehicleId: Long, parkingLotId: Long) = apiClient.deleteVehicle(vehicleId, parkingLotId)
+
     suspend fun getGates(parkingLotId: Long) = apiClient.getGates(parkingLotId)
 
     suspend fun registerGate(request: RegisterGateRequest) = apiClient.registerGate(request)
+
+    suspend fun updateGate(gateId: Long, request: RegisterGateRequest) = apiClient.updateGate(gateId, request)
+
+    suspend fun deleteGate(gateId: Long, parkingLotId: Long) = apiClient.deleteGate(gateId, parkingLotId)
 
     suspend fun detectPlate(request: PlateDetectedRequest) = apiClient.postPlateDetected(request)
 

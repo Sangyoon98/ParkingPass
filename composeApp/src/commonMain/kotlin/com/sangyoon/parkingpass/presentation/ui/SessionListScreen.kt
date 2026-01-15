@@ -46,17 +46,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sangyoon.parkingpass.domain.model.Session
-import com.sangyoon.parkingpass.domain.model.SessionStatus
+import com.sangyoon.parkingpass.domain.model.SessionStatus as DomainSessionStatus
 import com.sangyoon.parkingpass.domain.model.VehicleCategory
 import com.sangyoon.parkingpass.presentation.ui.components.FilterChipRow
+import com.sangyoon.parkingpass.presentation.ui.components.SessionStatus
 import com.sangyoon.parkingpass.presentation.ui.components.StatusBadge
 import com.sangyoon.parkingpass.presentation.ui.components.VehicleTypeIcon
 import com.sangyoon.parkingpass.presentation.ui.theme.PrimaryBlue
 import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +157,7 @@ fun SessionListScreen(
                                         null -> "전체"
                                         VehicleCategory.SEDAN -> "승용차"
                                         VehicleCategory.SUV -> "SUV"
-                                        VehicleCategory.ELECTRIC_CAR -> "전기차"
+                                        VehicleCategory.ELECTRIC -> "전기차"
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -175,9 +175,8 @@ fun SessionListScreen(
                                     fontWeight = FontWeight.Medium
                                 )
 
-                                val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                                 Text(
-                                    text = "업데이트: ${now.hour.toString().padStart(2, '0')}:${now.minute.toString().padStart(2, '0')}",
+                                    text = uiState.lastUpdatedAt?.let { "최근 업데이트: ${formatDateTime(it)}" } ?: "최근 업데이트",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = TextSecondary
                                 )
@@ -299,8 +298,11 @@ private fun SessionCard(
 
                     // Status Badge
                     StatusBadge(
-                        isEntry = session.status == SessionStatus.OPEN,
-                        label = if (session.status == SessionStatus.OPEN) "입차중" else "출차완료"
+                        status = if (session.status == DomainSessionStatus.OPEN) SessionStatus.ENTRY else SessionStatus.EXIT,
+                        timestamp = formatDateTime(
+                            if (session.status == DomainSessionStatus.OPEN) session.enteredAt
+                            else session.exitedAt ?: session.enteredAt
+                        )
                     )
                 }
 
@@ -421,11 +423,28 @@ private fun formatDateTime(dateTime: String): String {
 }
 
 private fun calculateDuration(enteredAt: String, exitedAt: String? = null): String {
-    // Simplified duration calculation
-    // In a real app, you'd use proper date/time parsing
-    return if (exitedAt != null) {
-        "2시간 30분" // Placeholder
-    } else {
-        "1시간 15분" // Placeholder for ongoing
+    return try {
+        // Parse timestamps using kotlinx.datetime for accurate multi-day calculation
+        val entryInstant = kotlinx.datetime.Instant.parse(enteredAt.replace(" ", "T") + if (!enteredAt.contains("Z")) "Z" else "")
+        val exitInstant = if (exitedAt != null) {
+            kotlinx.datetime.Instant.parse(exitedAt.replace(" ", "T") + if (!exitedAt.contains("Z")) "Z" else "")
+        } else {
+            kotlinx.datetime.Clock.System.now()
+        }
+
+        // Calculate total duration in minutes
+        val durationMs = (exitInstant - entryInstant).inWholeMinutes
+        val hours = durationMs / 60
+        val minutes = durationMs % 60
+
+        when {
+            hours > 0 && minutes > 0 -> "${hours}시간 ${minutes}분"
+            hours > 0 -> "${hours}시간"
+            minutes > 0 -> "${minutes}분"
+            else -> "1분 미만"
+        }
+    } catch (e: Exception) {
+        println("Duration calculation error: ${e.message}")
+        "계산 불가"
     }
 }
