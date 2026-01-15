@@ -174,7 +174,7 @@ fun SessionListScreen(
                                 )
 
                                 Text(
-                                    text = "최근 업데이트",
+                                    text = uiState.lastUpdatedAt?.let { "최근 업데이트: ${formatDateTime(it)}" } ?: "최근 업데이트",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = TextSecondary
                                 )

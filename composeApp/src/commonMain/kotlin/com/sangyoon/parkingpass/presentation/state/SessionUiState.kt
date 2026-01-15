@@ -7,5 +7,6 @@ data class SessionUiState(
     val history: List<Session> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val selectedDate: String? = null
+    val selectedDate: String? = null,
+    val lastUpdatedAt: String? = null
 )
