@@ -41,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -74,10 +75,10 @@ fun GateListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    var gateToEdit by rememberSaveable { mutableStateOf<Gate?>(null) }
-    var gateToDelete by rememberSaveable { mutableStateOf<Gate?>(null) }
-    var showEditDialog by rememberSaveable { mutableStateOf(false) }
-    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    var gateToEdit by remember { mutableStateOf<Gate?>(null) }
+    var gateToDelete by remember { mutableStateOf<Gate?>(null) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(parkingLotId) {
         viewModel.loadGates(parkingLotId)
@@ -394,10 +395,10 @@ private fun EditGateDialog(
     onDismiss: () -> Unit,
     onConfirm: (name: String, deviceKey: String, direction: GateDirection) -> Unit
 ) {
-    var name by rememberSaveable { mutableStateOf(gate.name) }
-    var deviceKey by rememberSaveable { mutableStateOf(gate.deviceKey) }
-    var selectedDirection by rememberSaveable { mutableStateOf(gate.direction) }
-    var directionExpanded by rememberSaveable { mutableStateOf(false) }
+    var name by remember { mutableStateOf(gate.name) }
+    var deviceKey by remember { mutableStateOf(gate.deviceKey) }
+    var selectedDirection by remember { mutableStateOf(gate.direction) }
+    var directionExpanded by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
