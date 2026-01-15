@@ -55,6 +55,12 @@ import com.sangyoon.parkingpass.presentation.ui.theme.PrimaryBlue
 import com.sangyoon.parkingpass.presentation.ui.theme.StatusEntry
 import com.sangyoon.parkingpass.presentation.ui.theme.StatusExit
 import androidx.compose.material3.Surface
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.GateViewModel
 
@@ -68,6 +74,10 @@ fun GateListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    var gateToEdit by rememberSaveable { mutableStateOf<Gate?>(null) }
+    var gateToDelete by rememberSaveable { mutableStateOf<Gate?>(null) }
+    var showEditDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(parkingLotId) {
         viewModel.loadGates(parkingLotId)
@@ -177,8 +187,14 @@ fun GateListScreen(
                             items(filteredGates, key = { it.id }) { gate ->
                                 GateCard(
                                     gate = gate,
-                                    onEditClick = { /* TODO: 편집 기능 */ },
-                                    onDeleteClick = { /* TODO: 삭제 기능 */ }
+                                    onEditClick = {
+                                        gateToEdit = gate
+                                        showEditDialog = true
+                                    },
+                                    onDeleteClick = {
+                                        gateToDelete = gate
+                                        showDeleteDialog = true
+                                    }
                                 )
                             }
                         }
@@ -186,6 +202,51 @@ fun GateListScreen(
                 }
             }
         }
+    }
+
+    // Edit Dialog
+    if (showEditDialog && gateToEdit != null) {
+        EditGateDialog(
+            gate = gateToEdit!!,
+            onDismiss = {
+                showEditDialog = false
+                gateToEdit = null
+            },
+            onConfirm = { name, deviceKey, direction ->
+                viewModel.updateGate(
+                    gateId = gateToEdit!!.id,
+                    parkingLotId = parkingLotId,
+                    name = name,
+                    deviceKey = deviceKey,
+                    direction = direction,
+                    onSuccess = {
+                        showEditDialog = false
+                        gateToEdit = null
+                    }
+                )
+            }
+        )
+    }
+
+    // Delete Confirmation Dialog
+    if (showDeleteDialog && gateToDelete != null) {
+        DeleteGateDialog(
+            gateName = gateToDelete!!.name,
+            onDismiss = {
+                showDeleteDialog = false
+                gateToDelete = null
+            },
+            onConfirm = {
+                viewModel.deleteGate(
+                    gateId = gateToDelete!!.id,
+                    parkingLotId = parkingLotId,
+                    onSuccess = {
+                        showDeleteDialog = false
+                        gateToDelete = null
+                    }
+                )
+            }
+        )
     }
 }
 
@@ -324,4 +385,133 @@ private fun GateCard(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditGateDialog(
+    gate: Gate,
+    onDismiss: () -> Unit,
+    onConfirm: (name: String, deviceKey: String, direction: GateDirection) -> Unit
+) {
+    var name by rememberSaveable { mutableStateOf(gate.name) }
+    var deviceKey by rememberSaveable { mutableStateOf(gate.deviceKey) }
+    var selectedDirection by rememberSaveable { mutableStateOf(gate.direction) }
+    var directionExpanded by rememberSaveable { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("게이트 수정") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("게이트 이름") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = deviceKey,
+                    onValueChange = { deviceKey = it },
+                    label = { Text("디바이스 키") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ExposedDropdownMenuBox(
+                    expanded = directionExpanded,
+                    onExpandedChange = { directionExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = when (selectedDirection) {
+                            GateDirection.ENTER -> "입구"
+                            GateDirection.EXIT -> "출구"
+                            GateDirection.BOTH -> "양방향"
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("방향") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = directionExpanded)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = directionExpanded,
+                        onDismissRequest = { directionExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("입구") },
+                            onClick = {
+                                selectedDirection = GateDirection.ENTER
+                                directionExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("출구") },
+                            onClick = {
+                                selectedDirection = GateDirection.EXIT
+                                directionExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("양방향") },
+                            onClick = {
+                                selectedDirection = GateDirection.BOTH
+                                directionExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (name.isNotBlank() && deviceKey.isNotBlank()) {
+                        onConfirm(name, deviceKey, selectedDirection)
+                    }
+                },
+                enabled = name.isNotBlank() && deviceKey.isNotBlank()
+            ) {
+                Text("수정")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("취소")
+            }
+        }
+    )
+}
+
+@Composable
+private fun DeleteGateDialog(
+    gateName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("게이트 삭제") },
+        text = { Text("'$gateName' 게이트를 삭제하시겠습니까?\n이 작업은 취소할 수 없습니다.") },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("삭제")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("취소")
+            }
+        }
+    )
 }

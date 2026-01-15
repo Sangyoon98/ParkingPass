@@ -15,7 +15,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,11 +44,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sangyoon.parkingpass.domain.model.Vehicle
+import com.sangyoon.parkingpass.domain.model.VehicleCategory
 import com.sangyoon.parkingpass.presentation.ui.components.RoundedSearchBar
 import com.sangyoon.parkingpass.presentation.ui.components.VehicleTypeIcon
+import com.sangyoon.parkingpass.presentation.ui.theme.PrimaryBlue
 import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.VehicleViewModel
 
@@ -54,6 +67,10 @@ fun VehicleListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    var vehicleToEdit by rememberSaveable { mutableStateOf<Vehicle?>(null) }
+    var vehicleToDelete by rememberSaveable { mutableStateOf<Vehicle?>(null) }
+    var showEditDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(parkingLotId) {
         viewModel.loadVehicles(parkingLotId)
@@ -154,7 +171,17 @@ fun VehicleListScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(filteredVehicles, key = { it.id }) { vehicle ->
-                            VehicleItem(vehicle)
+                            VehicleItem(
+                                vehicle = vehicle,
+                                onEditClick = {
+                                    vehicleToEdit = vehicle
+                                    showEditDialog = true
+                                },
+                                onDeleteClick = {
+                                    vehicleToDelete = vehicle
+                                    showDeleteDialog = true
+                                }
+                            )
                         }
 
                         if (filteredVehicles.isEmpty() && searchQuery.isNotBlank()) {
@@ -178,10 +205,60 @@ fun VehicleListScreen(
             }
         }
     }
+
+    // Edit Dialog
+    if (showEditDialog && vehicleToEdit != null) {
+        EditVehicleDialog(
+            vehicle = vehicleToEdit!!,
+            onDismiss = {
+                showEditDialog = false
+                vehicleToEdit = null
+            },
+            onConfirm = { plateNumber, label, category, memo ->
+                viewModel.updateVehicle(
+                    vehicleId = vehicleToEdit!!.id,
+                    parkingLotId = parkingLotId,
+                    plateNumber = plateNumber,
+                    label = label,
+                    category = category,
+                    memo = memo,
+                    onSuccess = {
+                        showEditDialog = false
+                        vehicleToEdit = null
+                    }
+                )
+            }
+        )
+    }
+
+    // Delete Confirmation Dialog
+    if (showDeleteDialog && vehicleToDelete != null) {
+        DeleteVehicleDialog(
+            plateNumber = vehicleToDelete!!.plateNumber,
+            onDismiss = {
+                showDeleteDialog = false
+                vehicleToDelete = null
+            },
+            onConfirm = {
+                viewModel.deleteVehicle(
+                    vehicleId = vehicleToDelete!!.id,
+                    parkingLotId = parkingLotId,
+                    onSuccess = {
+                        showDeleteDialog = false
+                        vehicleToDelete = null
+                    }
+                )
+            }
+        )
+    }
 }
 
 @Composable
-private fun VehicleItem(vehicle: Vehicle) {
+private fun VehicleItem(
+    vehicle: Vehicle,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -230,6 +307,181 @@ private fun VehicleItem(vehicle: Vehicle) {
                     )
                 }
             }
+
+            // Action Icons
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "편집",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "삭제",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditVehicleDialog(
+    vehicle: Vehicle,
+    onDismiss: () -> Unit,
+    onConfirm: (plateNumber: String, label: String, category: VehicleCategory, memo: String?) -> Unit
+) {
+    var plateNumber by rememberSaveable { mutableStateOf(vehicle.plateNumber) }
+    var label by rememberSaveable { mutableStateOf(vehicle.label) }
+    var memo by rememberSaveable { mutableStateOf(vehicle.memo ?: "") }
+    var selectedCategory by rememberSaveable { mutableStateOf(vehicle.category) }
+    var categoryExpanded by rememberSaveable { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("차량 수정") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = plateNumber,
+                    onValueChange = { plateNumber = it },
+                    label = { Text("차량 번호") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = label,
+                    onValueChange = { label = it },
+                    label = { Text("차량 이름") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = when (selectedCategory) {
+                            VehicleCategory.SEDAN -> "승용차"
+                            VehicleCategory.SUV -> "SUV"
+                            VehicleCategory.TRUCK -> "트럭"
+                            VehicleCategory.VAN -> "밴"
+                            VehicleCategory.MOTORCYCLE -> "오토바이"
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("차량 종류") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("승용차") },
+                            onClick = {
+                                selectedCategory = VehicleCategory.SEDAN
+                                categoryExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("SUV") },
+                            onClick = {
+                                selectedCategory = VehicleCategory.SUV
+                                categoryExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("트럭") },
+                            onClick = {
+                                selectedCategory = VehicleCategory.TRUCK
+                                categoryExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("밴") },
+                            onClick = {
+                                selectedCategory = VehicleCategory.VAN
+                                categoryExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("오토바이") },
+                            onClick = {
+                                selectedCategory = VehicleCategory.MOTORCYCLE
+                                categoryExpanded = false
+                            }
+                        )
+                    }
+                }
+
+                OutlinedTextField(
+                    value = memo,
+                    onValueChange = { memo = it },
+                    label = { Text("메모 (선택)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 2
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (plateNumber.isNotBlank() && label.isNotBlank()) {
+                        onConfirm(plateNumber, label, selectedCategory, memo.ifBlank { null })
+                    }
+                },
+                enabled = plateNumber.isNotBlank() && label.isNotBlank()
+            ) {
+                Text("수정")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("취소")
+            }
+        }
+    )
+}
+
+@Composable
+private fun DeleteVehicleDialog(
+    plateNumber: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("차량 삭제") },
+        text = { Text("'$plateNumber' 차량을 삭제하시겠습니까?\n이 작업은 취소할 수 없습니다.") },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("삭제")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("취소")
+            }
+        }
+    )
 }
