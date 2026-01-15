@@ -297,7 +297,10 @@ private fun SessionCard(
                     // Status Badge
                     StatusBadge(
                         status = if (session.status == DomainSessionStatus.OPEN) SessionStatus.ENTRY else SessionStatus.EXIT,
-                        timestamp = formatDateTime(session.enteredAt)
+                        timestamp = formatDateTime(
+                            if (session.status == DomainSessionStatus.OPEN) session.enteredAt
+                            else session.exitedAt ?: session.enteredAt
+                        )
                     )
                 }
 
