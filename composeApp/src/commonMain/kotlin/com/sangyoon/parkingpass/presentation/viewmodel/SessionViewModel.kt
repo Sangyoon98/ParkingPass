@@ -29,7 +29,6 @@ class SessionViewModel(
         loadSessions(parkingLotId)
     }
 
-    @OptIn(kotlin.time.ExperimentalTime::class)
     fun loadSessions(parkingLotId: Long, date: String? = null) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }

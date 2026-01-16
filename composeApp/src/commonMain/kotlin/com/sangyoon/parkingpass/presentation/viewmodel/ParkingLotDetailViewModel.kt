@@ -37,7 +37,6 @@ class ParkingLotDetailViewModel(
         load(parkingLotId)
     }
 
-    @OptIn(kotlin.time.ExperimentalTime::class)
     fun load(parkingLotId: Long) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }

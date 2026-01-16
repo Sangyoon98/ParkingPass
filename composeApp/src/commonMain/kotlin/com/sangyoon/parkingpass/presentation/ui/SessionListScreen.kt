@@ -57,6 +57,9 @@ import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -428,10 +431,29 @@ private fun formatDateTime(dateTime: String): String {
 @OptIn(kotlin.time.ExperimentalTime::class)
 private fun calculateDuration(enteredAt: String, exitedAt: String? = null): String {
     return try {
-        // Parse timestamps using kotlinx.datetime for accurate multi-day calculation
-        val entryInstant = Instant.parse(enteredAt.replace(" ", "T") + if (!enteredAt.contains("Z")) "Z" else "")
+        // Parse timestamps using kotlinx.datetime with proper timezone handling
+        val tz = TimeZone.currentSystemDefault()
+
+        // Parse entry timestamp
+        val entryInstant = if (enteredAt.contains("Z") || enteredAt.contains("+") || enteredAt.contains("-")) {
+            // Already has timezone info, parse as Instant
+            Instant.parse(enteredAt.replace(" ", "T"))
+        } else {
+            // Local time, parse as LocalDateTime and convert to Instant with local timezone
+            val entryLocal = LocalDateTime.parse(enteredAt.replace(" ", "T"))
+            entryLocal.toInstant(tz)
+        }
+
+        // Parse exit timestamp
         val exitInstant = if (exitedAt != null) {
-            Instant.parse(exitedAt.replace(" ", "T") + if (!exitedAt.contains("Z")) "Z" else "")
+            if (exitedAt.contains("Z") || exitedAt.contains("+") || exitedAt.contains("-")) {
+                // Already has timezone info
+                Instant.parse(exitedAt.replace(" ", "T"))
+            } else {
+                // Local time
+                val exitLocal = LocalDateTime.parse(exitedAt.replace(" ", "T"))
+                exitLocal.toInstant(tz)
+            }
         } else {
             Clock.System.now()
         }
