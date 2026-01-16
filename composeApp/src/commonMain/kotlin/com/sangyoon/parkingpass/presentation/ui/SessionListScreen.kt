@@ -428,37 +428,25 @@ private fun formatDateTime(dateTime: String): String {
     }
 }
 
+private fun parseTimestamp(timestamp: String, tz: TimeZone): Instant {
+    val normalized = timestamp.replace(" ", "T")
+    // Check if timezone info exists at the end: Z or +/-HH:MM
+    val hasTimezone = normalized.endsWith("Z") || Regex("[+-]\\d{2}:\\d{2}$").containsMatchIn(normalized)
+
+    return if (hasTimezone) {
+        Instant.parse(normalized)
+    } else {
+        LocalDateTime.parse(normalized).toInstant(tz)
+    }
+}
+
 @OptIn(kotlin.time.ExperimentalTime::class)
 private fun calculateDuration(enteredAt: String, exitedAt: String? = null): String {
     return try {
-        // Parse timestamps using kotlinx.datetime with proper timezone handling
         val tz = TimeZone.currentSystemDefault()
+        val entryInstant = parseTimestamp(enteredAt, tz)
+        val exitInstant = exitedAt?.let { parseTimestamp(it, tz) } ?: Clock.System.now()
 
-        // Parse entry timestamp
-        val entryInstant = if (enteredAt.contains("Z") || enteredAt.contains("+") || enteredAt.contains("-")) {
-            // Already has timezone info, parse as Instant
-            Instant.parse(enteredAt.replace(" ", "T"))
-        } else {
-            // Local time, parse as LocalDateTime and convert to Instant with local timezone
-            val entryLocal = LocalDateTime.parse(enteredAt.replace(" ", "T"))
-            entryLocal.toInstant(tz)
-        }
-
-        // Parse exit timestamp
-        val exitInstant = if (exitedAt != null) {
-            if (exitedAt.contains("Z") || exitedAt.contains("+") || exitedAt.contains("-")) {
-                // Already has timezone info
-                Instant.parse(exitedAt.replace(" ", "T"))
-            } else {
-                // Local time
-                val exitLocal = LocalDateTime.parse(exitedAt.replace(" ", "T"))
-                exitLocal.toInstant(tz)
-            }
-        } else {
-            Clock.System.now()
-        }
-
-        // Calculate total duration in minutes
         val durationMinutes = (exitInstant - entryInstant).inWholeMinutes
         val hours = durationMinutes / 60
         val minutes = durationMinutes % 60
