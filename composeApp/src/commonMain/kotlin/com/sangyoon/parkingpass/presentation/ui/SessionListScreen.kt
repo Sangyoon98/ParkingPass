@@ -425,6 +425,7 @@ private fun formatDateTime(dateTime: String): String {
     }
 }
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 private fun calculateDuration(enteredAt: String, exitedAt: String? = null): String {
     return try {
         // Parse timestamps using kotlinx.datetime for accurate multi-day calculation
