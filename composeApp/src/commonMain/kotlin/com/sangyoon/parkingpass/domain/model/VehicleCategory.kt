@@ -7,5 +7,8 @@ package com.sangyoon.parkingpass.domain.model
 enum class VehicleCategory(val displayName: String) {
     SEDAN("승용차"),
     SUV("SUV"),
-    ELECTRIC("전기차")
+    ELECTRIC("전기차"),
+    TRUCK("트럭"),
+    VAN("밴"),
+    MOTORCYCLE("오토바이")
 }

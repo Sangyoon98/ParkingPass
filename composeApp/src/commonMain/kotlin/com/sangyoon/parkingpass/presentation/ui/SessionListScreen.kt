@@ -57,6 +57,9 @@ import com.sangyoon.parkingpass.presentation.ui.theme.TextSecondary
 import com.sangyoon.parkingpass.presentation.viewmodel.SessionViewModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,6 +161,9 @@ fun SessionListScreen(
                                         VehicleCategory.SEDAN -> "승용차"
                                         VehicleCategory.SUV -> "SUV"
                                         VehicleCategory.ELECTRIC -> "전기차"
+                                        VehicleCategory.TRUCK -> "트럭"
+                                        VehicleCategory.VAN -> "밴"
+                                        VehicleCategory.MOTORCYCLE -> "오토바이"
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -422,25 +428,33 @@ private fun formatDateTime(dateTime: String): String {
     }
 }
 
+private fun parseTimestamp(timestamp: String, tz: TimeZone): Instant {
+    val normalized = timestamp.replace(" ", "T")
+    // Check if timezone info exists at the end: Z or +/-HH:MM
+    val hasTimezone = normalized.endsWith("Z") || Regex("[+-]\\d{2}:\\d{2}$").containsMatchIn(normalized)
+
+    return if (hasTimezone) {
+        Instant.parse(normalized)
+    } else {
+        LocalDateTime.parse(normalized).toInstant(tz)
+    }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
 private fun calculateDuration(enteredAt: String, exitedAt: String? = null): String {
     return try {
-        // Parse timestamps using kotlinx.datetime for accurate multi-day calculation
-        val entryInstant = kotlinx.datetime.Instant.parse(enteredAt.replace(" ", "T") + if (!enteredAt.contains("Z")) "Z" else "")
-        val exitInstant = if (exitedAt != null) {
-            kotlinx.datetime.Instant.parse(exitedAt.replace(" ", "T") + if (!exitedAt.contains("Z")) "Z" else "")
-        } else {
-            kotlinx.datetime.Clock.System.now()
-        }
+        val tz = TimeZone.currentSystemDefault()
+        val entryInstant = parseTimestamp(enteredAt, tz)
+        val exitInstant = exitedAt?.let { parseTimestamp(it, tz) } ?: Clock.System.now()
 
-        // Calculate total duration in minutes
-        val durationMs = (exitInstant - entryInstant).inWholeMinutes
-        val hours = durationMs / 60
-        val minutes = durationMs % 60
+        val durationMinutes = (exitInstant - entryInstant).inWholeMinutes
+        val hours = durationMinutes / 60
+        val minutes = durationMinutes % 60
 
         when {
-            hours > 0 && minutes > 0 -> "${hours}시간 ${minutes}분"
-            hours > 0 -> "${hours}시간"
-            minutes > 0 -> "${minutes}분"
+            hours > 0L && minutes > 0L -> "${hours}시간 ${minutes}분"
+            hours > 0L -> "${hours}시간"
+            minutes > 0L -> "${minutes}분"
             else -> "1분 미만"
         }
     } catch (e: Exception) {

@@ -28,6 +28,9 @@ fun VehicleTypeIcon(
         VehicleCategory.SEDAN -> Icons.Default.DirectionsCar to Color(0xFF2196F3)
         VehicleCategory.SUV -> Icons.Default.DirectionsCar to Color(0xFF4CAF50)
         VehicleCategory.ELECTRIC -> Icons.Default.ElectricCar to Color(0xFFFFEB3B)
+        VehicleCategory.TRUCK -> Icons.Default.DirectionsCar to Color(0xFFFF9800)
+        VehicleCategory.VAN -> Icons.Default.DirectionsCar to Color(0xFF9C27B0)
+        VehicleCategory.MOTORCYCLE -> Icons.Default.DirectionsCar to Color(0xFFF44336)
     }
 
     Box(

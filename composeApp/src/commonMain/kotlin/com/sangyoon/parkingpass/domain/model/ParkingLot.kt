@@ -6,5 +6,6 @@ data class ParkingLot(
     val location: String,
     val ownerId: String? = null,
     val isPublic: Boolean = true,
-    val joinCode: String? = null
+    val joinCode: String? = null,
+    val capacity: Int = 100
 )

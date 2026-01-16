@@ -22,4 +22,25 @@ class InMemoryGateDeviceRepository : GateDeviceRepository {
     override suspend fun findAllByParkingLotId(parkingLotId: Long): List<GateDevice> {
         return byId.values.filter { it.parkingLotId == parkingLotId }
     }
+
+    override suspend fun findById(id: Long): GateDevice? = byId[id]
+
+    override suspend fun update(device: GateDevice): GateDevice {
+        val existing = byId[device.id]
+        if (existing != null && existing.deviceKey != device.deviceKey) {
+            byDeviceKey.remove(existing.deviceKey)
+        }
+        byId[device.id] = device
+        byDeviceKey[device.deviceKey] = device
+        return device
+    }
+
+    override suspend fun delete(id: Long): Boolean {
+        val device = byId.remove(id)
+        if (device != null) {
+            byDeviceKey.remove(device.deviceKey)
+            return true
+        }
+        return false
+    }
 }

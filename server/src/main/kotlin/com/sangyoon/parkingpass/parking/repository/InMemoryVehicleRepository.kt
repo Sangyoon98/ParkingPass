@@ -27,5 +27,30 @@ class InMemoryVehicleRepository : VehicleRepository {
         return byLotAndPlate.values.filter { it.parkingLotId == parkingLotId }
     }
 
+    override suspend fun findById(id: Long): Vehicle? = byId[id]
+
+    override suspend fun update(vehicle: Vehicle): Vehicle {
+        val existing = byId[vehicle.id]
+        if (existing != null) {
+            val existingKey = key(existing.parkingLotId, existing.plateNumber)
+            val newKey = key(vehicle.parkingLotId, vehicle.plateNumber)
+            if (existingKey != newKey) {
+                byLotAndPlate.remove(existingKey)
+            }
+        }
+        byId[vehicle.id] = vehicle
+        byLotAndPlate[key(vehicle.parkingLotId, vehicle.plateNumber)] = vehicle
+        return vehicle
+    }
+
+    override suspend fun delete(id: Long): Boolean {
+        val vehicle = byId.remove(id)
+        if (vehicle != null) {
+            byLotAndPlate.remove(key(vehicle.parkingLotId, vehicle.plateNumber))
+            return true
+        }
+        return false
+    }
+
     private fun key(parkingLotId: Long, plateNumber: String): String = "$parkingLotId|$plateNumber"
 }

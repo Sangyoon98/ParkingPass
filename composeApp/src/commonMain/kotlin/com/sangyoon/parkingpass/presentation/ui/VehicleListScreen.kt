@@ -375,6 +375,7 @@ private fun EditVehicleDialog(
                         value = when (selectedCategory) {
                             VehicleCategory.SEDAN -> "승용차"
                             VehicleCategory.SUV -> "SUV"
+                            VehicleCategory.ELECTRIC -> "전기차"
                             VehicleCategory.TRUCK -> "트럭"
                             VehicleCategory.VAN -> "밴"
                             VehicleCategory.MOTORCYCLE -> "오토바이"
@@ -405,6 +406,13 @@ private fun EditVehicleDialog(
                             text = { Text("SUV") },
                             onClick = {
                                 selectedCategory = VehicleCategory.SUV
+                                categoryExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("전기차") },
+                            onClick = {
+                                selectedCategory = VehicleCategory.ELECTRIC
                                 categoryExpanded = false
                             }
                         )
